@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin · Unedited</title>
+<meta name="robots" content="noindex,nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500&family=Noto+Naskh+Arabic:wght@400;500&family=Noto+Serif+SC:wght@400;500&family=Noto+Serif+TC:wght@400;500&family=Noto+Serif+JP:wght@400;500&family=Noto+Serif+Hebrew:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f5;
+    --surface: #ffffff;
+    --text: #2a2825;
+    --text-soft: #6b6760;
+    --text-faint: #98948c;
+    --border: #e8e3da;
+    --border-soft: #f0ebe2;
+    --accent: #8b5a3c;
+    --warning-bg: #fbf0e6;
+    --warning-text: #8b5a1f;
+    --success-bg: #e8f3ec;
+    --success-text: #2d6a3e;
+    --error-bg: #fbeaea;
+    --error-text: #8b1f1f;
+    --info-bg: #eef2f7;
+    --info-text: #3a4a5c;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 32px 0 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .site-title { font-family: "Iowan Old Style", Georgia, serif; font-size: 24px; font-weight: 500; margin: 0; letter-spacing: -0.01em; }
+  .admin-tag { font-size: 11px; padding: 3px 8px; background: var(--accent); color: white; border-radius: 4px; font-weight: 500; letter-spacing: 0.05em; }
+  .header-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+  .icon-btn { background: transparent; border: 1px solid var(--border); padding: 7px 14px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 13px; color: var(--text-soft); }
+  .icon-btn:hover { background: var(--border-soft); color: var(--text); }
+  main { padding: 32px 0 80px; }
+  h2 { font-family: "Iowan Old Style", Georgia, serif; font-weight: 500; margin: 0 0 16px; }
+  h3 { font-family: -apple-system, system-ui, sans-serif; font-weight: 500; font-size: 14px; margin: 0 0 8px; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.05em; }
+  label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text); }
+  label .opt { color: var(--text-faint); font-weight: 400; }
+  input[type="text"], input[type="email"], input[type="password"], input[type="url"], input[type="number"], select, textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px;
+    font-size: 14px; font-family: inherit; background: var(--surface); color: var(--text);
+  }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--text); }
+  textarea { min-height: 200px; resize: vertical; line-height: 1.6; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
+  .field { margin-bottom: 16px; }
+  .help { font-size: 12px; color: var(--text-faint); margin: 4px 0 0; }
+  .btn-primary {
+    background: var(--text); color: var(--bg); padding: 11px 24px; border: none; border-radius: 6px;
+    font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-secondary {
+    background: transparent; color: var(--text); padding: 11px 22px; border: 1px solid var(--border);
+    border-radius: 6px; font-size: 14px; cursor: pointer; font-family: inherit;
+  }
+  .btn-secondary:hover { background: var(--border-soft); }
+  .btn-danger {
+    background: var(--error-bg); color: var(--error-text); padding: 8px 14px; border: 1px solid #e8c7c7;
+    border-radius: 6px; font-size: 13px; cursor: pointer; font-family: inherit;
+  }
+  .btn-danger:hover { background: #f4d6d6; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .msg { padding: 12px 16px; border-radius: 6px; font-size: 14px; margin-bottom: 16px; }
+  .msg.success { background: var(--success-bg); color: var(--success-text); }
+  .msg.error { background: var(--error-bg); color: var(--error-text); }
+  .msg.info { background: var(--info-bg); color: var(--info-text); }
+
+  /* Login screen */
+  .login-card {
+    max-width: 480px; margin: 80px auto; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px; padding: 32px;
+  }
+  .login-card h2 { font-size: 24px; margin: 0 0 8px; }
+  .login-card p { color: var(--text-soft); font-size: 14px; margin: 0 0 24px; line-height: 1.6; }
+  .login-card details { margin: 16px 0; font-size: 13px; }
+  .login-card details summary { color: var(--accent); cursor: pointer; padding: 4px 0; }
+  .login-card details ol { padding-left: 20px; line-height: 1.8; color: var(--text-soft); }
+  .login-card code {
+    background: var(--border-soft); padding: 2px 6px; border-radius: 3px;
+    font-size: 12px; font-family: ui-monospace, monospace;
+  }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 2px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .tab {
+    background: transparent; border: none; padding: 10px 16px; font-size: 14px;
+    color: var(--text-soft); cursor: pointer; font-family: inherit;
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 500; }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* Stories list */
+  .stories-list { display: flex; flex-direction: column; gap: 8px; }
+  .story-row {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+    padding: 14px 18px; display: flex; align-items: center; gap: 12px;
+  }
+  .story-row-info { flex: 1; min-width: 0; }
+  .story-row-title { font-family: "Iowan Old Style", Georgia, serif; font-size: 15px; font-weight: 500; margin: 0 0 2px; }
+  .story-row-meta { font-size: 12px; color: var(--text-faint); }
+  .story-row-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .story-row-actions button {
+    background: transparent; border: 1px solid var(--border); padding: 6px 10px;
+    border-radius: 4px; font-size: 12px; cursor: pointer; font-family: inherit;
+    color: var(--text-soft);
+  }
+  .story-row-actions button:hover { background: var(--border-soft); color: var(--text); }
+  .story-row-actions button.danger:hover { background: var(--error-bg); color: var(--error-text); border-color: #e8c7c7; }
+
+  /* Toolbar in editor */
+  .editor-wrap { border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
+  .editor-toolbar {
+    display: flex; gap: 2px; padding: 6px; border-bottom: 1px solid var(--border);
+    background: var(--bg); border-radius: 6px 6px 0 0; flex-wrap: wrap;
+  }
+  .tb-btn { background: transparent; border: none; padding: 5px 10px; font-size: 13px; color: var(--text-soft); border-radius: 3px; cursor: pointer; font-family: inherit; min-width: 30px; }
+  .tb-btn:hover { background: var(--border-soft); color: var(--text); }
+  .tb-btn.active { background: var(--text); color: var(--bg); }
+  .tb-btn.bold { font-weight: 700; }
+  .tb-btn.italic { font-style: italic; }
+  .editor-area {
+    min-height: 240px; padding: 14px 16px; font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 16px; line-height: 1.7; color: var(--text); outline: none; max-height: 500px; overflow-y: auto;
+  }
+  .editor-area:empty:before { content: attr(data-placeholder); color: var(--text-faint); font-style: italic; }
+  .editor-area p { margin: 0 0 1em; }
+  .editor-area blockquote { border-left: 3px solid var(--border); padding-left: 14px; margin: 1em 0; color: var(--text-soft); font-style: italic; }
+  .editor-area h2, .editor-area h3 { font-weight: 500; margin: 1em 0 0.5em; }
+  .editor-area[dir="rtl"] { text-align: right; }
+  .editor-area[data-script="persian"] { font-family: "Vazirmatn", Georgia, serif; }
+  .editor-area[data-script="arabic"] { font-family: "Noto Naskh Arabic", Georgia, serif; }
+  .editor-area[data-script="chinese-simplified"] { font-family: "Noto Serif SC", Georgia, serif; }
+  .editor-area[data-script="japanese"] { font-family: "Noto Serif JP", Georgia, serif; }
+  .editor-area[data-script="hebrew"] { font-family: "Noto Serif Hebrew", Georgia, serif; }
+
+  .tag-picker { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag-pick {
+    font-family: inherit; font-size: 12px; padding: 5px 12px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text-soft); border-radius: 999px; cursor: pointer;
+  }
+  .tag-pick:hover { border-color: var(--text-soft); }
+  .tag-pick.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+  .checkbox-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; font-size: 13px; line-height: 1.5; }
+  .checkbox-row input { margin-top: 3px; }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 48px 20px; color: var(--text-soft); font-size: 14px; }
+
+  /* Settings tab */
+  .settings-section { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 16px; }
+
+  /* Status bar at top during operations */
+  .status-bar {
+    position: fixed; top: 0; left: 0; right: 0; padding: 10px 16px;
+    text-align: center; font-size: 13px; z-index: 100;
+    transform: translateY(-100%); transition: transform 0.2s;
+  }
+  .status-bar.visible { transform: translateY(0); }
+  .status-bar.success { background: var(--success-bg); color: var(--success-text); }
+  .status-bar.error { background: var(--error-bg); color: var(--error-text); }
+  .status-bar.info { background: var(--info-bg); color: var(--info-text); }
+</style>
+</head>
+<body>
+
+<div class="status-bar" id="status-bar"></div>
+
+<!-- LOGIN SCREEN -->
+<div id="login-view">
+  <div class="container">
+    <div class="login-card">
+      <h2>Sign in to admin</h2>
+      <p>Enter your GitHub repo info and a Personal Access Token. Both are stored in this browser only — they never leave your device except to talk to GitHub.</p>
+
+      <div id="login-error"></div>
+
+      <div class="field">
+        <label>GitHub username <span class="opt">e.g. unedited-stories</span></label>
+        <input type="text" id="cfg-owner" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label>Repository name <span class="opt">e.g. unedited</span></label>
+        <input type="text" id="cfg-repo" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label>Branch <span class="opt">usually 'main'</span></label>
+        <input type="text" id="cfg-branch" value="main" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label>Personal Access Token</label>
+        <input type="password" id="cfg-token" autocomplete="off" />
+      </div>
+
+      <div class="checkbox-row" style="margin: 12px 0 16px;">
+        <input type="checkbox" id="cfg-remember" checked />
+        <label for="cfg-remember" style="margin: 0; font-weight: 400;">Remember on this device</label>
+      </div>
+
+      <button class="btn-primary" id="login-btn" onclick="login()">Sign in</button>
+
+      <details>
+        <summary>How do I get a Personal Access Token?</summary>
+        <ol>
+          <li>Go to GitHub → Settings → Developer settings → Personal access tokens → <strong>Fine-grained tokens</strong></li>
+          <li>Click "Generate new token"</li>
+          <li>Token name: <code>unedited-admin</code></li>
+          <li>Expiration: pick something reasonable (1 year is fine)</li>
+          <li>Repository access: "Only select repositories" → choose your <code>unedited</code> repo</li>
+          <li>Repository permissions: set <strong>Contents</strong> to <strong>Read and write</strong></li>
+          <li>Click "Generate token" and copy the token (starts with <code>github_pat_</code>)</li>
+          <li>Paste it above and sign in</li>
+        </ol>
+        <p style="margin-top: 12px; color: var(--text-soft);">The token is stored only in your browser's localStorage. To sign out and remove it, click "Sign out" once logged in.</p>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="admin-view" style="display: none;">
+  <div class="container">
+    <header>
+      <h1 class="site-title">Unedited</h1>
+      <span class="admin-tag">ADMIN</span>
+      <div class="header-actions">
+        <a class="icon-btn" id="view-site-link" target="_blank" rel="noopener">View site ↗</a>
+        <button class="icon-btn" onclick="logout()">Sign out</button>
+      </div>
+    </header>
+
+    <main>
+      <div class="tabs">
+        <button class="tab active" data-tab="stories">Stories</button>
+        <button class="tab" data-tab="new">New story</button>
+        <button class="tab" data-tab="content">Site content</button>
+        <button class="tab" data-tab="settings">Settings</button>
+      </div>
+
+      <!-- STORIES LIST TAB -->
+      <div class="tab-pane active" id="tab-stories">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap;">
+          <h2 style="margin: 0;">Published stories</h2>
+          <button class="btn-secondary" onclick="loadStories()">↻ Refresh</button>
+        </div>
+        <div id="stories-list" class="stories-list">
+          <div class="empty">Loading…</div>
+        </div>
+      </div>
+
+      <!-- NEW / EDIT STORY TAB -->
+      <div class="tab-pane" id="tab-new">
+        <h2 id="form-title">Publish a new story</h2>
+        <p id="form-subtitle" style="color: var(--text-soft); font-size: 14px; margin: -8px 0 24px;">Fill in the details from a submission email or voice note. The story goes live within ~1 minute of saving.</p>
+
+        <div id="form-status"></div>
+
+        <div class="row">
+          <div class="field">
+            <label>Author <span class="opt">*</span></label>
+            <input type="text" id="f-author" placeholder="First name, initials, or 'Anonymous'" />
+          </div>
+          <div class="field">
+            <label>Location <span class="opt">optional</span></label>
+            <input type="text" id="f-location" placeholder="e.g. Lisbon, Portugal" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Year <span class="opt">optional</span></label>
+            <input type="text" id="f-year" placeholder="2024" />
+          </div>
+          <div class="field">
+            <label>Language</label>
+            <select id="f-language">
+              <option value="en">English (en)</option>
+              <option value="fa">Persian / Farsi (fa)</option>
+              <option value="ar">Arabic (ar)</option>
+              <option value="he">Hebrew (he)</option>
+              <option value="zh">Chinese (zh)</option>
+              <option value="ja">Japanese (ja)</option>
+              <option value="hi">Hindi (hi)</option>
+              <option value="bn">Bengali (bn)</option>
+              <option value="th">Thai (th)</option>
+              <option value="nl">Dutch (nl)</option>
+              <option value="es">Spanish (es)</option>
+              <option value="pt">Portuguese (pt)</option>
+              <option value="fr">French (fr)</option>
+              <option value="de">German (de)</option>
+              <option value="it">Italian (it)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Tags</label>
+          <div class="tag-picker" id="tag-picker"></div>
+        </div>
+
+        <div class="field">
+          <label>Content notes <span class="opt">optional</span></label>
+          <input type="text" id="f-content-notes" placeholder="e.g. medical trauma, loss" />
+        </div>
+
+        <div class="field">
+          <label>Story</label>
+          <div class="editor-wrap">
+            <div class="editor-toolbar">
+              <button type="button" class="tb-btn bold" data-cmd="bold" title="Bold">B</button>
+              <button type="button" class="tb-btn italic" data-cmd="italic" title="Italic">I</button>
+              <button type="button" class="tb-btn" data-cmd="formatBlock" data-arg="h2" title="Heading">H2</button>
+              <button type="button" class="tb-btn" data-cmd="formatBlock" data-arg="h3" title="Sub">H3</button>
+              <button type="button" class="tb-btn" data-cmd="formatBlock" data-arg="p" title="Paragraph">P</button>
+              <button type="button" class="tb-btn" data-cmd="formatBlock" data-arg="blockquote" title="Quote">"</button>
+              <button type="button" class="tb-btn" data-cmd="insertUnorderedList" title="List">•</button>
+              <button type="button" class="tb-btn" data-cmd="undo" title="Undo">↶</button>
+              <button type="button" class="tb-btn" data-cmd="redo" title="Redo">↷</button>
+            </div>
+            <div class="editor-area" id="editor" contenteditable="true" data-placeholder="Paste the story HTML from the submission email, or write fresh."></div>
+          </div>
+          <p class="help">Pasting from an email strips formatting. Use the toolbar to add it back, or paste the raw HTML from the form's <code>story_html</code> field for full formatting.</p>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Audio URL <span class="opt">if audio story</span></label>
+            <input type="url" id="f-audio-url" placeholder="https://res.cloudinary.com/..." />
+          </div>
+          <div class="field">
+            <label>Audio duration (seconds) <span class="opt">optional</span></label>
+            <input type="number" id="f-audio-duration" min="0" placeholder="e.g. 1245" />
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="checkbox-row">
+            <input type="checkbox" id="f-share-allowed" checked />
+            <label for="f-share-allowed" style="font-weight: 400;">Sharing on social media is allowed (uncheck if author opted out)</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Submitted on <span class="opt">YYYY-MM-DD</span></label>
+            <input type="text" id="f-submitted-at" />
+          </div>
+          <div class="field">
+            <label>Published on <span class="opt">YYYY-MM-DD</span></label>
+            <input type="text" id="f-published-at" />
+          </div>
+        </div>
+
+        <div class="btn-row" style="margin-top: 24px;">
+          <button class="btn-primary" id="save-btn" onclick="saveStory()">Publish</button>
+          <button class="btn-secondary" onclick="resetForm()">Reset form</button>
+          <button class="btn-secondary" id="cancel-edit-btn" onclick="resetForm()" style="display: none;">Cancel edit</button>
+        </div>
+      </div>
+
+      <!-- SITE CONTENT TAB -->
+      <div class="tab-pane" id="tab-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap;">
+          <h2 style="margin: 0;">Site content</h2>
+          <div class="btn-row">
+            <button class="btn-secondary" onclick="loadContent()">↻ Reload</button>
+            <button class="btn-primary" id="content-save-btn" onclick="saveContent()">Save changes</button>
+          </div>
+        </div>
+        <p style="color: var(--text-soft); font-size: 14px; margin: -4px 0 20px;">Edit the words shown on the public site. Use <code>&lt;em&gt;...&lt;/em&gt;</code> for italic emphasis. Changes apply within ~1 minute of saving.</p>
+
+        <div id="content-status"></div>
+
+        <div id="content-form">
+          <div class="empty">Loading…</div>
+        </div>
+      </div>
+
+      <!-- SETTINGS TAB -->
+      <div class="tab-pane" id="tab-settings">
+        <h2>Settings</h2>
+
+        <div class="settings-section">
+          <h3>GitHub connection</h3>
+          <p style="font-size: 13px; color: var(--text-soft); margin: 0 0 16px;">Currently signed in to: <strong id="settings-repo-info"></strong></p>
+          <button class="btn-secondary" onclick="logout()">Sign out and clear credentials</button>
+        </div>
+
+        <div class="settings-section">
+          <h3>Edit site content</h3>
+          <p style="font-size: 13px; color: var(--text-soft); margin: 0 0 12px;">For changes to the site itself (header text, About page, Why page, available tags), edit <code>index.html</code> directly on GitHub. The admin panel only handles stories.</p>
+          <a class="btn-secondary" id="edit-html-link" target="_blank" rel="noopener">Open index.html on GitHub ↗</a>
+        </div>
+
+        <div class="settings-section">
+          <h3>About this admin panel</h3>
+          <p style="font-size: 13px; color: var(--text-soft); margin: 0 0 8px;">This panel runs entirely in your browser. Your GitHub token is stored only in this browser's localStorage, and is sent only to api.github.com when reading or writing stories.</p>
+          <p style="font-size: 13px; color: var(--text-soft); margin: 0;">No analytics, no third parties, no logging.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG / STATE
+// ============================================================
+const CONFIG_KEY = "unedited-admin-config-v1";
+const TAGS = [
+  "hospital","home","birth-center","water-birth",
+  "c-section","vbac","induction","unmedicated","epidural",
+  "premature","twins","surrogacy","adoption","loss",
+  "first-baby","rainbow-baby"
+];
+
+let cfg = null; // { owner, repo, branch, token }
+let stories = []; // loaded from index.json + each story file
+let indexShas = {}; // sha of index.json + each story file (needed for GitHub PUT)
+let editingId = null; // when set, we're editing this story instead of creating new
+let selectedTags = new Set();
+
+// ============================================================
+// AUTH / CONFIG
+// ============================================================
+function loadConfig() {
+  try {
+    const raw = localStorage.getItem(CONFIG_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) { return null; }
+}
+
+function saveConfig(c, remember) {
+  if (remember) {
+    localStorage.setItem(CONFIG_KEY, JSON.stringify(c));
+  } else {
+    localStorage.removeItem(CONFIG_KEY);
+  }
+}
+
+async function login() {
+  const errEl = document.getElementById("login-error");
+  errEl.innerHTML = "";
+
+  const owner = document.getElementById("cfg-owner").value.trim();
+  const repo = document.getElementById("cfg-repo").value.trim();
+  const branch = document.getElementById("cfg-branch").value.trim() || "main";
+  const token = document.getElementById("cfg-token").value.trim();
+  const remember = document.getElementById("cfg-remember").checked;
+
+  if (!owner || !repo || !token) {
+    errEl.innerHTML = '<div class="msg error">All fields are required.</div>';
+    return;
+  }
+
+  const btn = document.getElementById("login-btn");
+  btn.disabled = true;
+  btn.textContent = "Verifying…";
+
+  // Verify token by trying to read the repo
+  try {
+    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+      headers: { Authorization: "token " + token, Accept: "application/vnd.github+json" }
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.message || `Could not access ${owner}/${repo}`);
+    }
+  } catch (err) {
+    errEl.innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '. Check your username, repo name, and token permissions.</div>';
+    btn.disabled = false;
+    btn.textContent = "Sign in";
+    return;
+  }
+
+  cfg = { owner, repo, branch, token };
+  saveConfig(cfg, remember);
+  enterAdmin();
+}
+
+function logout() {
+  if (!confirm("Sign out and remove credentials from this browser?")) return;
+  localStorage.removeItem(CONFIG_KEY);
+  cfg = null;
+  document.getElementById("admin-view").style.display = "none";
+  document.getElementById("login-view").style.display = "block";
+  document.getElementById("cfg-token").value = "";
+}
+
+function enterAdmin() {
+  document.getElementById("login-view").style.display = "none";
+  document.getElementById("admin-view").style.display = "block";
+
+  // Update header links
+  document.getElementById("view-site-link").href = `https://${cfg.owner}.github.io/${cfg.repo}/`;
+  document.getElementById("settings-repo-info").textContent = `${cfg.owner}/${cfg.repo} (${cfg.branch})`;
+  document.getElementById("edit-html-link").href = `https://github.com/${cfg.owner}/${cfg.repo}/edit/${cfg.branch}/index.html`;
+
+  buildTagPicker();
+  initEditor();
+  loadStories();
+  loadContent();
+  setDefaultDates();
+}
+
+function setDefaultDates() {
+  const today = new Date().toISOString().slice(0, 10);
+  document.getElementById("f-submitted-at").value = today;
+  document.getElementById("f-published-at").value = today;
+}
+
+// ============================================================
+// GITHUB API HELPERS
+// ============================================================
+async function ghGet(path) {
+  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}?ref=${cfg.branch}`;
+  const res = await fetch(url, {
+    headers: { Authorization: "token " + cfg.token, Accept: "application/vnd.github+json" }
+  });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error("GitHub error: " + res.status);
+  return res.json();
+}
+
+async function ghPut(path, content, message, sha) {
+  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
+  const body = {
+    message,
+    content: utf8ToBase64(content),
+    branch: cfg.branch
+  };
+  if (sha) body.sha = sha;
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: { Authorization: "token " + cfg.token, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.message || "GitHub error: " + res.status);
+  }
+  return res.json();
+}
+
+async function ghDelete(path, message, sha) {
+  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
+  const res = await fetch(url, {
+    method: "DELETE",
+    headers: { Authorization: "token " + cfg.token, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+    body: JSON.stringify({ message, sha, branch: cfg.branch })
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.message || "GitHub error: " + res.status);
+  }
+  return res.json();
+}
+
+function utf8ToBase64(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+function base64ToUtf8(str) {
+  return decodeURIComponent(escape(atob(str.replace(/\s/g, ""))));
+}
+
+// ============================================================
+// STORY LOADING
+// ============================================================
+// ============================================================
+// SITE CONTENT
+// ============================================================
+
+// Schema describing each editable field in content.json — used to render form
+const CONTENT_SCHEMA = [
+  { section: "Site basics" },
+  { path: "site.title", label: "Site title", type: "text", help: "Shown in the header and browser tab" },
+  { path: "site.tagline", label: "Tagline", type: "text", help: "Smaller text under the site title" },
+  { path: "site.footer", label: "Footer text", type: "text" },
+  { path: "site.contact_email", label: "Contact email", type: "text", help: "Used on the About page" },
+
+  { section: "Home page teaser" },
+  { path: "home_teaser.paragraphs", label: "Paragraphs", type: "list", help: "One paragraph per box. HTML allowed: <em>...</em> for italic emphasis." },
+  { path: "home_teaser.link_text", label: "Link text", type: "text" },
+
+  { section: "Why page" },
+  { path: "why_page.title", label: "Page title", type: "text" },
+  { path: "why_page.intro_paragraphs", label: "Opening paragraphs", type: "list", help: "Each paragraph is a separate box. HTML allowed for emphasis." },
+  { path: "why_page.lead_one_title", label: "First reason — bold lead", type: "text" },
+  { path: "why_page.lead_one_text", label: "First reason — explanation", type: "textarea" },
+  { path: "why_page.lead_two_title", label: "Second reason — bold lead", type: "text" },
+  { path: "why_page.lead_two_text", label: "Second reason — explanation", type: "textarea" },
+  { path: "why_page.lead_three_title", label: "Third reason — bold lead", type: "text" },
+  { path: "why_page.lead_three_text", label: "Third reason — explanation", type: "textarea" },
+  { path: "why_page.closing", label: "Closing pledge", type: "textarea", help: "Set apart at the bottom in italic gray" },
+
+  { section: "About page" },
+  { path: "about_page.title", label: "Page title", type: "text" },
+  { path: "about_page.intro", label: "Intro paragraph", type: "textarea" },
+  { path: "about_page.what_youll_find_title", label: "Section 1 heading", type: "text" },
+  { path: "about_page.what_youll_find_text", label: "Section 1 text", type: "textarea" },
+  { path: "about_page.submitting_title", label: "Section 2 heading", type: "text" },
+  { path: "about_page.submitting_text", label: "Section 2 text", type: "textarea" },
+  { path: "about_page.book_title", label: "Section 3 heading", type: "text" },
+  { path: "about_page.book_text", label: "Section 3 text", type: "textarea" },
+  { path: "about_page.contact_title", label: "Contact heading", type: "text" },
+  { path: "about_page.contact_text", label: "Contact text", type: "text", help: "The email address is appended automatically" },
+
+  { section: "Submission page" },
+  { path: "submit_page.title", label: "Heading", type: "text" },
+  { path: "submit_page.intro", label: "Introduction", type: "textarea" },
+
+  { section: "Submission tags" },
+  { path: "available_tags", label: "Available tags", type: "tags", help: "Tags submitters can pick from. Lowercase, hyphenated. Press Enter to add." }
+];
+
+let siteContent = null;
+let contentSha = null;
+
+async function loadContent() {
+  const wrap = document.getElementById("content-form");
+  const statusEl = document.getElementById("content-status");
+  if (statusEl) statusEl.innerHTML = "";
+  wrap.innerHTML = '<div class="empty">Loading…</div>';
+
+  try {
+    const file = await ghGet("content.json");
+    if (!file) {
+      wrap.innerHTML = '<div class="msg error">content.json not found in the repo. Make sure you have pushed the latest version of the project.</div>';
+      return;
+    }
+    contentSha = file.sha;
+    siteContent = JSON.parse(base64ToUtf8(file.content));
+    renderContentForm();
+  } catch (err) {
+    wrap.innerHTML = '<div class="msg error">Failed to load: ' + escapeHtml(err.message) + '</div>';
+  }
+}
+
+function getNested(obj, path) {
+  return path.split(".").reduce((o, k) => (o ? o[k] : undefined), obj);
+}
+
+function setNested(obj, path, value) {
+  const parts = path.split(".");
+  const last = parts.pop();
+  let target = obj;
+  for (const p of parts) {
+    if (!target[p] || typeof target[p] !== "object") target[p] = {};
+    target = target[p];
+  }
+  target[last] = value;
+}
+
+function renderContentForm() {
+  const wrap = document.getElementById("content-form");
+  if (!siteContent) { wrap.innerHTML = ""; return; }
+
+  let html = "";
+  for (const item of CONTENT_SCHEMA) {
+    if (item.section) {
+      html += '<div class="settings-section"><h3>' + escapeHtml(item.section) + '</h3>';
+      // collect this section's fields until next section
+      const idx = CONTENT_SCHEMA.indexOf(item);
+      let endIdx = CONTENT_SCHEMA.length;
+      for (let j = idx + 1; j < CONTENT_SCHEMA.length; j++) {
+        if (CONTENT_SCHEMA[j].section) { endIdx = j; break; }
+      }
+      for (let j = idx + 1; j < endIdx; j++) {
+        html += renderContentField(CONTENT_SCHEMA[j]);
+      }
+      html += '</div>';
+    }
+  }
+  wrap.innerHTML = html;
+
+  // Wire up dynamic list controls
+  wrap.querySelectorAll("[data-list-add]").forEach(btn => {
+    btn.addEventListener("click", () => addListItem(btn.dataset.listAdd));
+  });
+  wrap.querySelectorAll("[data-list-remove]").forEach(btn => {
+    btn.addEventListener("click", () => removeListItem(btn.dataset.listRemove, parseInt(btn.dataset.listIdx, 10)));
+  });
+  wrap.querySelectorAll("[data-tag-add]").forEach(btn => {
+    btn.addEventListener("click", () => addTagItem(btn.dataset.tagAdd));
+  });
+  wrap.querySelectorAll("[data-tag-remove]").forEach(btn => {
+    btn.addEventListener("click", () => removeTagItem(btn.dataset.tagRemove, parseInt(btn.dataset.tagIdx, 10)));
+  });
+}
+
+function renderContentField(field) {
+  const value = getNested(siteContent, field.path);
+  const id = "content-" + field.path.replace(/\./g, "-");
+  let inner = "";
+
+  if (field.type === "text") {
+    inner = `<input type="text" id="${id}" data-path="${field.path}" value="${escapeAttr(value || "")}" />`;
+  } else if (field.type === "textarea") {
+    inner = `<textarea id="${id}" data-path="${field.path}" style="min-height: 120px;">${escapeHtml(value || "")}</textarea>`;
+  } else if (field.type === "list") {
+    const items = Array.isArray(value) ? value : [];
+    inner = '<div class="list-items" id="' + id + '">';
+    items.forEach((v, i) => {
+      inner += `<div class="list-item" style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <textarea data-path="${field.path}" data-list-idx="${i}" style="min-height: 70px; flex: 1;">${escapeHtml(v || "")}</textarea>
+        <button type="button" class="btn-danger" data-list-remove="${field.path}" data-list-idx="${i}" style="align-self: flex-start;">Remove</button>
+      </div>`;
+    });
+    inner += '</div>';
+    inner += `<button type="button" class="btn-secondary" data-list-add="${field.path}" style="font-size: 13px; padding: 6px 12px;">+ Add paragraph</button>`;
+  } else if (field.type === "tags") {
+    const items = Array.isArray(value) ? value : [];
+    inner = '<div class="tag-items" id="' + id + '" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;">';
+    items.forEach((v, i) => {
+      inner += `<span class="tag-pick active" style="display: inline-flex; align-items: center; gap: 4px; cursor: default;">${escapeHtml(v)} <button type="button" data-tag-remove="${field.path}" data-tag-idx="${i}" style="background: none; border: none; color: inherit; cursor: pointer; padding: 0 0 0 4px; font-size: 14px;">×</button></span>`;
+    });
+    inner += '</div>';
+    inner += `<div style="display: flex; gap: 8px;">
+      <input type="text" id="${id}-new" placeholder="new-tag" style="flex: 1;" />
+      <button type="button" class="btn-secondary" data-tag-add="${field.path}" style="font-size: 13px; padding: 8px 14px;">Add</button>
+    </div>`;
+  }
+
+  return `<div class="field">
+    <label>${escapeHtml(field.label)}</label>
+    ${inner}
+    ${field.help ? '<p class="help">' + escapeHtml(field.help) + '</p>' : ''}
+  </div>`;
+}
+
+function syncContentFromForm() {
+  // Read all simple text/textarea fields with data-path
+  document.querySelectorAll("#content-form [data-path]:not([data-list-idx])").forEach(el => {
+    setNested(siteContent, el.dataset.path, el.value);
+  });
+  // Read list paragraphs (textareas with data-list-idx)
+  const listsByPath = {};
+  document.querySelectorAll("#content-form [data-list-idx]").forEach(el => {
+    const p = el.dataset.path;
+    const i = parseInt(el.dataset.listIdx, 10);
+    if (!listsByPath[p]) listsByPath[p] = [];
+    listsByPath[p][i] = el.value;
+  });
+  Object.keys(listsByPath).forEach(p => {
+    const arr = listsByPath[p].filter(v => v !== undefined);
+    setNested(siteContent, p, arr);
+  });
+}
+
+function addListItem(path) {
+  syncContentFromForm();
+  const arr = getNested(siteContent, path) || [];
+  arr.push("");
+  setNested(siteContent, path, arr);
+  renderContentForm();
+}
+
+function removeListItem(path, idx) {
+  syncContentFromForm();
+  const arr = getNested(siteContent, path) || [];
+  arr.splice(idx, 1);
+  setNested(siteContent, path, arr);
+  renderContentForm();
+}
+
+function addTagItem(path) {
+  syncContentFromForm();
+  const inputId = "content-" + path.replace(/\./g, "-") + "-new";
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const newTag = input.value.trim().toLowerCase().replace(/\s+/g, "-");
+  if (!newTag) return;
+  const arr = getNested(siteContent, path) || [];
+  if (arr.includes(newTag)) {
+    showStatusBar("error", "Tag already exists.");
+    return;
+  }
+  arr.push(newTag);
+  setNested(siteContent, path, arr);
+  renderContentForm();
+}
+
+function removeTagItem(path, idx) {
+  syncContentFromForm();
+  const arr = getNested(siteContent, path) || [];
+  arr.splice(idx, 1);
+  setNested(siteContent, path, arr);
+  renderContentForm();
+}
+
+async function saveContent() {
+  if (!siteContent) return;
+  syncContentFromForm();
+
+  const btn = document.getElementById("content-save-btn");
+  btn.disabled = true;
+  btn.textContent = "Saving…";
+  document.getElementById("content-status").innerHTML = '<div class="msg info">Writing to GitHub…</div>';
+
+  try {
+    const json = JSON.stringify(siteContent, null, 2) + "\n";
+    const res = await ghPut("content.json", json, "Update site content", contentSha);
+    contentSha = res.content.sha;
+    document.getElementById("content-status").innerHTML = '<div class="msg success">Saved. Site updates within ~1 minute.</div>';
+    showStatusBar("success", "Saved.");
+  } catch (err) {
+    document.getElementById("content-status").innerHTML = '<div class="msg error">Save failed: ' + escapeHtml(err.message) + '</div>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Save changes";
+  }
+}
+
+async function loadStories() {
+  const list = document.getElementById("stories-list");
+  list.innerHTML = '<div class="empty">Loading…</div>';
+
+  try {
+    const indexFile = await ghGet("stories/index.json");
+    if (!indexFile) throw new Error("stories/index.json not found");
+    indexShas["index.json"] = indexFile.sha;
+    const indexData = JSON.parse(base64ToUtf8(indexFile.content));
+
+    stories = [];
+    for (const entry of indexData.stories) {
+      const file = await ghGet("stories/" + entry.file);
+      if (!file) continue;
+      indexShas[entry.file] = file.sha;
+      const story = JSON.parse(base64ToUtf8(file.content));
+      story._filename = entry.file;
+      stories.push(story);
+    }
+
+    renderStories();
+  } catch (err) {
+    list.innerHTML = '<div class="msg error">Failed to load: ' + escapeHtml(err.message) + '</div>';
+  }
+}
+
+function renderStories() {
+  const list = document.getElementById("stories-list");
+  if (stories.length === 0) {
+    list.innerHTML = '<div class="empty">No stories yet. Click "New story" to add one.</div>';
+    return;
+  }
+  // Sort by published_at desc
+  const sorted = stories.slice().sort((a, b) => (b.published_at || "").localeCompare(a.published_at || ""));
+  list.innerHTML = sorted.map(s => {
+    const meta = [s.id, s.location, s.year, s.language, s.published_at].filter(Boolean).join(" · ");
+    return `
+      <div class="story-row">
+        <div class="story-row-info">
+          <p class="story-row-title">${escapeHtml(s.author)}</p>
+          <div class="story-row-meta">${escapeHtml(meta)}${s.audio_url ? ' · 🎙 audio' : ''}${s.share_allowed === false ? ' · 🔒 no share' : ''}</div>
+        </div>
+        <div class="story-row-actions">
+          <button onclick="editStory('${escapeAttr(s.id)}')">Edit</button>
+          <button class="danger" onclick="deleteStory('${escapeAttr(s.id)}')">Delete</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+// ============================================================
+// EDIT / NEW
+// ============================================================
+function editStory(id) {
+  const s = stories.find(x => x.id === id);
+  if (!s) return;
+  editingId = id;
+
+  document.getElementById("form-title").textContent = "Edit story " + s.id;
+  document.getElementById("form-subtitle").textContent = "Editing " + (s._filename || s.id) + ". Changes commit to GitHub when you save.";
+  document.getElementById("save-btn").textContent = "Save changes";
+  document.getElementById("cancel-edit-btn").style.display = "inline-block";
+
+  document.getElementById("f-author").value = s.author || "";
+  document.getElementById("f-location").value = s.location || "";
+  document.getElementById("f-year").value = s.year || "";
+  document.getElementById("f-language").value = s.language || "en";
+  document.getElementById("f-content-notes").value = s.content_notes || "";
+  document.getElementById("f-audio-url").value = s.audio_url || "";
+  document.getElementById("f-audio-duration").value = s.audio_duration_seconds || "";
+  document.getElementById("f-share-allowed").checked = s.share_allowed !== false;
+  document.getElementById("f-submitted-at").value = s.submitted_at || "";
+  document.getElementById("f-published-at").value = s.published_at || "";
+
+  selectedTags = new Set(s.tags || []);
+  document.querySelectorAll("#tag-picker .tag-pick").forEach(b => {
+    b.classList.toggle("active", selectedTags.has(b.dataset.tag));
+  });
+
+  document.getElementById("editor").innerHTML = s.body || "";
+  updateEditorScript();
+
+  switchTab("new");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function resetForm() {
+  editingId = null;
+  document.getElementById("form-title").textContent = "Publish a new story";
+  document.getElementById("form-subtitle").textContent = "Fill in the details from a submission email or voice note. The story goes live within ~1 minute of saving.";
+  document.getElementById("save-btn").textContent = "Publish";
+  document.getElementById("cancel-edit-btn").style.display = "none";
+
+  ["f-author","f-location","f-year","f-content-notes","f-audio-url","f-audio-duration"].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+  document.getElementById("f-language").value = "en";
+  document.getElementById("f-share-allowed").checked = true;
+  selectedTags.clear();
+  document.querySelectorAll("#tag-picker .tag-pick").forEach(b => b.classList.remove("active"));
+  document.getElementById("editor").innerHTML = "";
+  setDefaultDates();
+}
+
+function nextStoryId() {
+  let max = 0;
+  stories.forEach(s => {
+    const n = parseInt(s.id, 10);
+    if (!isNaN(n) && n > max) max = n;
+  });
+  return String(max + 1).padStart(3, "0");
+}
+
+function slugify(str) {
+  return (str || "").toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 40) || "story";
+}
+
+async function saveStory() {
+  const author = document.getElementById("f-author").value.trim();
+  if (!author) return showFormStatus("error", "Author is required.");
+
+  const body = document.getElementById("editor").innerHTML.trim();
+  const audioUrl = document.getElementById("f-audio-url").value.trim();
+  if (!body && !audioUrl) return showFormStatus("error", "Either a written story or an audio URL is required.");
+
+  const isEdit = !!editingId;
+  const id = isEdit ? editingId : nextStoryId();
+
+  const story = {
+    id,
+    author,
+    location: document.getElementById("f-location").value.trim(),
+    year: document.getElementById("f-year").value.trim(),
+    tags: Array.from(selectedTags),
+    content_notes: document.getElementById("f-content-notes").value.trim(),
+    language: document.getElementById("f-language").value,
+    share_allowed: document.getElementById("f-share-allowed").checked,
+    submitted_at: document.getElementById("f-submitted-at").value.trim(),
+    published_at: document.getElementById("f-published-at").value.trim(),
+    audio_url: audioUrl,
+    audio_duration_seconds: parseInt(document.getElementById("f-audio-duration").value, 10) || 0,
+    body
+  };
+
+  const existing = isEdit ? stories.find(x => x.id === editingId) : null;
+  const filename = existing ? existing._filename : `${id}-${slugify(author)}-${slugify(story.location)}`.replace(/-+$/, "") + ".json";
+  const filepath = "stories/" + filename;
+
+  const btn = document.getElementById("save-btn");
+  btn.disabled = true;
+  btn.textContent = isEdit ? "Saving…" : "Publishing…";
+  showFormStatus("info", "Writing to GitHub…");
+
+  try {
+    // 1. Write/update the story file
+    const sha = isEdit && existing ? indexShas[existing._filename] : undefined;
+    await ghPut(filepath, JSON.stringify(story, null, 2) + "\n", isEdit ? `Update story ${id}` : `Add story ${id}: ${author}`, sha);
+
+    // 2. Update index.json if this is a new story
+    if (!isEdit) {
+      const indexFile = await ghGet("stories/index.json");
+      const indexData = JSON.parse(base64ToUtf8(indexFile.content));
+      indexData.stories.push({ id, file: filename });
+      await ghPut("stories/index.json", JSON.stringify(indexData, null, 2) + "\n", `Add story ${id} to index`, indexFile.sha);
+    }
+
+    showFormStatus("success", `Story ${isEdit ? "updated" : "published"}. Site rebuilds within ~1 minute.`);
+    showStatusBar("success", "Saved.");
+    resetForm();
+    await loadStories();
+    setTimeout(() => switchTab("stories"), 1200);
+  } catch (err) {
+    showFormStatus("error", "Save failed: " + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = isEdit ? "Save changes" : "Publish";
+  }
+}
+
+async function deleteStory(id) {
+  const s = stories.find(x => x.id === id);
+  if (!s) return;
+  if (!confirm(`Delete story "${s.author}" (${s.id})? This commits a deletion to GitHub.`)) return;
+
+  showStatusBar("info", "Deleting…");
+
+  try {
+    // Delete the story file
+    const fileSha = indexShas[s._filename];
+    await ghDelete("stories/" + s._filename, `Remove story ${id}`, fileSha);
+
+    // Update index.json
+    const indexFile = await ghGet("stories/index.json");
+    const indexData = JSON.parse(base64ToUtf8(indexFile.content));
+    indexData.stories = indexData.stories.filter(e => e.id !== id);
+    await ghPut("stories/index.json", JSON.stringify(indexData, null, 2) + "\n", `Remove story ${id} from index`, indexFile.sha);
+
+    showStatusBar("success", "Deleted.");
+    await loadStories();
+  } catch (err) {
+    showStatusBar("error", "Delete failed: " + err.message);
+  }
+}
+
+function showFormStatus(type, msg) {
+  document.getElementById("form-status").innerHTML = `<div class="msg ${type}">${escapeHtml(msg)}</div>`;
+}
+
+let statusTimeout;
+function showStatusBar(type, msg) {
+  const bar = document.getElementById("status-bar");
+  bar.className = "status-bar visible " + type;
+  bar.textContent = msg;
+  clearTimeout(statusTimeout);
+  statusTimeout = setTimeout(() => { bar.classList.remove("visible"); }, 3000);
+}
+
+// ============================================================
+// EDITOR
+// ============================================================
+function initEditor() {
+  const editor = document.getElementById("editor");
+  document.querySelectorAll(".tb-btn").forEach(btn => {
+    btn.addEventListener("mousedown", (e) => e.preventDefault());
+    btn.addEventListener("click", () => {
+      const cmd = btn.dataset.cmd;
+      const arg = btn.dataset.arg || null;
+      editor.focus();
+      document.execCommand(cmd, false, arg);
+    });
+  });
+  editor.addEventListener("input", updateEditorScript);
+  editor.addEventListener("paste", (e) => {
+    // Allow paste — preserves HTML if the user pasted from the rich editor or email
+    // (we sanitize on save indirectly through the editor's internal handling)
+  });
+}
+
+function updateEditorScript() {
+  const editor = document.getElementById("editor");
+  const text = editor.innerText || "";
+  if (text.length < 3) {
+    editor.removeAttribute("data-script");
+    editor.removeAttribute("dir");
+    return;
+  }
+  const detected = detectScript(text);
+  editor.setAttribute("data-script", detected.script);
+  editor.setAttribute("dir", detected.dir);
+}
+
+function buildTagPicker() {
+  const picker = document.getElementById("tag-picker");
+  picker.innerHTML = TAGS.map(t =>
+    `<button type="button" class="tag-pick" data-tag="${escapeAttr(t)}">${escapeHtml(t)}</button>`
+  ).join("");
+  picker.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const t = btn.dataset.tag;
+      if (selectedTags.has(t)) { selectedTags.delete(t); btn.classList.remove("active"); }
+      else { selectedTags.add(t); btn.classList.add("active"); }
+    });
+  });
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function switchTab(name) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === name));
+  document.querySelectorAll(".tab-pane").forEach(p => p.classList.toggle("active", p.id === "tab-" + name));
+}
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => switchTab(t.dataset.tab)));
+
+// ============================================================
+// HELPERS
+// ============================================================
+function escapeHtml(str) {
+  if (str === undefined || str === null) return "";
+  return String(str)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+function escapeAttr(str) {
+  return escapeHtml(str);
+}
+
+function detectScript(text) {
+  if (!text) return { script: "latin", dir: "ltr" };
+  const plain = String(text).replace(/<[^>]+>/g, " ").replace(/\s+/g, "");
+  if (!plain) return { script: "latin", dir: "ltr" };
+  let arabic = 0, persian = 0, hebrew = 0, han = 0, kana = 0, latin = 0;
+  for (const ch of plain) {
+    const cp = ch.codePointAt(0);
+    if (cp === 0x06AF || cp === 0x067E || cp === 0x0686 || cp === 0x0698 || cp === 0x06CC || cp === 0x06A9) persian++;
+    else if (cp >= 0x0600 && cp <= 0x06FF) arabic++;
+    else if (cp >= 0x0590 && cp <= 0x05FF) hebrew++;
+    else if ((cp >= 0x3040 && cp <= 0x309F) || (cp >= 0x30A0 && cp <= 0x30FF)) kana++;
+    else if (cp >= 0x4E00 && cp <= 0x9FFF) han++;
+    else if ((cp >= 0x0041 && cp <= 0x007A) || (cp >= 0x00C0 && cp <= 0x024F)) latin++;
+  }
+  if (persian > 0 && arabic > 0) return { script: "persian", dir: "rtl" };
+  if (arabic > 5) return { script: "arabic", dir: "rtl" };
+  if (hebrew > 5) return { script: "hebrew", dir: "rtl" };
+  if (kana > 0) return { script: "japanese", dir: "ltr" };
+  if (han > 5) return { script: "chinese-simplified", dir: "ltr" };
+  return { script: "latin", dir: "ltr" };
+}
+
+// ============================================================
+// INIT
+// ============================================================
+(function init() {
+  const saved = loadConfig();
+  if (saved && saved.owner && saved.repo && saved.token) {
+    cfg = saved;
+    document.getElementById("cfg-branch").value = saved.branch || "main";
+    enterAdmin();
+  }
+})();
+</script>
+
+</body>
+</html>

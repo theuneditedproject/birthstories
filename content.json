@@ -1,0 +1,52 @@
+{
+  "site": {
+    "title": "Unedited",
+    "tagline": "Birth stories in their own words. From mothers around the world.",
+    "footer": "Unedited · A collective project",
+    "contact_email": "hello@example.com"
+  },
+  "home_teaser": {
+    "paragraphs": [
+      "My birth story was painful. But the hardest part wasn't the pain. <em>I felt lonely.</em> If I had read another woman's story before mine, I would have known I wasn't the only one.",
+      "Birth stories, happy or painful, are magical. They need to be said. They need to be shared. They need to be preserved."
+    ],
+    "link_text": "Read why this exists →"
+  },
+  "why_page": {
+    "title": "Why this exists",
+    "intro_paragraphs": [
+      "My birth story was painful. But the hardest part wasn't the pain. <em>I felt lonely.</em> Alone in the hospital room. Alone inside my own body. Alone in a story that refused to go the way I had been told it would.",
+      "Afterwards, I kept thinking about all the other women, somewhere, who must have lived this too. If I had read one of their stories before mine, I would have known I wasn't the only one. I would have felt less alone.",
+      "<em>Unedited</em> began there, in that wish."
+    ],
+    "lead_one_title": "So no woman feels alone.",
+    "lead_one_text": "When we tell each other what actually happened, the shame we carry by ourselves becomes something we can hold together. The painful stories belong here as much as the joyful ones. Maybe more.",
+    "lead_two_title": "So we learn what no textbook can teach.",
+    "lead_two_text": "There are shelves full of books about birth. Very few births happen the way those books describe. The real knowledge lives in the women who lived through it. What it feels like. What helped. What broke. What surprised them. That knowledge is worth gathering.",
+    "lead_three_title": "So nothing is lost.",
+    "lead_three_text": "Birth stories from different times, different places, different generations. From cities and from villages. In peace and in war. They are part of human history. They are how a daughter understands her mother, how a culture remembers itself, how the next woman learns she is not the first.",
+    "closing": "Birth stories, happy or painful, are magical. They need to be said. They need to be shared. They need to be preserved."
+  },
+  "about_page": {
+    "title": "About",
+    "intro": "This is a collection of birth stories from women all over the world, told in their own words. To understand why this project exists, read Why.",
+    "what_youll_find_title": "What you'll find here",
+    "what_youll_find_text": "Stories of every kind of birth. Hospital, home, water, scheduled C-section, emergency C-section, unmedicated, medicated, planned, unplanned, traumatic, beautiful, ordinary. Stories of loss too, when mothers want to share them.",
+    "submitting_title": "Submitting",
+    "submitting_text": "Anyone can submit, in any language. Use your full name, a first name, initials, or stay anonymous. You can change your mind later. Stories are published in the language they were written in. We don't translate them, because the words you choose are part of the story. Your draft saves automatically while you write. We review every submission before publishing. We check for harm and clarity, not for tone. We don't edit the writing.",
+    "book_title": "The book",
+    "book_text": "A selection of these stories will eventually become a book. If your story is being considered, we'll reach out to ask permission separately. You can always say no.",
+    "contact_title": "Contact",
+    "contact_text": "For questions, removal requests, or anything else:"
+  },
+  "submit_page": {
+    "title": "Share your story",
+    "intro": "Tell it your way, in any language you like — Persian, Arabic, English, Dutch, Chinese, anything. The editor adjusts as you write so your story renders correctly in your script. Your work saves automatically. We review every submission and reply within a few days."
+  },
+  "available_tags": [
+    "hospital", "home", "birth-center", "water-birth",
+    "c-section", "vbac", "induction", "unmedicated", "epidural",
+    "premature", "twins", "surrogacy", "adoption", "loss",
+    "first-baby", "rainbow-baby"
+  ]
+}

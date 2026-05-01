@@ -1,0 +1,2468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Unedited — Birth stories in their own words</title>
+<meta name="description" content="Birth stories from mothers around the world. Unfiltered, in their own words." />
+<!-- Multilingual fonts: loaded only when a story actually needs them (display=swap means they fall back gracefully) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500&family=Noto+Naskh+Arabic:wght@400;500&family=Noto+Serif+SC:wght@400;500&family=Noto+Serif+TC:wght@400;500&family=Noto+Serif+JP:wght@400;500&family=Noto+Serif+Devanagari:wght@400;500&family=Noto+Serif+Bengali:wght@400;500&family=Noto+Serif+Hebrew:wght@400;500&family=Noto+Serif+Thai:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f5;
+    --surface: #ffffff;
+    --text: #2a2825;
+    --text-soft: #6b6760;
+    --text-faint: #98948c;
+    --border: #e8e3da;
+    --border-soft: #f0ebe2;
+    --accent: #8b5a3c;
+    --warning-bg: #fbf0e6;
+    --warning-text: #8b5a1f;
+    --success-bg: #e8f3ec;
+    --success-text: #2d6a3e;
+    --error-bg: #fbeaea;
+    --error-text: #8b1f1f;
+    --info-bg: #eef2f7;
+    --info-text: #3a4a5c;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 48px 0 32px; border-bottom: 1px solid var(--border); }
+  h1.site-title {
+    font-family: "Iowan Old Style", Georgia, "Times New Roman", serif;
+    font-size: 36px; font-weight: 500; margin: 0 0 8px; letter-spacing: -0.01em;
+  }
+  .tagline { font-size: 15px; color: var(--text-soft); margin: 0; max-width: 540px; }
+  nav.main-nav {
+    display: flex; gap: 4px; padding: 16px 0;
+    border-bottom: 1px solid var(--border); margin-bottom: 32px; overflow-x: auto;
+  }
+  nav.main-nav button {
+    font-family: inherit; font-size: 14px; padding: 8px 16px;
+    border: none; background: transparent; color: var(--text-soft);
+    border-radius: 6px; cursor: pointer; white-space: nowrap; transition: all 0.15s;
+  }
+  nav.main-nav button:hover { background: var(--border-soft); color: var(--text); }
+  nav.main-nav button.active { background: var(--text); color: var(--bg); }
+  main { padding-bottom: 80px; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* Story cards */
+  .story-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 20px 24px; margin-bottom: 12px; cursor: pointer; transition: border-color 0.15s;
+  }
+  .story-card:hover { border-color: var(--text-soft); }
+  .story-meta { display: flex; gap: 12px; font-size: 12px; color: var(--text-faint); margin-bottom: 6px; flex-wrap: wrap; }
+  .story-author { font-family: "Iowan Old Style", Georgia, serif; font-size: 18px; font-weight: 500; margin: 0 0 8px; }
+  .story-excerpt { font-size: 14px; color: var(--text-soft); margin: 0 0 12px; line-height: 1.6; }
+  .cw-badge { display: inline-block; background: var(--warning-bg); color: var(--warning-text); font-size: 12px; padding: 3px 10px; border-radius: 4px; }
+  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+
+  /* === VIEW CONTROLS === */
+  .view-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .view-toggle {
+    display: inline-flex;
+    background: var(--border-soft);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .view-btn {
+    background: transparent;
+    border: none;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-soft);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+  .view-btn:hover { color: var(--text); }
+  .view-btn.active {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .shuffle-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 7px 14px;
+    font-size: 13px;
+    color: var(--text-soft);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+  .shuffle-btn:hover { color: var(--text); border-color: var(--text-soft); }
+  .shuffle-btn.spinning svg { animation: spin 0.6s ease-in-out; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* === FEATURED (CINEMATIC) VIEW === */
+  .featured-view { position: relative; }
+  .featured-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 48px 56px;
+    min-height: 420px;
+    cursor: pointer;
+    transition: opacity 0.25s ease, transform 0.25s ease, border-color 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .featured-card.fading { opacity: 0; transform: translateY(8px); }
+  .featured-card:hover { border-color: var(--text-soft); }
+  .featured-card .featured-meta {
+    display: flex;
+    gap: 14px;
+    font-size: 12px;
+    color: var(--text-faint);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .featured-author {
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 32px;
+    font-weight: 500;
+    margin: 0 0 22px;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .featured-excerpt {
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 19px;
+    line-height: 1.75;
+    color: var(--text);
+    margin: 0 0 24px;
+  }
+  .featured-tags { margin-top: 20px; }
+  .featured-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 500;
+    margin-top: 18px;
+  }
+  .featured-decoration {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    opacity: 0.08;
+    pointer-events: none;
+  }
+  .featured-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    margin-top: 28px;
+  }
+  .featured-arrow {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text-soft);
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .featured-arrow:hover:not(:disabled) {
+    color: var(--text);
+    border-color: var(--text-soft);
+    transform: scale(1.05);
+  }
+  .featured-arrow:disabled { opacity: 0.35; cursor: not-allowed; }
+  .featured-counter {
+    font-size: 13px;
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+    min-width: 52px;
+    text-align: center;
+  }
+  @media (max-width: 600px) {
+    .featured-card { padding: 32px 28px; min-height: 320px; }
+    .featured-author { font-size: 26px; }
+    .featured-excerpt { font-size: 17px; }
+  }
+
+  /* === SHARE BUTTONS === */
+  .share-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  .share-label {
+    font-size: 12px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-right: 4px;
+  }
+  .share-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text-soft);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    text-decoration: none;
+    font-family: inherit;
+  }
+  .share-btn:hover {
+    color: var(--text);
+    border-color: var(--text-soft);
+  }
+  .share-btn.copy-confirm { color: var(--success-text); border-color: var(--success-text); }
+  .share-section {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  /* === DECORATIVE BOTANICAL/ORGANIC ELEMENTS === */
+  .header-decoration {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.15;
+  }
+  .header-decoration.left { left: -40px; top: 30px; }
+  .header-decoration.right { right: -40px; top: 60px; }
+  @media (max-width: 720px) {
+    .header-decoration { display: none; }
+  }
+  header { position: relative; }
+
+  /* Section divider with botanical mark */
+  .leaf-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 32px 0;
+    color: var(--accent);
+    opacity: 0.4;
+  }
+
+  .footer-share { display: flex; justify-content: center; margin-bottom: 16px; }
+  .footer-share .share-section { margin: 0; padding: 0; border: none; }
+  .tag { font-size: 11px; padding: 2px 8px; background: var(--border-soft); color: var(--text-soft); border-radius: 999px; text-transform: lowercase; }
+
+  /* Reader */
+  .reader { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 40px 48px; }
+  .back-btn {
+    background: transparent; border: 1px solid var(--border); padding: 6px 14px;
+    font-size: 13px; color: var(--text-soft); border-radius: 6px; cursor: pointer;
+    margin-bottom: 24px; font-family: inherit;
+  }
+  .back-btn:hover { background: var(--border-soft); }
+  .reader-title { font-family: "Iowan Old Style", Georgia, serif; font-size: 28px; font-weight: 500; margin: 0 0 8px; }
+  .reader-meta { font-size: 13px; color: var(--text-faint); margin: 0 0 20px; }
+  .reader-body { font-family: "Iowan Old Style", Georgia, serif; font-size: 17px; line-height: 1.8; }
+  .reader-body p { margin: 0 0 1em; }
+  .reader-body p:last-child { margin-bottom: 0; }
+  .reader-body blockquote { border-left: 3px solid var(--border); padding-left: 16px; margin: 1em 0; color: var(--text-soft); font-style: italic; }
+  .reader-body h2, .reader-body h3 { font-weight: 500; margin: 1.2em 0 0.5em; }
+  .reader-body ul, .reader-body ol { padding-left: 1.5em; margin: 0 0 1em; }
+  .reader-body li { margin-bottom: 0.3em; }
+
+  /* Language-specific rendering — applied via [data-script] attribute */
+  /* RTL scripts: text alignment and direction flip automatically */
+  [dir="rtl"] { text-align: right; }
+  [dir="rtl"] blockquote { border-left: none; border-right: 3px solid var(--border); padding-left: 0; padding-right: 16px; }
+  [dir="rtl"] ul, [dir="rtl"] ol { padding-left: 0; padding-right: 1.5em; }
+
+  /* Persian / Farsi */
+  [data-script="persian"] { font-family: "Vazirmatn", "Iowan Old Style", Georgia, serif; line-height: 2; }
+  /* Arabic */
+  [data-script="arabic"] { font-family: "Noto Naskh Arabic", "Iowan Old Style", Georgia, serif; line-height: 2; }
+  /* Hebrew */
+  [data-script="hebrew"] { font-family: "Noto Serif Hebrew", "Iowan Old Style", Georgia, serif; }
+  /* Chinese (simplified — also handles unspecified Han) */
+  [data-script="chinese-simplified"] { font-family: "Noto Serif SC", "Iowan Old Style", Georgia, serif; line-height: 1.9; }
+  /* Chinese (traditional) */
+  [data-script="chinese-traditional"] { font-family: "Noto Serif TC", "Iowan Old Style", Georgia, serif; line-height: 1.9; }
+  /* Japanese */
+  [data-script="japanese"] { font-family: "Noto Serif JP", "Iowan Old Style", Georgia, serif; line-height: 1.9; }
+  /* Devanagari (Hindi, Marathi, etc.) */
+  [data-script="devanagari"] { font-family: "Noto Serif Devanagari", "Iowan Old Style", Georgia, serif; line-height: 1.9; }
+  /* Bengali */
+  [data-script="bengali"] { font-family: "Noto Serif Bengali", "Iowan Old Style", Georgia, serif; line-height: 1.9; }
+  /* Thai */
+  [data-script="thai"] { font-family: "Noto Serif Thai", "Iowan Old Style", Georgia, serif; line-height: 1.9; }
+
+  /* Story cards on listings: smaller adjustments */
+  .story-excerpt[dir="rtl"] { text-align: right; }
+  .story-author[dir="rtl"] { text-align: right; }
+  @media (max-width: 600px) {
+    .reader { padding: 24px 20px; }
+    .reader-title { font-size: 24px; }
+    .reader-body { font-size: 16px; }
+  }
+
+  /* Form */
+  .form-intro { font-size: 15px; color: var(--text-soft); margin: 0 0 24px; max-width: 580px; line-height: 1.7; }
+  .form-group { margin-bottom: 20px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+  label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text); }
+  label .opt { color: var(--text-faint); font-weight: 400; }
+  input[type="text"], input[type="email"] {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+    border-radius: 6px; font-size: 14px; font-family: inherit;
+    background: var(--surface); color: var(--text); transition: border-color 0.15s;
+  }
+  input:focus { outline: none; border-color: var(--text); }
+  .checkbox-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; font-size: 13px; line-height: 1.5; }
+  .checkbox-row input { margin-top: 3px; flex-shrink: 0; }
+  .submit-btn {
+    background: var(--text); color: var(--bg); padding: 12px 28px;
+    border: none; border-radius: 6px; font-size: 14px; font-weight: 500;
+    cursor: pointer; font-family: inherit;
+  }
+  .submit-btn:hover { opacity: 0.85; }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .secondary-btn {
+    background: transparent; color: var(--text); padding: 12px 22px;
+    border: 1px solid var(--border); border-radius: 6px; font-size: 14px;
+    cursor: pointer; font-family: inherit;
+  }
+  .secondary-btn:hover { background: var(--border-soft); }
+  .ghost-btn {
+    background: transparent; color: var(--text-soft); padding: 8px 14px;
+    border: none; font-size: 13px; cursor: pointer; font-family: inherit; border-radius: 6px;
+  }
+  .ghost-btn:hover { background: var(--border-soft); color: var(--text); }
+  .button-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .msg { padding: 14px 18px; border-radius: 6px; font-size: 14px; margin-bottom: 24px; }
+  .msg.success { background: var(--success-bg); color: var(--success-text); }
+  .msg.error { background: var(--error-bg); color: var(--error-text); }
+  .msg.info { background: var(--info-bg); color: var(--info-text); }
+
+  /* === TIPTAP EDITOR === */
+  .editor-wrap { border: 1px solid var(--border); border-radius: 8px; background: var(--surface); transition: border-color 0.15s; overflow: hidden; }
+  .editor-wrap.focused { border-color: var(--text); }
+  .toolbar {
+    display: flex; gap: 2px; padding: 6px 8px; border-bottom: 1px solid var(--border);
+    flex-wrap: wrap; background: var(--bg);
+  }
+  .tb-btn {
+    background: transparent; border: none; padding: 6px 10px; font-size: 14px;
+    color: var(--text-soft); border-radius: 4px; cursor: pointer; font-family: inherit;
+    min-width: 32px; transition: all 0.15s;
+    display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  }
+  .tb-btn:hover:not(:disabled) { background: var(--border-soft); color: var(--text); }
+  .tb-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .tb-btn.is-active { background: var(--text); color: var(--bg); }
+  .tb-divider { width: 1px; background: var(--border); margin: 4px 4px; }
+  .tb-btn.italic-style { font-style: italic; }
+  .tb-btn.bold-style { font-weight: 700; }
+
+  .ProseMirror {
+    min-height: 320px; padding: 20px 24px; font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 17px; line-height: 1.8; color: var(--text); outline: none;
+    overflow-y: auto; max-height: 600px;
+  }
+  .ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder); color: var(--text-faint);
+    float: left; height: 0; font-style: italic; pointer-events: none;
+  }
+  .ProseMirror > * + * { margin-top: 0.85em; }
+  .ProseMirror p { margin: 0; }
+  .ProseMirror strong { font-weight: 600; }
+  .ProseMirror em { font-style: italic; }
+  .ProseMirror blockquote {
+    border-left: 3px solid var(--border); padding-left: 16px; margin: 1em 0;
+    color: var(--text-soft); font-style: italic;
+  }
+  .ProseMirror h2, .ProseMirror h3 {
+    font-family: "Iowan Old Style", Georgia, serif; font-weight: 500; line-height: 1.3;
+  }
+  .ProseMirror h2 { font-size: 24px; }
+  .ProseMirror h3 { font-size: 20px; }
+  .ProseMirror ul, .ProseMirror ol { padding-left: 1.5em; }
+  .ProseMirror li { margin-bottom: 0.3em; }
+  .ProseMirror li > p { margin: 0; }
+  .ProseMirror hr { border: none; border-top: 1px solid var(--border); margin: 1.5em 0; }
+  .ProseMirror ::selection { background: rgba(139, 90, 60, 0.18); }
+
+  /* Editor adapts as user types — script class applied to .ProseMirror via JS */
+  .ProseMirror[data-script="persian"] { font-family: "Vazirmatn", "Iowan Old Style", Georgia, serif; line-height: 2; direction: rtl; text-align: right; }
+  .ProseMirror[data-script="arabic"] { font-family: "Noto Naskh Arabic", "Iowan Old Style", Georgia, serif; line-height: 2; direction: rtl; text-align: right; }
+  .ProseMirror[data-script="hebrew"] { font-family: "Noto Serif Hebrew", "Iowan Old Style", Georgia, serif; direction: rtl; text-align: right; }
+  .ProseMirror[data-script="chinese-simplified"] { font-family: "Noto Serif SC", "Iowan Old Style", Georgia, serif; line-height: 1.9; }
+  .ProseMirror[data-script="chinese-traditional"] { font-family: "Noto Serif TC", "Iowan Old Style", Georgia, serif; line-height: 1.9; }
+  .ProseMirror[data-script="japanese"] { font-family: "Noto Serif JP", "Iowan Old Style", Georgia, serif; line-height: 1.9; }
+  .ProseMirror[data-script="devanagari"] { font-family: "Noto Serif Devanagari", "Iowan Old Style", Georgia, serif; line-height: 1.9; }
+  .ProseMirror[data-script="bengali"] { font-family: "Noto Serif Bengali", "Iowan Old Style", Georgia, serif; line-height: 1.9; }
+  .ProseMirror[data-script="thai"] { font-family: "Noto Serif Thai", "Iowan Old Style", Georgia, serif; line-height: 1.9; }
+  .ProseMirror[data-script*="persian"] blockquote,
+  .ProseMirror[data-script*="arabic"] blockquote,
+  .ProseMirror[data-script*="hebrew"] blockquote { border-left: none; border-right: 3px solid var(--border); padding-left: 0; padding-right: 16px; }
+
+  .editor-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 16px; border-top: 1px solid var(--border-soft);
+    font-size: 12px; color: var(--text-faint); background: var(--bg);
+  }
+  .save-status { display: flex; align-items: center; gap: 6px; }
+  .save-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-faint); }
+  .save-dot.saving { background: #d97706; animation: pulse 1s infinite; }
+  .save-dot.saved { background: #2d6a3e; }
+  @keyframes pulse { 50% { opacity: 0.4; } }
+
+  .draft-banner {
+    background: var(--info-bg); color: var(--info-text);
+    padding: 10px 16px; border-radius: 6px; font-size: 13px;
+    margin-bottom: 16px; display: flex; justify-content: space-between;
+    align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+
+  .tag-picker { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .tag-pick-btn {
+    font-family: inherit; font-size: 12px; padding: 5px 12px;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text-soft); border-radius: 999px; cursor: pointer;
+  }
+  .tag-pick-btn:hover { border-color: var(--text-soft); }
+  .tag-pick-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+  .filter-bar { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+  .filter-btn {
+    font-family: inherit; font-size: 12px; padding: 5px 12px;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text-soft); border-radius: 999px; cursor: pointer;
+  }
+  .filter-btn:hover { border-color: var(--text-soft); }
+  .filter-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+  .preview-pane {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 32px 36px; margin-top: 16px; font-family: "Iowan Old Style", Georgia, serif;
+  }
+  .preview-pane h4 {
+    font-family: -apple-system, system-ui, sans-serif; font-size: 11px;
+    font-weight: 500; color: var(--text-faint); text-transform: uppercase;
+    letter-spacing: 0.08em; margin: 0 0 16px;
+  }
+  .preview-pane .pv-author { font-size: 24px; font-weight: 500; margin: 0 0 6px; }
+  .preview-pane .pv-meta { font-family: -apple-system, system-ui, sans-serif; font-size: 13px; color: var(--text-faint); margin: 0 0 20px; }
+  .preview-pane .pv-body { font-size: 17px; line-height: 1.8; }
+  .preview-pane .pv-body p { margin: 0 0 1em; }
+  .preview-pane .pv-body blockquote { border-left: 3px solid var(--border); padding-left: 16px; margin: 1em 0; color: var(--text-soft); font-style: italic; }
+  .preview-pane .pv-body h2, .preview-pane .pv-body h3 { font-weight: 500; margin: 1.2em 0 0.5em; }
+  .preview-pane.hidden { display: none; }
+
+  .empty { text-align: center; padding: 64px 20px; color: var(--text-soft); font-size: 15px; }
+  footer {
+    padding: 32px 0; border-top: 1px solid var(--border); margin-top: 64px;
+    font-size: 13px; color: var(--text-faint); text-align: center;
+  }
+  .help-text { font-size: 12px; color: var(--text-faint); margin: 6px 0 0; line-height: 1.5; }
+
+  /* === MODE TOGGLE (Write / Record) === */
+  .mode-toggle {
+    display: inline-flex;
+    background: var(--border-soft);
+    border-radius: 8px;
+    padding: 3px;
+    margin-bottom: 12px;
+    gap: 2px;
+  }
+  .mode-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-soft);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mode-btn:hover { color: var(--text); }
+  .mode-btn.active {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .mode-icon { font-size: 11px; opacity: 0.7; }
+  .mode-btn.active .mode-icon { opacity: 1; }
+  .mode-btn[data-mode="record"] .mode-icon { color: #d94a4a; }
+
+  .mode-pane { display: none; }
+  .mode-pane.active { display: block; }
+
+  /* === RECORDER === */
+  .recorder {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 24px;
+  }
+  .recorder-status { margin-bottom: 20px; min-height: 24px; }
+  .rec-state-text {
+    font-size: 14px;
+    color: var(--text-soft);
+    margin: 0;
+    line-height: 1.6;
+  }
+  .rec-state-text.recording { color: #d94a4a; font-weight: 500; }
+  .rec-state-text.paused { color: #d97706; font-weight: 500; }
+  .rec-state-text.warning { color: #d97706; }
+
+  .recorder-visual {
+    background: var(--bg);
+    border-radius: 6px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  #rec-waveform {
+    flex: 1;
+    height: 60px;
+    width: 100%;
+    max-width: 100%;
+  }
+  .rec-time {
+    font-family: -apple-system, system-ui, sans-serif;
+    font-variant-numeric: tabular-nums;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text);
+    min-width: 60px;
+    text-align: right;
+  }
+  .rec-time.recording { color: #d94a4a; }
+
+  .rec-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .rec-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 10px 18px;
+    font-size: 14px;
+    color: var(--text);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s;
+  }
+  .rec-btn:hover:not(:disabled) { background: var(--border-soft); }
+  .rec-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .rec-btn.rec-main {
+    background: #d94a4a;
+    color: white;
+    border-color: #d94a4a;
+    padding: 10px 22px;
+  }
+  .rec-btn.rec-main:hover:not(:disabled) { background: #c43d3d; border-color: #c43d3d; }
+  .rec-btn.rec-main.is-recording {
+    background: var(--surface);
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .rec-btn.rec-main.is-recording:hover:not(:disabled) { background: var(--border-soft); }
+  .rec-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: white;
+  }
+  .rec-btn.rec-main.is-recording .rec-dot { background: #d94a4a; animation: pulse 1.2s infinite; }
+
+  .rec-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-soft);
+  }
+  .rec-size {
+    font-size: 12px;
+    color: var(--text-faint);
+    margin-left: auto;
+  }
+
+  /* === AUDIO PLAYER ON STORY PAGES === */
+  .story-audio {
+    margin: 0 0 24px;
+    padding: 16px 20px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .story-audio audio { width: 100%; height: 40px; }
+  .story-audio-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 8px;
+  }
+  .audio-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    margin-left: auto;
+  }
+
+  /* === TELEGRAM OPTION === */
+  .telegram-option { margin-top: 24px; }
+  .telegram-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 0 0 16px;
+    color: var(--text-faint);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .telegram-divider::before, .telegram-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .telegram-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .telegram-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin: 0;
+    font-family: "Iowan Old Style", Georgia, serif;
+  }
+  .telegram-desc {
+    font-size: 13px;
+    color: var(--text-soft);
+    margin: 0;
+    line-height: 1.6;
+  }
+  .telegram-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #2aabee;
+    color: white;
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    align-self: flex-start;
+    margin-top: 4px;
+    transition: background 0.15s;
+  }
+  .telegram-link:hover { background: #229bd9; }
+  .telegram-link.disabled {
+    background: var(--border-soft);
+    color: var(--text-faint);
+    pointer-events: none;
+  }
+  .tg-icon {
+    font-size: 14px;
+    transform: rotate(45deg);
+  }
+
+  /* === HOME PAGE TEASER === */
+  .why-teaser {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px 32px;
+    margin-bottom: 32px;
+  }
+  .why-teaser-text {
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 14px;
+  }
+  .why-teaser-text:last-of-type { margin-bottom: 18px; }
+  .why-teaser-text em { font-style: italic; color: var(--accent); }
+  .why-teaser-link {
+    background: transparent;
+    border: none;
+    color: var(--accent);
+    font-family: -apple-system, system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+    letter-spacing: 0.02em;
+  }
+  .why-teaser-link:hover { color: var(--text); }
+  @media (max-width: 600px) {
+    .why-teaser { padding: 22px 24px; }
+    .why-teaser-text { font-size: 16px; }
+  }
+
+  /* === WHY PAGE === */
+  .why-page {
+    font-family: "Iowan Old Style", Georgia, serif;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 8px 0 32px;
+  }
+  .why-title {
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 32px;
+    font-weight: 500;
+    margin: 0 0 32px;
+    letter-spacing: -0.01em;
+  }
+  .why-page p {
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--text);
+    margin: 0 0 22px;
+  }
+  .why-page p em { font-style: italic; color: var(--accent); }
+  .why-page p strong {
+    font-weight: 500;
+    font-family: "Iowan Old Style", Georgia, serif;
+  }
+  .why-page .why-lead {
+    margin-top: 32px;
+  }
+  .why-page .why-lead strong {
+    display: block;
+    font-size: 19px;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+  .why-page .why-closing {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-size: 19px;
+    font-style: italic;
+    color: var(--text-soft);
+    line-height: 1.7;
+  }
+  @media (max-width: 600px) {
+    .why-title { font-size: 26px; }
+    .why-page p { font-size: 17px; }
+    .why-page .why-lead strong { font-size: 17px; }
+    .why-page .why-closing { font-size: 17px; }
+  }
+
+  /* Editor loading state */
+  .editor-loading {
+    min-height: 320px; padding: 20px 24px; color: var(--text-faint);
+    font-family: "Iowan Old Style", Georgia, serif; font-size: 17px; font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <svg class="header-decoration left" width="120" height="180" viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Organic vine of soft curves and leaves, evoking growth and life -->
+      <g fill="none" stroke="#8b5a3c" stroke-width="1" stroke-linecap="round">
+        <path d="M 60 10 Q 50 40, 55 70 Q 62 100, 50 130 Q 45 155, 55 175" />
+        <path d="M 55 35 Q 30 30, 20 45 Q 28 50, 50 50" />
+        <path d="M 58 65 Q 85 55, 95 70 Q 88 78, 60 80" />
+        <path d="M 52 100 Q 25 95, 18 115 Q 30 120, 50 115" />
+        <path d="M 54 135 Q 80 130, 90 150 Q 78 155, 53 150" />
+      </g>
+      <g fill="#8b5a3c" opacity="0.5">
+        <ellipse cx="22" cy="46" rx="9" ry="3" transform="rotate(-15 22 46)" />
+        <ellipse cx="92" cy="73" rx="10" ry="3" transform="rotate(20 92 73)" />
+        <ellipse cx="22" cy="116" rx="9" ry="3" transform="rotate(-12 22 116)" />
+        <ellipse cx="86" cy="151" rx="9" ry="3" transform="rotate(18 86 151)" />
+        <circle cx="60" cy="10" r="2.5" />
+      </g>
+    </svg>
+    <svg class="header-decoration right" width="100" height="160" viewBox="0 0 100 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Mirror-image organic shape -->
+      <g fill="none" stroke="#8b5a3c" stroke-width="1" stroke-linecap="round">
+        <path d="M 45 5 Q 55 35, 50 65 Q 42 95, 55 125 Q 58 145, 48 158" />
+        <path d="M 52 30 Q 78 25, 88 40 Q 80 48, 55 48" />
+        <path d="M 48 60 Q 22 50, 12 65 Q 22 73, 50 75" />
+        <path d="M 54 95 Q 80 90, 88 110 Q 75 117, 52 112" />
+      </g>
+      <g fill="#8b5a3c" opacity="0.5">
+        <ellipse cx="86" cy="42" rx="8" ry="2.5" transform="rotate(15 86 42)" />
+        <ellipse cx="14" cy="68" rx="8" ry="2.5" transform="rotate(-18 14 68)" />
+        <ellipse cx="84" cy="111" rx="8" ry="2.5" transform="rotate(20 84 111)" />
+        <circle cx="45" cy="5" r="2" />
+      </g>
+    </svg>
+    <h1 class="site-title" id="ct-site-title">Unedited</h1>
+    <p class="tagline" id="ct-site-tagline">Birth stories in their own words. From mothers around the world.</p>
+  </header>
+
+  <nav class="main-nav">
+    <button class="nav-btn active" data-page="stories">Stories</button>
+    <button class="nav-btn" data-page="why">Why</button>
+    <button class="nav-btn" data-page="submit">Share yours</button>
+    <button class="nav-btn" data-page="about">About</button>
+  </nav>
+
+  <main>
+    <div class="page active" id="page-stories">
+      <div class="why-teaser" id="ct-home-teaser">
+        <p class="why-teaser-text">My birth story was painful. But the hardest part wasn't the pain. <em>I felt lonely.</em> If I had read another woman's story before mine, I would have known I wasn't the only one.</p>
+        <p class="why-teaser-text">Birth stories, happy or painful, are magical. They need to be said. They need to be shared. They need to be preserved.</p>
+        <button class="why-teaser-link" onclick="showPage('why')">Read why this exists →</button>
+      </div>
+
+      <div class="view-controls">
+        <div class="view-toggle">
+          <button type="button" class="view-btn active" data-view="featured" aria-label="Featured view">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><rect x="2" y="3" width="12" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+            Featured
+          </button>
+          <button type="button" class="view-btn" data-view="list" aria-label="List view">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><rect x="2" y="3" width="12" height="2" rx="0.5"/><rect x="2" y="7" width="12" height="2" rx="0.5"/><rect x="2" y="11" width="12" height="2" rx="0.5"/></svg>
+            All stories
+          </button>
+        </div>
+        <button type="button" class="shuffle-btn" id="shuffle-btn" aria-label="Shuffle stories">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="13,2 15,4 13,6"/><path d="M2,4 L11,4 C13,4 15,6 15,8"/><polyline points="13,10 15,12 13,14"/><path d="M2,12 L7,12 M11,12 L13,12"/><path d="M2,4 L7,4 L11,12"/></svg>
+          Shuffle
+        </button>
+      </div>
+
+      <div class="filter-bar" id="filter-bar"></div>
+
+      <!-- Featured (cinematic one-at-a-time) view -->
+      <div class="featured-view" id="featured-view">
+        <div class="featured-card" id="featured-card">
+          <div class="empty">Loading stories…</div>
+        </div>
+        <div class="featured-nav">
+          <button type="button" class="featured-arrow" id="prev-btn" aria-label="Previous story">
+            <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="10,3 5,8 10,13"/></svg>
+          </button>
+          <span class="featured-counter" id="featured-counter">— / —</span>
+          <button type="button" class="featured-arrow" id="next-btn" aria-label="Next story">
+            <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,3 11,8 6,13"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- List view (compact grid) -->
+      <div class="list-view" id="list-view" style="display: none;">
+        <div id="stories-list"></div>
+      </div>
+    </div>
+
+    <div class="page" id="page-reader">
+      <button class="back-btn" onclick="showPage('stories')">← All stories</button>
+      <article class="reader" id="reader-content"></article>
+    </div>
+
+    <div class="page" id="page-submit">
+      <h2 id="ct-submit-title" style="font-family: 'Iowan Old Style', Georgia, serif; font-size: 26px; font-weight: 500; margin: 0 0 8px;">Share your story</h2>
+      <p class="form-intro" id="ct-submit-intro">Tell it your way, in any language you like — Persian, Arabic, English, Dutch, Chinese, anything. The editor adjusts as you write so your story renders correctly in your script. Your work saves automatically. We review every submission and reply within a few days.</p>
+
+      <div id="form-status"></div>
+      <div id="draft-banner-slot"></div>
+
+      <form id="story-form" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label>How should we credit you? <span class="opt">*</span></label>
+            <input type="text" name="author" placeholder="First name, initials, or 'Anonymous'" required />
+          </div>
+          <div class="form-group">
+            <label>Where are you? <span class="opt">(optional)</span></label>
+            <input type="text" name="location" placeholder="e.g. Lisbon, Portugal" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Year of birth <span class="opt">(optional)</span></label>
+            <input type="text" name="year" placeholder="e.g. 2023" />
+          </div>
+          <div class="form-group">
+            <label>Email <span class="opt">* not published</span></label>
+            <input type="email" name="email" placeholder="So we can reach you" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Type of birth <span class="opt">(pick any that apply)</span></label>
+          <div id="tag-picker" class="tag-picker"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Content notes <span class="opt">(if your story includes loss, trauma, etc.)</span></label>
+          <input type="text" name="content_notes" placeholder="e.g. medical trauma, hemorrhage" />
+          <p class="help-text">We'll show this as a gentle warning above your story for sensitive readers.</p>
+        </div>
+
+        <div class="form-group">
+          <label>Your story <span class="opt">*</span></label>
+          <div class="mode-toggle" role="tablist" aria-label="Story mode">
+            <button type="button" class="mode-btn active" data-mode="write" role="tab" aria-selected="true">
+              <span class="mode-icon">✎</span> Write
+            </button>
+            <button type="button" class="mode-btn" data-mode="record" role="tab" aria-selected="false">
+              <span class="mode-icon">●</span> Record
+            </button>
+          </div>
+
+          <div class="mode-pane active" id="mode-write">
+            <div class="editor-wrap" id="editor-wrap">
+              <div class="toolbar" id="toolbar" role="toolbar" aria-label="Formatting" style="display: none;"></div>
+              <div id="editor-mount"><div class="editor-loading">Loading editor…</div></div>
+              <div class="editor-footer" id="editor-footer" style="display: none;">
+                <span id="word-count">0 words</span>
+                <span class="save-status">
+                  <span class="save-dot" id="save-dot"></span>
+                  <span id="save-text">Not saved yet</span>
+                </span>
+              </div>
+            </div>
+            <p class="help-text">Tip: highlight text and use the toolbar, or use keyboard shortcuts (Ctrl+B, Ctrl+I, Ctrl+S to save).</p>
+          </div>
+
+          <div class="mode-pane" id="mode-record">
+            <div class="recorder">
+              <div class="recorder-status" id="rec-status">
+                <p class="rec-state-text" id="rec-state-text">Tap the record button when you're ready. You can pause, resume, and re-record as many times as you need.</p>
+              </div>
+
+              <div class="recorder-visual" id="rec-visual">
+                <canvas id="rec-waveform" width="600" height="80"></canvas>
+                <div class="rec-time" id="rec-time">0:00</div>
+              </div>
+
+              <div class="rec-controls">
+                <button type="button" class="rec-btn rec-main" id="rec-record" aria-label="Start recording">
+                  <span class="rec-dot"></span>
+                  <span class="rec-label" id="rec-record-label">Record</span>
+                </button>
+                <button type="button" class="rec-btn" id="rec-pause" disabled style="display: none;">Pause</button>
+                <button type="button" class="rec-btn" id="rec-stop" disabled>Stop</button>
+              </div>
+
+              <audio id="rec-playback" controls preload="auto" style="display: none; width: 100%; margin-top: 16px;"></audio>
+
+              <div class="rec-actions" id="rec-actions" style="display: none;">
+                <button type="button" class="ghost-btn" id="rec-rerecord">↺ Re-record</button>
+                <span class="rec-size" id="rec-size"></span>
+              </div>
+
+              <p class="help-text" id="rec-help">Recording uses your device's microphone. Your story is saved on your device while you record. Nothing leaves your computer until you press Submit. Maximum length: 30 minutes.</p>
+              <p class="help-text" id="rec-mic-error" style="color: var(--error-text); display: none;"></p>
+            </div>
+
+            <div class="telegram-option">
+              <div class="telegram-divider"><span>or</span></div>
+              <div class="telegram-card">
+                <p class="telegram-title">Prefer to send a voice note from your phone?</p>
+                <p class="telegram-desc">Send your story as a voice message on Telegram. Mention your name (or 'Anonymous'), where you are, and any content notes. We'll reply to confirm we received it.</p>
+                <a class="telegram-link" id="telegram-link" href="https://t.me/REPLACE_WITH_YOUR_TELEGRAM" target="_blank" rel="noopener">
+                  <span class="tg-icon" aria-hidden="true">✈</span>
+                  <span>Open Telegram</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox-row">
+            <input type="checkbox" name="consent_author" id="c-author" required />
+            <label for="c-author" style="font-weight: 400;">I'm the author of this story and I'm over 18.</label>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" name="consent_publish" id="c-publish" required />
+            <label for="c-publish" style="font-weight: 400;">I give permission to publish this on the website. I can request changes or removal anytime.</label>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" name="consent_share" id="c-share" checked />
+            <label for="c-share" style="font-weight: 400;">My story can be shared on social media (uncheck if you'd prefer your story stays only on this website).</label>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" name="consent_book" id="c-book" />
+            <label for="c-book" style="font-weight: 400;">I'd be open to being contacted about including this in a future book (separate consent will be required).</label>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button type="submit" class="submit-btn" id="submit-btn">Submit story</button>
+          <button type="button" class="secondary-btn" id="preview-btn">Preview</button>
+          <button type="button" class="ghost-btn" id="save-now-btn">Save draft</button>
+          <button type="button" class="ghost-btn" id="clear-btn" style="margin-left: auto; color: var(--text-faint);">Clear draft</button>
+        </div>
+
+        <div class="preview-pane hidden" id="preview-pane">
+          <h4>Preview</h4>
+          <div class="pv-author" id="pv-author"></div>
+          <div class="pv-meta" id="pv-meta"></div>
+          <div id="pv-cw" style="margin-bottom: 20px;"></div>
+          <div class="pv-body" id="pv-body"></div>
+        </div>
+      </form>
+    </div>
+
+    <div class="page" id="page-why">
+      <article class="why-page" id="ct-why-page">
+        <h2 class="why-title">Why this exists</h2>
+        <p>Loading…</p>
+      </article>
+    </div>
+
+    <div class="page" id="page-about" id="ct-about-page-wrap">
+      <div id="ct-about-page"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="leaf-divider" aria-hidden="true">
+      <svg width="40" height="14" viewBox="0 0 40 14" xmlns="http://www.w3.org/2000/svg">
+        <g fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <path d="M 5 7 L 35 7" />
+        </g>
+        <g fill="currentColor">
+          <ellipse cx="20" cy="7" rx="3.5" ry="1.5" />
+          <circle cx="14" cy="7" r="0.8" />
+          <circle cx="26" cy="7" r="0.8" />
+        </g>
+      </svg>
+    </div>
+    <div class="footer-share" id="footer-share"></div>
+    <p id="ct-footer">Unedited · A collective project</p>
+  </footer>
+</div>
+
+<!-- TipTap loaded as ES modules from esm.sh -->
+<script type="module">
+import { Editor } from "https://esm.sh/@tiptap/core@2.10.3";
+import StarterKit from "https://esm.sh/@tiptap/starter-kit@2.10.3?deps=@tiptap/core@2.10.3";
+import Placeholder from "https://esm.sh/@tiptap/extension-placeholder@2.10.3?deps=@tiptap/core@2.10.3";
+import CharacterCount from "https://esm.sh/@tiptap/extension-character-count@2.10.3?deps=@tiptap/core@2.10.3";
+
+// ============================================================
+// CONFIG
+// ============================================================
+const CONFIG = {
+  formspreeEndpoint: "REPLACE_WITH_YOUR_FORMSPREE_URL",
+
+  // Cloudinary config for audio uploads
+  // Sign up free at cloudinary.com, then create an "unsigned upload preset" in Settings → Upload
+  cloudinaryCloudName: "REPLACE_WITH_YOUR_CLOUD_NAME",
+  cloudinaryUploadPreset: "REPLACE_WITH_YOUR_UPLOAD_PRESET",
+
+  // Telegram username for the project (without the @). Leave as REPLACE_WITH... to hide the option.
+  telegramUsername: "REPLACE_WITH_YOUR_TELEGRAM",
+
+  availableTags: [
+    "hospital", "home", "birth-center", "water-birth",
+    "c-section", "vbac", "induction", "unmedicated", "epidural",
+    "premature", "twins", "surrogacy", "adoption", "loss",
+    "first-baby", "rainbow-baby"
+  ],
+  draftKey: "unedited-draft-v1",
+  autosaveDelayMs: 800,
+
+  // Audio recording limits
+  audioMaxSeconds: 30 * 60,    // 30 minutes hard limit
+  audioWarnSeconds: 25 * 60    // soft warning at 25 minutes
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let allStories = [];
+let activeFilter = null;
+let saveTimer = null;
+let selectedTags = new Set();
+let editor = null;
+
+// ============================================================
+// LOAD STORIES
+// ============================================================
+// Fisher-Yates shuffle
+function shuffleArray(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+let currentView = "featured"; // "featured" or "list"
+let featuredIndex = 0;
+let displayedStories = []; // the currently shuffled order (filtered)
+
+// Load site content (titles, About text, Why text, etc.) from content.json
+// Falls back to whatever is hardcoded in the HTML if content.json is missing.
+async function loadSiteContent() {
+  try {
+    const res = await fetch("content.json", { cache: "no-cache" });
+    if (!res.ok) return;
+    const c = await res.json();
+    applySiteContent(c);
+  } catch (err) {
+    console.warn("Could not load content.json:", err);
+    // Site still works with hardcoded fallback text
+  }
+}
+
+function applySiteContent(c) {
+  // Site-wide
+  if (c.site) {
+    setText("ct-site-title", c.site.title);
+    setText("ct-site-tagline", c.site.tagline);
+    setText("ct-footer", c.site.footer);
+    if (c.site.title) document.title = c.site.title + " — Birth stories in their own words";
+  }
+
+  // Home teaser
+  if (c.home_teaser) {
+    const wrap = document.getElementById("ct-home-teaser");
+    if (wrap) {
+      const paras = (c.home_teaser.paragraphs || [])
+        .map(p => '<p class="why-teaser-text">' + p + '</p>').join("");
+      const linkText = c.home_teaser.link_text || "Read why this exists →";
+      wrap.innerHTML = paras +
+        '<button class="why-teaser-link" onclick="showPage(\'why\')">' + escapeHtml(linkText) + '</button>';
+    }
+  }
+
+  // Why page
+  if (c.why_page) {
+    const wrap = document.getElementById("ct-why-page");
+    if (wrap) {
+      const w = c.why_page;
+      let html = '<h2 class="why-title">' + escapeHtml(w.title || "") + '</h2>';
+      (w.intro_paragraphs || []).forEach(p => { html += '<p>' + p + '</p>'; });
+      if (w.lead_one_title || w.lead_one_text) {
+        html += '<p class="why-lead"><strong>' + escapeHtml(w.lead_one_title || "") + '</strong> ' + escapeHtml(w.lead_one_text || "") + '</p>';
+      }
+      if (w.lead_two_title || w.lead_two_text) {
+        html += '<p class="why-lead"><strong>' + escapeHtml(w.lead_two_title || "") + '</strong> ' + escapeHtml(w.lead_two_text || "") + '</p>';
+      }
+      if (w.lead_three_title || w.lead_three_text) {
+        html += '<p class="why-lead"><strong>' + escapeHtml(w.lead_three_title || "") + '</strong> ' + escapeHtml(w.lead_three_text || "") + '</p>';
+      }
+      if (w.closing) html += '<p class="why-closing">' + escapeHtml(w.closing) + '</p>';
+      wrap.innerHTML = html;
+    }
+  }
+
+  // About page
+  if (c.about_page) {
+    const wrap = document.getElementById("ct-about-page");
+    if (wrap) {
+      const a = c.about_page;
+      const email = (c.site && c.site.contact_email) || "hello@example.com";
+      let html =
+        '<h2 style="font-family: \'Iowan Old Style\', Georgia, serif; font-size: 26px; font-weight: 500; margin: 0 0 20px;">' + escapeHtml(a.title || "About") + '</h2>' +
+        '<p style="font-size: 16px; line-height: 1.8;">' + escapeHtml(a.intro || "").replace(/\bWhy\b/, '<a href="#" onclick="showPage(\'why\'); return false;" style="color: var(--accent);">Why</a>') + '</p>';
+      if (a.what_youll_find_title || a.what_youll_find_text) {
+        html += '<h3 style="font-family: \'Iowan Old Style\', Georgia, serif; font-size: 19px; font-weight: 500; margin: 32px 0 12px;">' + escapeHtml(a.what_youll_find_title || "") + '</h3>';
+        html += '<p style="font-size: 16px; line-height: 1.8;">' + escapeHtml(a.what_youll_find_text || "") + '</p>';
+      }
+      if (a.submitting_title || a.submitting_text) {
+        html += '<h3 style="font-family: \'Iowan Old Style\', Georgia, serif; font-size: 19px; font-weight: 500; margin: 32px 0 12px;">' + escapeHtml(a.submitting_title || "") + '</h3>';
+        html += '<p style="font-size: 16px; line-height: 1.8;">' + escapeHtml(a.submitting_text || "") + '</p>';
+      }
+      if (a.book_title || a.book_text) {
+        html += '<h3 style="font-family: \'Iowan Old Style\', Georgia, serif; font-size: 19px; font-weight: 500; margin: 32px 0 12px;">' + escapeHtml(a.book_title || "") + '</h3>';
+        html += '<p style="font-size: 16px; line-height: 1.8;">' + escapeHtml(a.book_text || "") + '</p>';
+      }
+      if (a.contact_title || a.contact_text) {
+        html += '<h3 style="font-family: \'Iowan Old Style\', Georgia, serif; font-size: 19px; font-weight: 500; margin: 32px 0 12px;">' + escapeHtml(a.contact_title || "") + '</h3>';
+        html += '<p style="font-size: 16px; line-height: 1.8;">' + escapeHtml(a.contact_text || "") + ' <a href="mailto:' + escapeHtml(email) + '" style="color: var(--accent);">' + escapeHtml(email) + '</a></p>';
+      }
+      wrap.innerHTML = html;
+    }
+  }
+
+  // Submit page
+  if (c.submit_page) {
+    setText("ct-submit-title", c.submit_page.title);
+    setText("ct-submit-intro", c.submit_page.intro);
+  }
+
+  // Available tags
+  if (Array.isArray(c.available_tags) && c.available_tags.length > 0) {
+    CONFIG.availableTags = c.available_tags;
+    if (typeof buildTagPicker === "function") buildTagPicker();
+  }
+}
+
+function setText(id, value) {
+  if (value === undefined || value === null) return;
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+async function loadStories() {
+  try {
+    const indexRes = await fetch("stories/index.json");
+    const index = await indexRes.json();
+    const storyPromises = index.stories.map(s =>
+      fetch("stories/" + s.file).then(r => r.json())
+    );
+    allStories = await Promise.all(storyPromises);
+    // Shuffle by default — every page load gets a fresh order
+    allStories = shuffleArray(allStories);
+    renderFilterBar();
+    rebuildDisplayed();
+
+    // Deep link support: if URL has #story=ID, open that story directly
+    const m = location.hash.match(/^#story=([\w-]+)/);
+    if (m && allStories.find(s => s.id === m[1])) {
+      openStory(m[1]);
+    }
+  } catch (err) {
+    console.error("Failed to load stories:", err);
+    document.getElementById("stories-list").innerHTML =
+      '<div class="empty">Could not load stories. Check the browser console.</div>';
+    document.getElementById("featured-card").innerHTML =
+      '<div class="empty">Could not load stories.</div>';
+  }
+}
+
+// Rebuild the displayed list based on current filter, then render the active view
+function rebuildDisplayed() {
+  if (activeFilter && activeFilter.startsWith("lang:")) {
+    const lang = activeFilter.slice(5);
+    displayedStories = allStories.filter(s => {
+      const detected = s.language || detectScript(s.body || "").lang;
+      return detected === lang;
+    });
+  } else if (activeFilter) {
+    displayedStories = allStories.filter(s => (s.tags || []).includes(activeFilter));
+  } else {
+    displayedStories = allStories.slice();
+  }
+  featuredIndex = 0;
+  if (currentView === "featured") renderFeatured();
+  else renderStories();
+}
+
+// View toggle
+document.querySelectorAll(".view-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const view = btn.dataset.view;
+    if (view === currentView) return;
+    currentView = view;
+    document.querySelectorAll(".view-btn").forEach(b => b.classList.toggle("active", b.dataset.view === view));
+    document.getElementById("featured-view").style.display = view === "featured" ? "block" : "none";
+    document.getElementById("list-view").style.display = view === "list" ? "block" : "none";
+    if (view === "featured") renderFeatured();
+    else renderStories();
+  });
+});
+
+// Shuffle button
+document.getElementById("shuffle-btn").addEventListener("click", (e) => {
+  allStories = shuffleArray(allStories);
+  rebuildDisplayed();
+  e.currentTarget.classList.remove("spinning");
+  void e.currentTarget.offsetWidth; // restart animation
+  e.currentTarget.classList.add("spinning");
+});
+
+// Featured navigation
+document.getElementById("prev-btn").addEventListener("click", () => {
+  if (featuredIndex > 0) {
+    featuredIndex--;
+    renderFeatured(true);
+  }
+});
+document.getElementById("next-btn").addEventListener("click", () => {
+  if (featuredIndex < displayedStories.length - 1) {
+    featuredIndex++;
+    renderFeatured(true);
+  }
+});
+
+// Keyboard arrows on the stories page
+document.addEventListener("keydown", (e) => {
+  const onStories = document.getElementById("page-stories").classList.contains("active");
+  if (!onStories || currentView !== "featured") return;
+  // Don't capture keys while typing in inputs
+  if (document.activeElement && ["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) return;
+  if (e.key === "ArrowLeft" && featuredIndex > 0) {
+    featuredIndex--;
+    renderFeatured(true);
+  } else if (e.key === "ArrowRight" && featuredIndex < displayedStories.length - 1) {
+    featuredIndex++;
+    renderFeatured(true);
+  }
+});
+
+function renderFeatured(animate) {
+  const card = document.getElementById("featured-card");
+  const counter = document.getElementById("featured-counter");
+  const prevBtn = document.getElementById("prev-btn");
+  const nextBtn = document.getElementById("next-btn");
+
+  if (displayedStories.length === 0) {
+    card.innerHTML = '<div class="empty">No stories yet.</div>';
+    counter.textContent = "— / —";
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    return;
+  }
+
+  prevBtn.disabled = featuredIndex <= 0;
+  nextBtn.disabled = featuredIndex >= displayedStories.length - 1;
+  counter.textContent = (featuredIndex + 1) + " / " + displayedStories.length;
+
+  const renderCard = () => {
+    const s = displayedStories[featuredIndex];
+    const meta = [s.location, s.year].filter(Boolean).join(" · ");
+    const detected = detectScript(s.body || "");
+    const scriptAttr = (s.script || detected.script);
+    const dirAttr = (s.dir || detected.dir);
+    const langAttr = (s.language || detected.lang);
+    const langAttrs = ' data-script="' + scriptAttr + '" dir="' + dirAttr + '"' + (langAttr ? ' lang="' + langAttr + '"' : '');
+    const hasAudio = !!s.audio_url;
+    const tags = (s.tags || []).slice(0, 4).map(t => '<span class="tag">' + escapeHtml(t) + '</span>').join("");
+    const excerpt = s.body ? excerptText(s.body, 380) : (hasAudio ? "Told in audio. Tap to listen." : "");
+
+    card.innerHTML =
+      '<svg class="featured-decoration" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+      '<g fill="none" stroke="#8b5a3c" stroke-width="1.2" stroke-linecap="round">' +
+      '<path d="M 60 30 Q 110 50, 130 100 Q 150 150, 100 175 Q 50 165, 40 115 Q 35 70, 60 30 Z" opacity="0.6" />' +
+      '<path d="M 75 60 Q 105 75, 115 105 Q 120 135, 95 150" opacity="0.5" />' +
+      '<path d="M 85 90 Q 100 95, 100 110" opacity="0.4" />' +
+      '</g>' +
+      '<g fill="#8b5a3c" opacity="0.3">' +
+      '<circle cx="60" cy="30" r="2" />' +
+      '<circle cx="100" cy="175" r="2" />' +
+      '</g></svg>' +
+      '<div class="featured-meta">' +
+      (meta ? '<span>' + escapeHtml(meta) + '</span>' : '') +
+      (hasAudio ? '<span class="audio-badge">▸ Audio</span>' : '') +
+      '</div>' +
+      '<h2 class="featured-author"' + langAttrs + '>' + escapeHtml(s.author) + '</h2>' +
+      (excerpt ? '<p class="featured-excerpt"' + langAttrs + '>' + escapeHtml(excerpt) + '</p>' : '') +
+      (s.content_notes ? '<div class="cw-badge" style="margin-bottom: 16px;">Content notes: ' + escapeHtml(s.content_notes) + '</div>' : '') +
+      (tags ? '<div class="tag-row featured-tags">' + tags + '</div>' : '') +
+      '<div class="featured-cta">Read this story →</div>';
+
+    card.onclick = () => openStory(s.id);
+  };
+
+  if (animate) {
+    card.classList.add("fading");
+    setTimeout(() => {
+      renderCard();
+      card.classList.remove("fading");
+    }, 200);
+  } else {
+    renderCard();
+  }
+}
+
+function renderFilterBar() {
+  const allTags = new Set();
+  const allLangs = new Set();
+  allStories.forEach(s => {
+    (s.tags || []).forEach(t => allTags.add(t));
+    const lang = s.language || detectScript(s.body || "").lang;
+    if (lang) allLangs.add(lang);
+  });
+  const bar = document.getElementById("filter-bar");
+  if (allTags.size === 0 && allLangs.size === 0) { bar.innerHTML = ""; return; }
+
+  // Friendly language labels
+  const LANG_LABELS = {
+    fa: "فارسی",
+    ar: "العربية",
+    he: "עברית",
+    zh: "中文",
+    ja: "日本語",
+    hi: "हिन्दी",
+    bn: "বাংলা",
+    th: "ไทย",
+    en: "English",
+    nl: "Nederlands",
+    es: "Español",
+    pt: "Português",
+    fr: "Français",
+    de: "Deutsch",
+    it: "Italiano"
+  };
+
+  let html = '<button class="filter-btn ' + (activeFilter === null ? "active" : "") + '" data-tag="">All</button>';
+
+  // Language chips first (if more than one language)
+  if (allLangs.size > 1) {
+    Array.from(allLangs).sort().forEach(l => {
+      const label = LANG_LABELS[l] || l;
+      const filterValue = "lang:" + l;
+      html += '<button class="filter-btn ' + (activeFilter === filterValue ? "active" : "") + '" data-tag="' + escapeHtml(filterValue) + '">' + escapeHtml(label) + '</button>';
+    });
+    if (allTags.size > 0) html += '<span style="border-left: 1px solid var(--border); margin: 0 4px;"></span>';
+  }
+
+  // Tag chips
+  Array.from(allTags).sort().forEach(t => {
+    html += '<button class="filter-btn ' + (activeFilter === t ? "active" : "") + '" data-tag="' + escapeHtml(t) + '">' + escapeHtml(t) + '</button>';
+  });
+
+  bar.innerHTML = html;
+  bar.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeFilter = btn.dataset.tag || null;
+      renderFilterBar();
+      rebuildDisplayed();
+    });
+  });
+}
+
+function renderStories() {
+  const list = document.getElementById("stories-list");
+  const stories = displayedStories;
+  if (stories.length === 0) {
+    list.innerHTML = '<div class="empty">No stories yet.</div>';
+    return;
+  }
+  list.innerHTML = stories.map(s => {
+    const meta = [s.location, s.year].filter(Boolean).join(" · ");
+    const tags = (s.tags || []).map(t => '<span class="tag">' + escapeHtml(t) + '</span>').join("");
+    const detected = detectScript(s.body || "");
+    const scriptAttr = (s.script || detected.script);
+    const dirAttr = (s.dir || detected.dir);
+    const langAttr = (s.language || detected.lang);
+    const excerptAttrs = ' data-script="' + scriptAttr + '" dir="' + dirAttr + '"' + (langAttr ? ' lang="' + langAttr + '"' : '');
+
+    const hasAudio = !!s.audio_url;
+    const audioBadge = hasAudio ? '<span class="audio-badge" title="Audio story">▸ Audio</span>' : '';
+    const excerpt = s.body ? excerptText(s.body) : (hasAudio ? "Told in audio. Press to listen." : "");
+
+    return '<div class="story-card" data-id="' + escapeHtml(s.id) + '">' +
+      (meta || hasAudio ? '<div class="story-meta">' + (meta ? escapeHtml(meta) : "") + (hasAudio ? audioBadge : "") + '</div>' : "") +
+      '<h3 class="story-author"' + excerptAttrs + '>' + escapeHtml(s.author) + '</h3>' +
+      (excerpt ? '<p class="story-excerpt"' + excerptAttrs + '>' + escapeHtml(excerpt) + '</p>' : "") +
+      (s.content_notes ? '<span class="cw-badge">Content notes: ' + escapeHtml(s.content_notes) + '</span>' : "") +
+      (tags ? '<div class="tag-row">' + tags + '</div>' : "") +
+      '</div>';
+  }).join("");
+  list.querySelectorAll(".story-card").forEach(card => {
+    card.addEventListener("click", () => openStory(card.dataset.id));
+  });
+}
+
+function openStory(id) {
+  const s = allStories.find(x => x.id === id);
+  if (!s) return;
+  const meta = [s.location, s.year].filter(Boolean).join(" · ");
+  const isHtml = /<\/?(p|h[1-6]|blockquote|strong|em|ul|ol|li|br)\b/i.test(s.body || "");
+  let bodyHtml = "";
+  if (s.body) {
+    if (isHtml) {
+      bodyHtml = sanitizeStoryHtml(s.body);
+    } else {
+      bodyHtml = (s.body || "").split(/\n\n+/).map(p => "<p>" + escapeHtml(p).replace(/\n/g, "<br>") + "</p>").join("");
+    }
+  }
+
+  // Detect script for proper rendering (RTL, fonts, etc.)
+  // Use the explicit `language` field in JSON if provided, otherwise auto-detect from text
+  const detected = detectScript(s.body || "");
+  const scriptAttr = (s.script || detected.script);
+  const dirAttr = (s.dir || detected.dir);
+  const langAttr = (s.language || detected.lang);
+  const langAttrs = ' data-script="' + scriptAttr + '" dir="' + dirAttr + '"' + (langAttr ? ' lang="' + langAttr + '"' : '');
+
+  // Audio block — shown if the story has an audio_url
+  let audioHtml = "";
+  if (s.audio_url) {
+    const durationLabel = s.audio_duration_seconds
+      ? Math.floor(s.audio_duration_seconds / 60) + ":" + String(Math.floor(s.audio_duration_seconds % 60)).padStart(2, "0")
+      : "";
+    audioHtml = '<div class="story-audio">' +
+      '<p class="story-audio-label">Listen' + (durationLabel ? " · " + durationLabel : "") + '</p>' +
+      '<audio controls preload="metadata" src="' + escapeHtml(s.audio_url) + '"></audio>' +
+      '</div>';
+  }
+
+  // If audio-only (no text body), show a friendly note
+  const bodyBlock = bodyHtml
+    ? '<div class="reader-body"' + langAttrs + '>' + bodyHtml + '</div>'
+    : (s.audio_url ? '<p style="color: var(--text-soft); font-style: italic; margin-top: 24px;">This story is told in audio. Press play above to listen.</p>' : '');
+
+  // Share buttons — shown unless the author opted out (share_allowed === false)
+  // Default to sharing-allowed to match the form default
+  const shareAllowed = s.share_allowed !== false;
+  const shareBlock = shareAllowed ? buildShareBlock({
+    title: "A birth story by " + s.author + " — Unedited",
+    text: s.body ? excerptText(s.body, 140) : "A birth story shared on Unedited.",
+    storyId: s.id
+  }) : '';
+
+  document.getElementById("reader-content").innerHTML =
+    '<h2 class="reader-title">' + escapeHtml(s.author) + '</h2>' +
+    (meta ? '<p class="reader-meta">' + escapeHtml(meta) + '</p>' : "") +
+    (s.content_notes ? '<div class="cw-badge" style="margin-bottom: 24px;">Content notes: ' + escapeHtml(s.content_notes) + '</div>' : "") +
+    audioHtml +
+    bodyBlock +
+    shareBlock;
+
+  // Wire up share button behaviors after insert
+  if (shareAllowed) wireShareButtons(s.id);
+
+  showPage("reader");
+  window.scrollTo(0, 0);
+}
+
+// Build a share-buttons block. If storyId is null, shares the whole site.
+function buildShareBlock(opts) {
+  const baseUrl = location.origin + location.pathname;
+  const url = opts.storyId ? baseUrl + "#story=" + opts.storyId : baseUrl;
+  const text = encodeURIComponent(opts.text || "");
+  const title = encodeURIComponent(opts.title || "Unedited");
+  const encUrl = encodeURIComponent(url);
+
+  // Per-platform share URLs
+  const shares = {
+    twitter: "https://twitter.com/intent/tweet?text=" + text + "&url=" + encUrl,
+    facebook: "https://www.facebook.com/sharer/sharer.php?u=" + encUrl,
+    whatsapp: "https://wa.me/?text=" + title + "%20" + encUrl,
+    telegram: "https://t.me/share/url?url=" + encUrl + "&text=" + title,
+    email: "mailto:?subject=" + title + "&body=" + text + "%0A%0A" + encUrl
+  };
+
+  return '<div class="share-section">' +
+    '<div class="share-row">' +
+      '<span class="share-label">Share' + (opts.storyId ? ' this story' : '') + '</span>' +
+      '<a class="share-btn" href="' + shares.twitter + '" target="_blank" rel="noopener" title="Share on X / Twitter" aria-label="Share on Twitter">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>' +
+      '</a>' +
+      '<a class="share-btn" href="' + shares.facebook + '" target="_blank" rel="noopener" title="Share on Facebook" aria-label="Share on Facebook">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9.198 21.5h4v-8.01h3.604l.396-3.98h-4V7.5a1 1 0 0 1 1-1h3v-4h-3a5 5 0 0 0-5 5v2.01h-2l-.396 3.98h2.396z"/></svg>' +
+      '</a>' +
+      '<a class="share-btn" href="' + shares.whatsapp + '" target="_blank" rel="noopener" title="Share on WhatsApp" aria-label="Share on WhatsApp">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.498 14.382c-.301-.15-1.767-.867-2.04-.966-.273-.101-.473-.15-.673.15-.197.295-.771.964-.944 1.162-.175.195-.349.21-.646.075-.3-.15-1.263-.465-2.403-1.485-.888-.795-1.484-1.77-1.66-2.07-.174-.3-.019-.465.13-.615.136-.135.301-.345.451-.523.146-.181.194-.301.297-.496.1-.21.049-.375-.025-.524-.075-.15-.672-1.62-.922-2.206-.24-.584-.487-.51-.672-.51-.172-.015-.371-.015-.571-.015-.2 0-.523.074-.797.359-.273.3-1.045 1.02-1.045 2.475s1.07 2.865 1.219 3.075c.149.195 2.105 3.195 5.1 4.485.714.3 1.27.48 1.704.629.714.227 1.365.195 1.88.121.574-.091 1.767-.721 2.016-1.426.255-.705.255-1.29.18-1.425-.074-.135-.27-.21-.57-.345m-5.446 7.443h-.016a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.298A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0 0 20.465 3.488"/></svg>' +
+      '</a>' +
+      '<a class="share-btn" href="' + shares.telegram + '" target="_blank" rel="noopener" title="Share on Telegram" aria-label="Share on Telegram">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.464.139a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>' +
+      '</a>' +
+      '<a class="share-btn" href="' + shares.email + '" title="Share via email" aria-label="Share via email">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,7 12,13 22,7"/></svg>' +
+      '</a>' +
+      '<button class="share-btn copy-link-btn" data-copy-url="' + escapeHtml(url) + '" title="Copy link" aria-label="Copy link">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>' +
+      '</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function wireShareButtons(storyId) {
+  document.querySelectorAll(".copy-link-btn").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const url = btn.dataset.copyUrl;
+      try {
+        await navigator.clipboard.writeText(url);
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></svg>';
+        btn.classList.add("copy-confirm");
+        setTimeout(() => {
+          btn.innerHTML = orig;
+          btn.classList.remove("copy-confirm");
+        }, 1500);
+      } catch (err) {
+        console.error("Copy failed:", err);
+      }
+    });
+  });
+}
+
+window.showPage = function(name) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  const page = document.getElementById("page-" + name);
+  if (page) page.classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.page === name);
+  });
+  if (name === "submit") checkForDraft();
+};
+
+document.querySelectorAll(".nav-btn").forEach(btn => {
+  btn.addEventListener("click", () => window.showPage(btn.dataset.page));
+});
+
+// ============================================================
+// TAG PICKER
+// ============================================================
+function buildTagPicker() {
+  const picker = document.getElementById("tag-picker");
+  picker.innerHTML = CONFIG.availableTags.map(t =>
+    '<button type="button" class="tag-pick-btn" data-tag="' + escapeHtml(t) + '">' + escapeHtml(t) + '</button>'
+  ).join("");
+  picker.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const tag = btn.dataset.tag;
+      if (selectedTags.has(tag)) {
+        selectedTags.delete(tag);
+        btn.classList.remove("active");
+      } else {
+        selectedTags.add(tag);
+        btn.classList.add("active");
+      }
+      scheduleSave();
+    });
+  });
+}
+
+// ============================================================
+// TIPTAP EDITOR
+// ============================================================
+function buildToolbar() {
+  const toolbar = document.getElementById("toolbar");
+  const buttons = [
+    { cmd: "bold", label: "B", class: "bold-style", title: "Bold (Ctrl+B)", action: () => editor.chain().focus().toggleBold().run(), isActive: () => editor.isActive("bold") },
+    { cmd: "italic", label: "I", class: "italic-style", title: "Italic (Ctrl+I)", action: () => editor.chain().focus().toggleItalic().run(), isActive: () => editor.isActive("italic") },
+    { divider: true },
+    { cmd: "h2", label: "H2", title: "Heading", action: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), isActive: () => editor.isActive("heading", { level: 2 }) },
+    { cmd: "h3", label: "H3", title: "Subheading", action: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), isActive: () => editor.isActive("heading", { level: 3 }) },
+    { cmd: "p", label: "P", title: "Paragraph", action: () => editor.chain().focus().setParagraph().run(), isActive: () => editor.isActive("paragraph") && !editor.isActive("heading") },
+    { divider: true },
+    { cmd: "blockquote", label: "\u201C", title: "Quote", action: () => editor.chain().focus().toggleBlockquote().run(), isActive: () => editor.isActive("blockquote") },
+    { cmd: "bulletList", label: "\u2022", title: "Bulleted list", action: () => editor.chain().focus().toggleBulletList().run(), isActive: () => editor.isActive("bulletList") },
+    { cmd: "orderedList", label: "1.", title: "Numbered list", action: () => editor.chain().focus().toggleOrderedList().run(), isActive: () => editor.isActive("orderedList") },
+    { divider: true },
+    { cmd: "undo", label: "\u21B6", title: "Undo (Ctrl+Z)", action: () => editor.chain().focus().undo().run(), canRun: () => editor.can().undo() },
+    { cmd: "redo", label: "\u21B7", title: "Redo (Ctrl+Shift+Z)", action: () => editor.chain().focus().redo().run(), canRun: () => editor.can().redo() }
+  ];
+
+  toolbar.innerHTML = "";
+  buttons.forEach(b => {
+    if (b.divider) {
+      const d = document.createElement("div");
+      d.className = "tb-divider";
+      toolbar.appendChild(d);
+      return;
+    }
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "tb-btn" + (b.class ? " " + b.class : "");
+    btn.title = b.title;
+    btn.textContent = b.label;
+    btn.dataset.cmd = b.cmd;
+    btn.addEventListener("mousedown", (e) => e.preventDefault());
+    btn.addEventListener("click", () => b.action());
+    toolbar.appendChild(btn);
+  });
+  toolbar.style.display = "flex";
+  document.getElementById("editor-footer").style.display = "flex";
+}
+
+function updateToolbarState() {
+  if (!editor) return;
+  document.querySelectorAll("#toolbar .tb-btn").forEach(btn => {
+    const cmd = btn.dataset.cmd;
+    if (cmd === "bold") btn.classList.toggle("is-active", editor.isActive("bold"));
+    else if (cmd === "italic") btn.classList.toggle("is-active", editor.isActive("italic"));
+    else if (cmd === "h2") btn.classList.toggle("is-active", editor.isActive("heading", { level: 2 }));
+    else if (cmd === "h3") btn.classList.toggle("is-active", editor.isActive("heading", { level: 3 }));
+    else if (cmd === "p") btn.classList.toggle("is-active", editor.isActive("paragraph") && !editor.isActive("heading"));
+    else if (cmd === "blockquote") btn.classList.toggle("is-active", editor.isActive("blockquote"));
+    else if (cmd === "bulletList") btn.classList.toggle("is-active", editor.isActive("bulletList"));
+    else if (cmd === "orderedList") btn.classList.toggle("is-active", editor.isActive("orderedList"));
+    else if (cmd === "undo") btn.disabled = !editor.can().undo();
+    else if (cmd === "redo") btn.disabled = !editor.can().redo();
+  });
+}
+
+function updateWordCount() {
+  if (!editor) return;
+  const words = editor.storage.characterCount.words();
+  document.getElementById("word-count").textContent = words + (words === 1 ? " word" : " words");
+}
+
+function initEditor() {
+  const mount = document.getElementById("editor-mount");
+  mount.innerHTML = "";
+
+  editor = new Editor({
+    element: mount,
+    extensions: [
+      StarterKit.configure({
+        heading: { levels: [2, 3] },
+        horizontalRule: false,
+        code: false,
+        codeBlock: false
+      }),
+      Placeholder.configure({
+        placeholder: "Tell it however it comes out. There's no right way. Write in any language."
+      }),
+      CharacterCount
+    ],
+    content: "",
+    onUpdate: () => {
+      scheduleSave();
+      updateWordCount();
+      updateToolbarState();
+      updateEditorScript();
+    },
+    onSelectionUpdate: updateToolbarState,
+    onFocus: () => {
+      document.getElementById("editor-wrap").classList.add("focused");
+      updateToolbarState();
+    },
+    onBlur: () => {
+      document.getElementById("editor-wrap").classList.remove("focused");
+    }
+  });
+
+  buildToolbar();
+  updateToolbarState();
+  updateWordCount();
+  updateEditorScript();
+}
+
+// Live script detection — runs as the user types so the editor flips RTL
+// and uses appropriate fonts as soon as enough non-Latin text has been written.
+function updateEditorScript() {
+  if (!editor) return;
+  const pm = document.querySelector(".ProseMirror");
+  if (!pm) return;
+  const text = editor.getText();
+  if (text.length < 3) {
+    pm.removeAttribute("data-script");
+    pm.removeAttribute("dir");
+    pm.removeAttribute("lang");
+    return;
+  }
+  const detected = detectScript(text);
+  pm.setAttribute("data-script", detected.script);
+  pm.setAttribute("dir", detected.dir);
+  if (detected.lang) pm.setAttribute("lang", detected.lang);
+}
+
+// ============================================================
+// AUTOSAVE / DRAFTS
+// ============================================================
+function getFormState() {
+  const form = document.getElementById("story-form");
+  return {
+    author: form.author.value,
+    location: form.location.value,
+    year: form.year.value,
+    email: form.email.value,
+    content_notes: form.content_notes.value,
+    tags: Array.from(selectedTags),
+    body_html: editor ? editor.getHTML() : "",
+    consent_author: form.consent_author.checked,
+    consent_publish: form.consent_publish.checked,
+    consent_share: form.consent_share.checked,
+    consent_book: form.consent_book.checked,
+    saved_at: new Date().toISOString()
+  };
+}
+
+function setSaveStatus(state) {
+  const dot = document.getElementById("save-dot");
+  const text = document.getElementById("save-text");
+  dot.className = "save-dot " + (state || "");
+  if (state === "saving") text.textContent = "Saving…";
+  else if (state === "saved") {
+    const t = new Date();
+    text.textContent = "Saved at " + t.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  } else text.textContent = "Not saved yet";
+}
+
+function saveDraft() {
+  try {
+    setSaveStatus("saving");
+    const state = getFormState();
+    localStorage.setItem(CONFIG.draftKey, JSON.stringify(state));
+    setTimeout(() => setSaveStatus("saved"), 200);
+  } catch (err) {
+    console.error("Draft save failed:", err);
+  }
+}
+
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveDraft, CONFIG.autosaveDelayMs);
+}
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(CONFIG.draftKey);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (err) { return null; }
+}
+
+function applyDraft(d) {
+  const form = document.getElementById("story-form");
+  form.author.value = d.author || "";
+  form.location.value = d.location || "";
+  form.year.value = d.year || "";
+  form.email.value = d.email || "";
+  form.content_notes.value = d.content_notes || "";
+  selectedTags = new Set(d.tags || []);
+  document.querySelectorAll("#tag-picker .tag-pick-btn").forEach(btn => {
+    btn.classList.toggle("active", selectedTags.has(btn.dataset.tag));
+  });
+  if (editor) editor.commands.setContent(d.body_html || "");
+  form.consent_author.checked = !!d.consent_author;
+  form.consent_publish.checked = !!d.consent_publish;
+  form.consent_share.checked = d.consent_share !== false; // default true
+  form.consent_book.checked = !!d.consent_book;
+  updateWordCount();
+  setSaveStatus("saved");
+}
+
+function clearDraft() {
+  localStorage.removeItem(CONFIG.draftKey);
+  document.getElementById("story-form").reset();
+  selectedTags.clear();
+  document.querySelectorAll("#tag-picker .tag-pick-btn").forEach(btn => btn.classList.remove("active"));
+  if (editor) editor.commands.clearContent();
+  document.getElementById("draft-banner-slot").innerHTML = "";
+  updateWordCount();
+  setSaveStatus("");
+}
+
+function checkForDraft() {
+  const d = loadDraft();
+  const slot = document.getElementById("draft-banner-slot");
+  if (!d) { slot.innerHTML = ""; return; }
+  const hasContent = d.body_html || d.author || d.email;
+  if (!hasContent) { slot.innerHTML = ""; return; }
+  const savedAt = d.saved_at ? new Date(d.saved_at) : null;
+  const when = savedAt ? savedAt.toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "earlier";
+  if (editor && editor.isEmpty) {
+    slot.innerHTML =
+      '<div class="draft-banner">' +
+      '<span>You have a draft saved from ' + escapeHtml(when) + '.</span>' +
+      '<div class="button-row">' +
+      '<button type="button" class="secondary-btn" id="restore-draft-btn" style="padding: 6px 14px; font-size: 13px;">Restore draft</button>' +
+      '<button type="button" class="ghost-btn" id="discard-draft-btn">Discard</button>' +
+      '</div></div>';
+    document.getElementById("restore-draft-btn").addEventListener("click", () => {
+      applyDraft(d);
+      slot.innerHTML = "";
+    });
+    document.getElementById("discard-draft-btn").addEventListener("click", () => {
+      clearDraft();
+    });
+  }
+}
+
+document.getElementById("story-form").addEventListener("input", scheduleSave);
+document.getElementById("save-now-btn").addEventListener("click", () => {
+  clearTimeout(saveTimer);
+  saveDraft();
+});
+document.getElementById("clear-btn").addEventListener("click", () => {
+  if (confirm("Clear your draft? This cannot be undone.")) clearDraft();
+});
+
+// ============================================================
+// MODE TOGGLE (Write / Record)
+// ============================================================
+let currentMode = "write";
+document.querySelectorAll(".mode-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const mode = btn.dataset.mode;
+    if (mode === currentMode) return;
+    currentMode = mode;
+    document.querySelectorAll(".mode-btn").forEach(b => {
+      b.classList.toggle("active", b.dataset.mode === mode);
+      b.setAttribute("aria-selected", b.dataset.mode === mode ? "true" : "false");
+    });
+    document.querySelectorAll(".mode-pane").forEach(p => p.classList.remove("active"));
+    document.getElementById("mode-" + mode).classList.add("active");
+  });
+});
+
+// ============================================================
+// AUDIO RECORDER
+// ============================================================
+const recorder = {
+  mediaRecorder: null,
+  audioStream: null,
+  audioContext: null,
+  analyser: null,
+  chunks: [],
+  blob: null,
+  startTime: 0,
+  elapsed: 0,
+  timerId: null,
+  rafId: null,
+  state: "idle" // idle | recording | paused | stopped
+};
+
+function setRecState(text, className) {
+  const el = document.getElementById("rec-state-text");
+  el.textContent = text;
+  el.className = "rec-state-text" + (className ? " " + className : "");
+}
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return m + ":" + (s < 10 ? "0" : "") + s;
+}
+
+function updateRecTime() {
+  let total = recorder.elapsed;
+  if (recorder.state === "recording") {
+    total += (Date.now() - recorder.startTime) / 1000;
+  }
+  document.getElementById("rec-time").textContent = formatTime(total);
+
+  // Soft warning approaching limit
+  if (total >= CONFIG.audioWarnSeconds && total < CONFIG.audioMaxSeconds && recorder.state === "recording") {
+    const remaining = Math.ceil((CONFIG.audioMaxSeconds - total) / 60);
+    setRecState("Approaching the time limit. About " + remaining + " minute" + (remaining === 1 ? "" : "s") + " left.", "warning");
+  }
+
+  // Hard stop at limit
+  if (total >= CONFIG.audioMaxSeconds && recorder.state === "recording") {
+    stopRecording();
+    setRecState("Time limit reached. Recording stopped at 30 minutes.", "warning");
+  }
+}
+
+function drawWaveform() {
+  if (!recorder.analyser) return;
+  const canvas = document.getElementById("rec-waveform");
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  if (canvas.width !== canvas.clientWidth * dpr) {
+    canvas.width = canvas.clientWidth * dpr;
+    canvas.height = canvas.clientHeight * dpr;
+    ctx.scale(dpr, dpr);
+  }
+
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
+  const bufferLen = recorder.analyser.frequencyBinCount;
+  const data = new Uint8Array(bufferLen);
+  recorder.analyser.getByteTimeDomainData(data);
+
+  ctx.clearRect(0, 0, w, h);
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = recorder.state === "recording" ? "#d94a4a" : "#b4b2a9";
+  ctx.beginPath();
+  const slice = w / bufferLen;
+  let x = 0;
+  for (let i = 0; i < bufferLen; i++) {
+    const v = data[i] / 128.0;
+    const y = (v * h) / 2;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+    x += slice;
+  }
+  ctx.stroke();
+
+  if (recorder.state === "recording" || recorder.state === "paused") {
+    recorder.rafId = requestAnimationFrame(drawWaveform);
+  }
+}
+
+async function startRecording() {
+  try {
+    document.getElementById("rec-mic-error").style.display = "none";
+    recorder.audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    // Pick the best supported mime type — mp4 is iOS-friendly, webm for everyone else
+    let mimeType = "audio/webm";
+    if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) mimeType = "audio/webm;codecs=opus";
+    else if (MediaRecorder.isTypeSupported("audio/mp4")) mimeType = "audio/mp4";
+    else if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = "";
+
+    recorder.mediaRecorder = new MediaRecorder(recorder.audioStream, mimeType ? { mimeType } : undefined);
+    recorder.chunks = [];
+    recorder.blob = null;
+    recorder.elapsed = 0;
+
+    recorder.mediaRecorder.ondataavailable = (e) => {
+      if (e.data && e.data.size > 0) recorder.chunks.push(e.data);
+    };
+    recorder.mediaRecorder.onstop = () => {
+      const type = recorder.mediaRecorder.mimeType || "audio/webm";
+      recorder.blob = new Blob(recorder.chunks, { type });
+      const url = URL.createObjectURL(recorder.blob);
+      const playback = document.getElementById("rec-playback");
+      playback.src = url;
+      playback.style.display = "block";
+      document.getElementById("rec-actions").style.display = "flex";
+      const sizeKb = Math.round(recorder.blob.size / 1024);
+      const sizeText = sizeKb < 1024 ? sizeKb + " KB" : (sizeKb / 1024).toFixed(1) + " MB";
+      document.getElementById("rec-size").textContent = sizeText + " · " + formatTime(recorder.elapsed);
+      // Stop the mic stream
+      if (recorder.audioStream) recorder.audioStream.getTracks().forEach(t => t.stop());
+      if (recorder.audioContext) recorder.audioContext.close();
+      recorder.state = "stopped";
+      scheduleSave(); // save state with audio meta
+    };
+
+    // Set up waveform analysis
+    recorder.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    recorder.analyser = recorder.audioContext.createAnalyser();
+    recorder.analyser.fftSize = 2048;
+    const source = recorder.audioContext.createMediaStreamSource(recorder.audioStream);
+    source.connect(recorder.analyser);
+
+    recorder.mediaRecorder.start(1000); // collect chunks every 1s
+    recorder.startTime = Date.now();
+    recorder.state = "recording";
+
+    // UI updates
+    const recBtn = document.getElementById("rec-record");
+    recBtn.classList.add("is-recording");
+    document.getElementById("rec-record-label").textContent = "Stop";
+    document.getElementById("rec-pause").style.display = "inline-flex";
+    document.getElementById("rec-pause").disabled = false;
+    document.getElementById("rec-stop").disabled = false;
+    document.getElementById("rec-time").classList.add("recording");
+    document.getElementById("rec-playback").style.display = "none";
+    document.getElementById("rec-actions").style.display = "none";
+
+    setRecState("Recording. Take your time. You can pause or stop whenever you want.", "recording");
+
+    recorder.timerId = setInterval(updateRecTime, 250);
+    drawWaveform();
+  } catch (err) {
+    console.error("Mic access failed:", err);
+    const errEl = document.getElementById("rec-mic-error");
+    errEl.style.display = "block";
+    if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+      errEl.textContent = "Microphone access was denied. Please allow microphone access in your browser settings and try again.";
+    } else if (err.name === "NotFoundError") {
+      errEl.textContent = "No microphone was found on this device.";
+    } else {
+      errEl.textContent = "Could not start recording: " + err.message;
+    }
+  }
+}
+
+function pauseRecording() {
+  if (!recorder.mediaRecorder || recorder.state !== "recording") return;
+  recorder.mediaRecorder.pause();
+  recorder.elapsed += (Date.now() - recorder.startTime) / 1000;
+  recorder.state = "paused";
+  document.getElementById("rec-pause").textContent = "Resume";
+  setRecState("Paused. Press Resume when you're ready to continue.", "paused");
+}
+
+function resumeRecording() {
+  if (!recorder.mediaRecorder || recorder.state !== "paused") return;
+  recorder.mediaRecorder.resume();
+  recorder.startTime = Date.now();
+  recorder.state = "recording";
+  document.getElementById("rec-pause").textContent = "Pause";
+  setRecState("Recording. Take your time.", "recording");
+  drawWaveform();
+}
+
+function stopRecording() {
+  if (!recorder.mediaRecorder || (recorder.state !== "recording" && recorder.state !== "paused")) return;
+  if (recorder.state === "recording") {
+    recorder.elapsed += (Date.now() - recorder.startTime) / 1000;
+  }
+  recorder.mediaRecorder.stop();
+  clearInterval(recorder.timerId);
+  cancelAnimationFrame(recorder.rafId);
+
+  // UI back to neutral
+  const recBtn = document.getElementById("rec-record");
+  recBtn.classList.remove("is-recording");
+  document.getElementById("rec-record-label").textContent = "Record";
+  document.getElementById("rec-pause").style.display = "none";
+  document.getElementById("rec-pause").disabled = true;
+  document.getElementById("rec-pause").textContent = "Pause";
+  document.getElementById("rec-stop").disabled = true;
+  document.getElementById("rec-time").classList.remove("recording");
+
+  setRecState("Recording finished. Listen back, then submit, or re-record if you want.", "");
+}
+
+function clearRecording() {
+  recorder.blob = null;
+  recorder.chunks = [];
+  recorder.elapsed = 0;
+  document.getElementById("rec-playback").style.display = "none";
+  document.getElementById("rec-playback").src = "";
+  document.getElementById("rec-actions").style.display = "none";
+  document.getElementById("rec-time").textContent = "0:00";
+  setRecState("Tap the record button when you're ready. You can pause, resume, and re-record as many times as you need.", "");
+  recorder.state = "idle";
+}
+
+document.getElementById("rec-record").addEventListener("click", () => {
+  if (recorder.state === "idle" || recorder.state === "stopped") {
+    if (recorder.state === "stopped" && recorder.blob) {
+      if (!confirm("Re-recording will replace your current recording. Continue?")) return;
+    }
+    startRecording();
+  } else {
+    stopRecording();
+  }
+});
+
+document.getElementById("rec-pause").addEventListener("click", () => {
+  if (recorder.state === "recording") pauseRecording();
+  else if (recorder.state === "paused") resumeRecording();
+});
+
+document.getElementById("rec-stop").addEventListener("click", stopRecording);
+
+document.getElementById("rec-rerecord").addEventListener("click", () => {
+  if (confirm("Re-record will discard the current recording. Continue?")) {
+    clearRecording();
+    startRecording();
+  }
+});
+
+// ============================================================
+// CLOUDINARY UPLOAD
+// ============================================================
+async function uploadAudioToCloudinary(blob) {
+  if (CONFIG.cloudinaryCloudName.includes("REPLACE_WITH") || CONFIG.cloudinaryUploadPreset.includes("REPLACE_WITH")) {
+    throw new Error("Audio uploads aren't configured yet. The site owner needs to add Cloudinary credentials in index.html.");
+  }
+  const url = "https://api.cloudinary.com/v1_1/" + CONFIG.cloudinaryCloudName + "/video/upload";
+  const formData = new FormData();
+  formData.append("file", blob);
+  formData.append("upload_preset", CONFIG.cloudinaryUploadPreset);
+  formData.append("resource_type", "video"); // Cloudinary treats audio as video for uploads
+
+  const res = await fetch(url, { method: "POST", body: formData });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error("Upload failed: " + errText);
+  }
+  const data = await res.json();
+  return { url: data.secure_url, duration: data.duration, format: data.format, bytes: data.bytes };
+}
+
+document.getElementById("preview-btn").addEventListener("click", () => {
+  const state = getFormState();
+  const pane = document.getElementById("preview-pane");
+  document.getElementById("pv-author").textContent = state.author || "(your name)";
+  const meta = [state.location, state.year].filter(Boolean).join(" · ");
+  document.getElementById("pv-meta").textContent = meta;
+  document.getElementById("pv-cw").innerHTML = state.content_notes
+    ? '<div class="cw-badge">Content notes: ' + escapeHtml(state.content_notes) + '</div>'
+    : "";
+  const pvBody = document.getElementById("pv-body");
+  pvBody.innerHTML = sanitizeStoryHtml(state.body_html) || '<p style="color: var(--text-faint);">(your story will appear here)</p>';
+
+  // Apply script detection to preview so writers see exactly how their story will render
+  const detected = detectScript(editor ? editor.getText() : "");
+  pvBody.setAttribute("data-script", detected.script);
+  pvBody.setAttribute("dir", detected.dir);
+  if (detected.lang) pvBody.setAttribute("lang", detected.lang); else pvBody.removeAttribute("lang");
+
+  pane.classList.toggle("hidden");
+  if (!pane.classList.contains("hidden")) pane.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+document.getElementById("story-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById("submit-btn");
+  const state = getFormState();
+  const plainText = editor ? editor.getText() : "";
+  const isAudioMode = currentMode === "record";
+
+  if (!state.author.trim()) return showStatus("error", "Please add a name (or 'Anonymous').");
+  if (!state.email.trim()) return showStatus("error", "Please add your email so we can reach you.");
+
+  if (isAudioMode) {
+    if (!recorder.blob) return showStatus("error", "Please record your story before submitting (or switch to Write mode).");
+    if (recorder.elapsed < 10) return showStatus("error", "Your recording is very short. Please record at least a few sentences.");
+  } else {
+    if (plainText.trim().length < 50) return showStatus("error", "Your story seems very short. Please write a bit more before submitting.");
+  }
+
+  if (!state.consent_author) return showStatus("error", "Please confirm you're the author and over 18.");
+  if (!state.consent_publish) return showStatus("error", "Please give permission to publish so we can include your story.");
+
+  if (CONFIG.formspreeEndpoint.includes("REPLACE_WITH")) {
+    return showStatus("error", "The form isn't configured yet. The site owner needs to add a Formspree endpoint in index.html.");
+  }
+
+  btn.disabled = true;
+  btn.textContent = isAudioMode ? "Uploading audio…" : "Submitting…";
+
+  let audioInfo = null;
+  if (isAudioMode) {
+    try {
+      audioInfo = await uploadAudioToCloudinary(recorder.blob);
+      btn.textContent = "Submitting…";
+    } catch (err) {
+      console.error("Audio upload error:", err);
+      showStatus("error", err.message || "Could not upload your recording. Please try again.");
+      btn.textContent = "Submit story";
+      btn.disabled = false;
+      return;
+    }
+  }
+
+  const payload = new FormData();
+  payload.append("author", state.author);
+  payload.append("location", state.location);
+  payload.append("year", state.year);
+  payload.append("email", state.email);
+  payload.append("tags", state.tags.join(", "));
+  payload.append("content_notes", state.content_notes);
+  payload.append("story_mode", isAudioMode ? "audio" : "text");
+
+  if (isAudioMode && audioInfo) {
+    payload.append("audio_url", audioInfo.url);
+    payload.append("audio_duration_seconds", String(Math.round(audioInfo.duration || recorder.elapsed)));
+    payload.append("audio_format", audioInfo.format || "");
+    payload.append("audio_size_bytes", String(audioInfo.bytes || recorder.blob.size));
+  } else {
+    payload.append("story_html", state.body_html);
+    payload.append("story_text", plainText);
+  }
+
+  payload.append("consent_author", state.consent_author ? "yes" : "no");
+  payload.append("consent_publish", state.consent_publish ? "yes" : "no");
+  payload.append("consent_share", state.consent_share ? "yes" : "no");
+  payload.append("consent_book", state.consent_book ? "yes" : "no");
+  payload.append("_subject", (isAudioMode ? "New audio story: " : "New story: ") + state.author);
+
+  try {
+    const res = await fetch(CONFIG.formspreeEndpoint, {
+      method: "POST", body: payload, headers: { Accept: "application/json" }
+    });
+    if (res.ok) {
+      clearDraft();
+      if (isAudioMode) clearRecording();
+      showStatus("success", "Thank you. Your story has been received and will be reviewed within a few days. We'll be in touch.");
+      btn.textContent = "Submit story";
+      btn.disabled = false;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      throw new Error("Submission failed");
+    }
+  } catch (err) {
+    showStatus("error", "Something went wrong. Please try again, or email us directly.");
+    btn.textContent = "Submit story";
+    btn.disabled = false;
+  }
+});
+
+function showStatus(type, msg) {
+  const el = document.getElementById("form-status");
+  el.innerHTML = '<div class="msg ' + type + '">' + escapeHtml(msg) + "</div>";
+  if (type !== "success") el.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function excerptText(html, maxLen) {
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html || "";
+  const text = (tmp.innerText || tmp.textContent || "").replace(/\s+/g, " ").trim();
+  const limit = maxLen || 240;
+  return text.length > limit ? text.slice(0, limit) + "…" : text;
+}
+
+// Detect the dominant script in a piece of text by counting Unicode ranges.
+// Returns an object with { script, dir, lang } where:
+//   - script is one of: persian, arabic, hebrew, chinese-simplified, chinese-traditional,
+//     japanese, devanagari, bengali, thai, latin (default)
+//   - dir is "rtl" or "ltr"
+//   - lang is a best-guess BCP-47 code for accessibility (lang attribute)
+function detectScript(text) {
+  if (!text) return { script: "latin", dir: "ltr", lang: "" };
+
+  // Strip HTML tags and whitespace for analysis
+  const plain = String(text).replace(/<[^>]+>/g, " ").replace(/\s+/g, "");
+  if (!plain) return { script: "latin", dir: "ltr", lang: "" };
+
+  const counts = {
+    persian: 0,         // Persian-specific characters (subset of Arabic block)
+    arabic: 0,          // Arabic script
+    hebrew: 0,
+    han: 0,             // CJK Unified Ideographs (could be Chinese or Japanese kanji)
+    hiragana_katakana: 0, // Japanese-only kana
+    devanagari: 0,
+    bengali: 0,
+    thai: 0,
+    latin: 0
+  };
+
+  for (const ch of plain) {
+    const cp = ch.codePointAt(0);
+    // Persian-specific letters: گ پ چ ژ and others not in standard Arabic
+    if (cp === 0x06AF || cp === 0x067E || cp === 0x0686 || cp === 0x0698 || cp === 0x06CC || cp === 0x06A9) counts.persian++;
+    else if (cp >= 0x0600 && cp <= 0x06FF) counts.arabic++;
+    else if (cp >= 0x0590 && cp <= 0x05FF) counts.hebrew++;
+    else if ((cp >= 0x3040 && cp <= 0x309F) || (cp >= 0x30A0 && cp <= 0x30FF)) counts.hiragana_katakana++;
+    else if (cp >= 0x4E00 && cp <= 0x9FFF) counts.han++;
+    else if (cp >= 0x0900 && cp <= 0x097F) counts.devanagari++;
+    else if (cp >= 0x0980 && cp <= 0x09FF) counts.bengali++;
+    else if (cp >= 0x0E00 && cp <= 0x0E7F) counts.thai++;
+    else if ((cp >= 0x0041 && cp <= 0x007A) || (cp >= 0x00C0 && cp <= 0x024F)) counts.latin++;
+  }
+
+  // Decision logic — Persian wins over generic Arabic if any persian-specific chars present
+  if (counts.persian > 0 && counts.arabic > 0) return { script: "persian", dir: "rtl", lang: "fa" };
+  if (counts.arabic > 5) return { script: "arabic", dir: "rtl", lang: "ar" };
+  if (counts.hebrew > 5) return { script: "hebrew", dir: "rtl", lang: "he" };
+  if (counts.hiragana_katakana > 0) return { script: "japanese", dir: "ltr", lang: "ja" };
+  if (counts.han > 5) return { script: "chinese-simplified", dir: "ltr", lang: "zh" };
+  if (counts.devanagari > 5) return { script: "devanagari", dir: "ltr", lang: "hi" };
+  if (counts.bengali > 5) return { script: "bengali", dir: "ltr", lang: "bn" };
+  if (counts.thai > 5) return { script: "thai", dir: "ltr", lang: "th" };
+  return { script: "latin", dir: "ltr", lang: "" };
+}
+
+function escapeHtml(str) {
+  if (str === undefined || str === null) return "";
+  return String(str)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+function sanitizeStoryHtml(html) {
+  if (!html) return "";
+  const allowed = new Set(["P","BR","STRONG","EM","B","I","H2","H3","BLOCKQUOTE","UL","OL","LI"]);
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  function clean(node) {
+    Array.from(node.childNodes).forEach(child => {
+      if (child.nodeType === 1) {
+        if (!allowed.has(child.tagName)) {
+          while (child.firstChild) node.insertBefore(child.firstChild, child);
+          node.removeChild(child);
+        } else {
+          Array.from(child.attributes).forEach(a => child.removeAttribute(a.name));
+          clean(child);
+        }
+      } else if (child.nodeType !== 3) {
+        node.removeChild(child);
+      }
+    });
+  }
+  clean(tmp);
+  return tmp.innerHTML;
+}
+
+// Ctrl+S manual save
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === "s" && document.getElementById("page-submit").classList.contains("active")) {
+    e.preventDefault();
+    clearTimeout(saveTimer);
+    saveDraft();
+  }
+});
+
+// ============================================================
+// INIT
+// ============================================================
+// Wire up Telegram link based on config
+(function setupTelegramLink() {
+  const link = document.getElementById("telegram-link");
+  if (!link) return;
+  if (CONFIG.telegramUsername.includes("REPLACE_WITH")) {
+    // No Telegram configured — hide the whole Telegram block
+    const wrap = document.querySelector(".telegram-option");
+    if (wrap) wrap.style.display = "none";
+  } else {
+    const username = CONFIG.telegramUsername.replace(/^@/, "");
+    link.href = "https://t.me/" + username;
+  }
+})();
+
+// Insert the project-wide share row in the footer
+(function setupFooterShare() {
+  const footerShare = document.getElementById("footer-share");
+  if (!footerShare) return;
+  footerShare.innerHTML = buildShareBlock({
+    title: "Unedited — birth stories in their own words",
+    text: "A collection of birth stories from mothers around the world. Unfiltered, in their own words.",
+    storyId: null
+  });
+  wireShareButtons(null);
+})();
+
+buildTagPicker();
+loadSiteContent();
+loadStories();
+initEditor();
+</script>
+
+</body>
+</html>
