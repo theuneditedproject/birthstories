@@ -1,0 +1,38 @@
+{
+  "_comment_DELETE_THIS_LINE": "This is a template. Copy the contents (without these _comment lines) into a new file when publishing. See WORKFLOW.md for full instructions.",
+
+  "id": "000",
+  "_id_help": "Three-digit number, must match filename. e.g. 042 for the 42nd story",
+
+  "author": "First name or 'Anonymous'",
+  "_author_help": "How they want to be credited. Whatever they told you.",
+
+  "location": "City, Country",
+  "_location_help": "Optional. Empty string '' if not provided.",
+
+  "year": "2024",
+  "_year_help": "Optional. Empty string '' if not provided.",
+
+  "tags": ["hospital"],
+  "_tags_help": "Pick from: hospital, home, birth-center, water-birth, c-section, vbac, induction, unmedicated, epidural, premature, twins, surrogacy, adoption, loss, first-baby, rainbow-baby",
+
+  "content_notes": "",
+  "_content_notes_help": "e.g. 'medical trauma, hemorrhage'. Empty if none.",
+
+  "language": "en",
+  "_language_help": "BCP-47 code: en, fa, ar, nl, zh, ja, es, pt, fr, de, he, hi, etc.",
+
+  "share_allowed": true,
+  "_share_allowed_help": "false ONLY if they opted out of social sharing. Default true.",
+
+  "submitted_at": "2026-01-15",
+  "published_at": "2026-01-22",
+  "_dates_help": "ISO format YYYY-MM-DD",
+
+  "audio_url": "",
+  "audio_duration_seconds": 0,
+  "_audio_help": "audio_url is empty '' for text-only. For audio stories paste the Cloudinary URL ending in .webm/.mp3/.mp4. duration is in seconds.",
+
+  "body": "<p>The story text. Use HTML if from the rich editor. Or plain text with double-newline paragraph breaks.</p>",
+  "_body_help": "For audio-only stories, body can be empty string ''."
+}

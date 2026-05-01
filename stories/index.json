@@ -1,0 +1,16 @@
+{
+  "stories": [
+    {
+      "id": "001",
+      "file": "001-the-founder.json"
+    },
+    {
+      "id": "002",
+      "file": "002-sample-farsi.json"
+    },
+    {
+      "id": "003",
+      "file": "003-sample-chinese.json"
+    }
+  ]
+}
