@@ -3,7 +3,7 @@
     "title": "Unedited",
     "tagline": "Birth stories in their own words. From mothers around the world.",
     "footer": "Unedited · A collective project",
-    "contact_email": "hello@example.com"
+    "contact_email": "unedited.voices.project@gmail.com"
   },
   "home_teaser": {
     "paragraphs": [
@@ -44,9 +44,26 @@
     "intro": "Tell it your way, in any language you like — Persian, Arabic, English, Dutch, Chinese, anything. The editor adjusts as you write so your story renders correctly in your script. Your work saves automatically. We review every submission and reply within a few days."
   },
   "available_tags": [
-    "hospital", "home", "birth-center", "water-birth",
-    "c-section", "vbac", "induction", "unmedicated", "epidural",
-    "premature", "twins", "surrogacy", "adoption", "loss",
-    "first-baby", "rainbow-baby"
+    "hospital",
+    "home",
+    "birth-center",
+    "water-birth",
+    "c-section",
+    "vbac",
+    "induction",
+    "unmedicated",
+    "epidural",
+    "premature",
+    "twins",
+    "surrogacy",
+    "adoption",
+    "loss",
+    "first-baby",
+    "rainbow-baby"
+  ],
+  "undefined": [
+    "",
+    "",
+    ""
   ]
 }
