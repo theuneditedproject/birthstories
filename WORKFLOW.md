@@ -12,6 +12,15 @@ This is the everyday operations guide. Bookmark it, or print the section you nee
 4. **If you're publishing it:** follow the "Publish a new story" recipe below
 5. **If you're not publishing it:** send a kind reply explaining (it doesn't have to be long; "thank you for trusting us with this. We've decided not to include it because [reason]" is enough)
 
+### Notes on the consent fields in the email
+
+The submission email includes a few consent flags. Worth knowing what each means:
+
+- `consent_author` / `consent_publish` / `consent_license`. Required to submit. If any are "no", the form wouldn't have gone through.
+- `consent_share`. Defaults to "yes". If "no", set `"share_allowed": false` in the JSON when you publish, and the share buttons will be hidden on that story.
+- `consent_book`. Opt-in. If "yes", they're open to a future book conversation. **Log this in your private tracking repo with the `book-candidate` label** so you can find it later.
+- `long_term_contact`, only present if they checked the book box AND filled in this optional field. It's their preferred way to be reached about the book later (might be a different email, a phone, a Telegram handle). Save it in your tracking repo. If empty, the regular email above is what they want you to use.
+
 ## When a voice note arrives on Telegram
 
 1. Listen to it

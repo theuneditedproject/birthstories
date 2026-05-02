@@ -1061,7 +1061,8 @@
           </div>
           <div class="form-group">
             <label for="f-email">Email <span class="opt">* not published</span></label>
-            <input id="f-email" type="email" name="email" placeholder="So we can reach you" required />
+            <input id="f-email" type="email" name="email" placeholder="So we can reach you" required aria-describedby="f-email-help" />
+            <p class="help-text" id="f-email-help">We use this to reply about your submission. If you say yes below to future book contact, we'll use it again then, unless you give us a different way.</p>
           </div>
         </div>
 
@@ -1167,6 +1168,14 @@
           <div class="checkbox-row">
             <input type="checkbox" name="consent_book" id="c-book" />
             <label for="c-book">I'd be open to being contacted about including this in a future book (separate consent will be required).</label>
+          </div>
+
+          <div class="form-group" id="long-term-contact-wrap" style="display: none; margin: 14px 0 0 30px; padding: 16px 18px; background: var(--bg-alt); border-left: 3px solid var(--ink);">
+            <label for="f-long-term-contact" style="text-transform: none; letter-spacing: normal; font-family: var(--font-sans); font-size: 13px; font-weight: 500; color: var(--ink);">
+              Best way to reach you about this later? <span class="opt">(optional)</span>
+            </label>
+            <input id="f-long-term-contact" type="text" name="long_term_contact" placeholder="e.g. permanent email, phone, Telegram, WhatsApp, or 'use the email above'" />
+            <p class="help-text">A book conversation might happen many months from now. If your email above might change by then, give us something more permanent here.</p>
           </div>
         </div>
 
@@ -2079,6 +2088,7 @@ function getFormState() {
     consent_license: form.consent_license.checked,
     consent_share: form.consent_share.checked,
     consent_book: form.consent_book.checked,
+    long_term_contact: form.long_term_contact ? form.long_term_contact.value : "",
     saved_at: new Date().toISOString()
   };
 }
@@ -2139,6 +2149,8 @@ function applyDraft(d) {
   form.consent_license.checked = !!d.consent_license;
   form.consent_share.checked = d.consent_share !== false; // default true
   form.consent_book.checked = !!d.consent_book;
+  if (form.long_term_contact) form.long_term_contact.value = d.long_term_contact || "";
+  toggleLongTermContact();
   updateWordCount();
   setSaveStatus("saved");
 }
@@ -2188,6 +2200,17 @@ document.getElementById("save-now-btn").addEventListener("click", () => {
 document.getElementById("clear-btn").addEventListener("click", () => {
   if (confirm("Clear your draft? This cannot be undone.")) clearDraft();
 });
+
+// Reveal the long-term contact field only when the book consent is checked,
+// so people who don't opt in don't see an extra field they don't need.
+function toggleLongTermContact() {
+  const cb = document.getElementById("c-book");
+  const wrap = document.getElementById("long-term-contact-wrap");
+  if (!cb || !wrap) return;
+  wrap.style.display = cb.checked ? "block" : "none";
+}
+document.getElementById("c-book").addEventListener("change", toggleLongTermContact);
+toggleLongTermContact(); // run once on load in case draft restored a checked state
 
 // ============================================================
 // MODE TOGGLE (Write / Record)
@@ -2578,6 +2601,9 @@ document.getElementById("story-form").addEventListener("submit", async (e) => {
   payload.append("consent_license", state.consent_license ? "yes (CC BY-NC-ND 4.0)" : "no");
   payload.append("consent_share", state.consent_share ? "yes" : "no");
   payload.append("consent_book", state.consent_book ? "yes" : "no");
+  if (state.consent_book && state.long_term_contact) {
+    payload.append("long_term_contact", state.long_term_contact);
+  }
   payload.append("_subject", (isAudioMode ? "New audio story: " : "New story: ") + state.author);
 
   try {
