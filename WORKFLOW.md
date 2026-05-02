@@ -10,7 +10,7 @@ This is the everyday operations guide. Bookmark it, or print the section you nee
 2. Sit with it. There's no rush. Stories deserve attention before decisions.
 3. Reply to the submitter from your project email. Thank them. Ask any follow-up questions. Confirm consent if anything was unclear.
 4. **If you're publishing it:** follow the "Publish a new story" recipe below
-5. **If you're not publishing it:** send a kind reply explaining (it doesn't have to be long; "thank you for trusting us with this — we've decided not to include it because [reason]" is enough)
+5. **If you're not publishing it:** send a kind reply explaining (it doesn't have to be long; "thank you for trusting us with this. We've decided not to include it because [reason]" is enough)
 
 ## When a voice note arrives on Telegram
 
@@ -58,7 +58,7 @@ This is the everyday operations guide. Bookmark it, or print the section you nee
   "published_at": "YYYY-MM-DD",
   "audio_url": "",
   "audio_duration_seconds": 0,
-  "body": "<p>Paste the story HTML here. The form sends story_html in submission emails — copy that whole block.</p><p>Each paragraph is in its own p tag.</p>"
+  "body": "<p>Paste the story HTML here. The form sends story_html in submission emails. Copy that whole block.</p><p>Each paragraph is in its own p tag.</p>"
 }
 ```
 
@@ -70,7 +70,7 @@ This is the everyday operations guide. Bookmark it, or print the section you nee
    - **body** can be empty (`""`) for audio-only stories
    - **tags** are an array. Available: `hospital`, `home`, `birth-center`, `water-birth`, `c-section`, `vbac`, `induction`, `unmedicated`, `epidural`, `premature`, `twins`, `surrogacy`, `adoption`, `loss`, `first-baby`, `rainbow-baby`
 
-5. **Commit the new file.** Scroll down, write a commit message like "Add story 009 — Maria, Lisbon", click "Commit new file"
+5. **Commit the new file.** Scroll down, write a commit message like "Add story 009. Maria, Lisbon", click "Commit new file"
 
 6. **Update `stories/index.json`.** Click on `index.json`, click the pencil icon. Add the new entry inside the `"stories"` array:
 
@@ -124,10 +124,10 @@ The story disappears from the site within a minute. If the author also wants it 
 
 Common edits:
 - **Change the tagline** under the site title: search for "Birth stories in their own words"
-- **Change About page text:** search for "About this project" — the page text is right there
-- **Change the Why page:** search for "Why this exists" — same idea
+- **Change About page text:** search for "About this project". The page text is right there
+- **Change the Why page:** search for "Why this exists". Same idea
 - **Add a new tag** to the submission form: find `availableTags` and add it to the array
-- **Change the contact email:** search for `hello@example.com` — it appears in About and footer
+- **Change the contact email:** search for `hello@example.com`. It appears in About and footer
 
 If you accidentally break something, GitHub keeps history. Click the file's "History" button, find the version that worked, click "..." → "Revert".
 
@@ -137,7 +137,7 @@ If you accidentally break something, GitHub keeps history. Click the file's "His
 
 1. **Did you commit?** GitHub web editor needs the "Commit changes" button. Editing alone doesn't save.
 2. **Did you wait 2 minutes?** Pages rebuilds take a moment.
-3. **Did you break the JSON?** Paste the file into [jsonlint.com](https://jsonlint.com) — it'll tell you what's wrong. Most common issues: missing comma between entries, missing quote, extra trailing comma.
+3. **Did you break the JSON?** Paste the file into [jsonlint.com](https://jsonlint.com). It'll tell you what's wrong. Most common issues: missing comma between entries, missing quote, extra trailing comma.
 4. **Did you forget `stories/index.json`?** Stories must be listed there or they don't appear.
 5. **If still broken:** click the file's History tab, revert to the last good version.
 

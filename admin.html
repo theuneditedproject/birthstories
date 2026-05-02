@@ -187,7 +187,7 @@
   <div class="container">
     <div class="login-card">
       <h2>Sign in to admin</h2>
-      <p>Enter your GitHub repo info and a Personal Access Token. Both are stored in this browser only — they never leave your device except to talk to GitHub.</p>
+      <p>Enter your GitHub repo info and a Personal Access Token. Both are stored in this browser only. They never leave your device except to talk to GitHub.</p>
 
       <div id="login-error"></div>
 
@@ -587,7 +587,7 @@ function base64ToUtf8(str) {
 // SITE CONTENT
 // ============================================================
 
-// Schema describing each editable field in content.json — used to render form
+// Schema describing each editable field in content.json. Used to render form
 const CONTENT_SCHEMA = [
   { section: "Site basics" },
   { path: "site.title", label: "Site title", type: "text", help: "Shown in the header and browser tab" },
@@ -602,12 +602,12 @@ const CONTENT_SCHEMA = [
   { section: "Why page" },
   { path: "why_page.title", label: "Page title", type: "text" },
   { path: "why_page.intro_paragraphs", label: "Opening paragraphs", type: "list", help: "Each paragraph is a separate box. HTML allowed for emphasis." },
-  { path: "why_page.lead_one_title", label: "First reason — bold lead", type: "text" },
-  { path: "why_page.lead_one_text", label: "First reason — explanation", type: "textarea" },
-  { path: "why_page.lead_two_title", label: "Second reason — bold lead", type: "text" },
-  { path: "why_page.lead_two_text", label: "Second reason — explanation", type: "textarea" },
-  { path: "why_page.lead_three_title", label: "Third reason — bold lead", type: "text" },
-  { path: "why_page.lead_three_text", label: "Third reason — explanation", type: "textarea" },
+  { path: "why_page.lead_one_title", label: "First reason. Bold lead", type: "text" },
+  { path: "why_page.lead_one_text", label: "First reason. Explanation", type: "textarea" },
+  { path: "why_page.lead_two_title", label: "Second reason. Bold lead", type: "text" },
+  { path: "why_page.lead_two_text", label: "Second reason. Explanation", type: "textarea" },
+  { path: "why_page.lead_three_title", label: "Third reason. Bold lead", type: "text" },
+  { path: "why_page.lead_three_text", label: "Third reason. Explanation", type: "textarea" },
   { path: "why_page.closing", label: "Closing pledge", type: "textarea", help: "Set apart at the bottom in italic gray" },
 
   { section: "About page" },
@@ -1067,7 +1067,7 @@ function initEditor() {
   });
   editor.addEventListener("input", updateEditorScript);
   editor.addEventListener("paste", (e) => {
-    // Allow paste — preserves HTML if the user pasted from the rich editor or email
+    // Allow paste. Preserves HTML if the user pasted from the rich editor or email
     // (we sanitize on save indirectly through the editor's internal handling)
   });
 }

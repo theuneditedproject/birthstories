@@ -1,0 +1,25 @@
+# Editor / OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Local backups (e.g. index.html.bak)
+*.bak
+*.orig
+*.tmp
+
+# Project archives
+unedited.zip
+*.zip
+
+# IDE folders
+.vscode/
+.idea/
+
+# Node (in case you ever add tooling)
+node_modules/
+npm-debug.log
+.env
+.env.local

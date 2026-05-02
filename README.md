@@ -6,24 +6,24 @@ This repo contains both the website (free GitHub Pages hosting) and the dataset 
 
 ## How it works
 
-- `index.html` is the entire website — single file, no build step
+- `index.html` is the entire website. Single file, no build step
 - `stories/` contains one JSON file per published story, plus `index.json` listing them
-- Submissions come in via Formspree — they're emailed to you privately
+- Submissions come in via Formspree. They're emailed to you privately
 - When you decide to publish, you add a JSON file to `stories/` and update `index.json`
-- The site loads stories at page load — no database needed
+- The site loads stories at page load. No database needed
 
 ## Submitter experience
 
 The "Share your story" page is a real writing environment, not just a plain text box:
 
-- **Modern rich text editor (TipTap)** — bold, italic, headings, blockquotes, bulleted and numbered lists, undo/redo. Same editor library used by Linear, Substack, GitLab, and others.
-- **Auto-save drafts** — drafts save to the submitter's browser every second as they type. If they close the tab and come back days later, their draft is waiting with a "Restore draft" button.
-- **Word count** — live, at the bottom of the editor
-- **Preview** — see the story as it will appear on the site before submitting
-- **Save status** — small dot showing "Saved at 3:42 PM" so they know their work is safe
-- **Keyboard shortcuts** — Ctrl/Cmd+B, Ctrl/Cmd+I, Ctrl/Cmd+S
-- **Tag picker** — clickable buttons to categorize the birth
-- **Friendly validation** — clear error messages if they miss something
+- **Modern rich text editor (TipTap)**. Bold, italic, headings, blockquotes, bulleted and numbered lists, undo/redo. Same editor library used by Linear, Substack, GitLab, and others.
+- **Auto-save drafts**. Drafts save to the submitter's browser every second as they type. If they close the tab and come back days later, their draft is waiting with a "Restore draft" button.
+- **Word count**. Live, at the bottom of the editor
+- **Preview**. See the story as it will appear on the site before submitting
+- **Save status**. Small dot showing "Saved at 3:42 PM" so they know their work is safe
+- **Keyboard shortcuts**. Ctrl/Cmd+B, Ctrl/Cmd+I, Ctrl/Cmd+S
+- **Tag picker**. Clickable buttons to categorize the birth
+- **Friendly validation**. Clear error messages if they miss something
 
 When they submit, both an HTML version (with their formatting) and a plain text version arrive in your inbox.
 
@@ -49,7 +49,7 @@ Below the in-page recorder, submitters see a "Send a voice note from your phone"
 - Longer recordings (Telegram supports up to 2GB per file vs. Cloudinary's free-tier limit)
 - Submitters who want a back-and-forth conversation rather than a one-shot submission
 
-The Telegram option is optional — if you don't set up a Telegram account, that section is automatically hidden.
+The Telegram option is optional. If you don't set up a Telegram account, that section is automatically hidden.
 
 You'll need to set up Cloudinary alongside Formspree for the in-page recorder, and (optionally) Telegram. Instructions below.
 
@@ -70,18 +70,18 @@ When someone shares a specific story, the link includes a hash like `#story=042`
 
 ### Share consent
 
-The submission form has a checkbox: **"My story can be shared on social media (uncheck if you'd prefer your story stays only on this website)."** It defaults to checked (opt-out, not opt-in), so most stories will be shareable. If a submitter unchecks it, you should set `"share_allowed": false` in their JSON when you publish — the share buttons will be hidden on that story's page.
+The submission form has a checkbox: **"My story can be shared on social media (uncheck if you'd prefer your story stays only on this website)."** It defaults to checked (opt-out, not opt-in), so most stories will be shareable. If a submitter unchecks it, you should set `"share_allowed": false` in their JSON when you publish. The share buttons will be hidden on that story's page.
 
 ## Multilingual support
 
 The site renders stories in any language correctly:
 
-- **Automatic script detection** — when a story is displayed, the site detects whether it's in Persian, Arabic, Hebrew, Chinese, Japanese, Hindi, Bengali, Thai, or any Latin-script language, and applies the appropriate font and reading direction (RTL for Persian/Arabic/Hebrew).
-- **Live in the editor** — as a writer types, the editor flips to right-to-left and switches to a Persian or Arabic font automatically. They see their story rendered correctly while writing, not just after submitting.
-- **Language filter** — when you have stories in multiple languages, a language filter appears in the gallery so readers can browse in their preferred language.
-- **No translation** — stories stay in the language they were written in. The words are part of the story.
+- **Automatic script detection**. When a story is displayed, the site detects whether it's in Persian, Arabic, Hebrew, Chinese, Japanese, Hindi, Bengali, Thai, or any Latin-script language, and applies the appropriate font and reading direction (RTL for Persian/Arabic/Hebrew).
+- **Live in the editor**, as a writer types, the editor flips to right-to-left and switches to a Persian or Arabic font automatically. They see their story rendered correctly while writing, not just after submitting.
+- **Language filter**. When you have stories in multiple languages, a language filter appears in the gallery so readers can browse in their preferred language.
+- **No translation**. Stories stay in the language they were written in. The words are part of the story.
 
-You can override auto-detection by adding a `"language"` field to a story's JSON (BCP-47 codes: `"fa"`, `"ar"`, `"zh"`, `"en"`, `"nl"`, etc.) — useful for distinguishing similar scripts (e.g. Norwegian vs. Swedish).
+You can override auto-detection by adding a `"language"` field to a story's JSON (BCP-47 codes: `"fa"`, `"ar"`, `"zh"`, `"en"`, `"nl"`, etc.). Useful for distinguishing similar scripts (e.g. Norwegian vs. Swedish).
 
 The form interface is in English. A short note tells submitters they can write in any language they prefer.
 
@@ -89,10 +89,10 @@ The form interface is in English. A short note tells submitters they can write i
 
 Drafts save to the **submitter's own browser** (localStorage). They never leave their computer until they hit Submit. This means:
 
-- Their draft is private to them — you can't see it
+- Their draft is private to them. You can't see it
 - If they switch devices, they won't see the draft on the other device
 - Clearing browser data clears their draft
-- This is by design — gives them privacy and control while they're still deciding whether to share
+- This is by design. Gives them privacy and control while they're still deciding whether to share
 
 ## First-time setup
 
@@ -118,9 +118,9 @@ Free Formspree allows 50 submissions/month. Upgrade for $10/mo if you exceed tha
 
 ### 2b. Set up Cloudinary (for audio recordings)
 
-If you want submitters to be able to record their stories, you also need Cloudinary. If you only want text submissions, you can skip this step — the recorder will simply tell submitters that audio isn't available.
+If you want submitters to be able to record their stories, you also need Cloudinary. If you only want text submissions, you can skip this step. The recorder will simply tell submitters that audio isn't available.
 
-1. Sign up at [cloudinary.com](https://cloudinary.com) with your project email — free tier
+1. Sign up at [cloudinary.com](https://cloudinary.com) with your project email. Free tier
 2. After signing in, find your **Cloud name** in the dashboard (top of the page)
 3. Go to Settings → Upload → "Upload presets" → "Add upload preset"
 4. Set "Signing Mode" to **Unsigned** (this is required for browser uploads)
@@ -139,7 +139,7 @@ Free Cloudinary gives you 25GB storage and 25GB monthly bandwidth, which is plen
 If you want to offer the Telegram option for voice notes:
 
 1. On your phone, install Telegram if you haven't already
-2. Sign up with the project's phone number (you may want a separate SIM or a virtual number for this — keeps it separate from your personal account)
+2. Sign up with the project's phone number (you may want a separate SIM or a virtual number for this. Keeps it separate from your personal account)
 3. Go to Settings → Username and pick a username for the project (e.g. `unedited_stories`)
 4. Open `index.html` and find:
    ```
@@ -217,18 +217,18 @@ There's an admin panel at `/admin.html` (or `https://YOUR-USERNAME.github.io/une
 ### Setting up
 
 1. Open the live site, then go to `/admin.html`. You'll see a sign-in screen.
-2. The first time, you need a Personal Access Token from GitHub. Click the "How do I get a Personal Access Token?" link on the sign-in screen — it walks you through it. Takes about 3 minutes.
+2. The first time, you need a Personal Access Token from GitHub. Click the "How do I get a Personal Access Token?" link on the sign-in screen. It walks you through it. Takes about 3 minutes.
 3. Enter your GitHub username, repo name (`unedited`), and paste the token. Check "Remember on this device" so you don't have to do this every time.
 4. Click Sign in.
 
 ### What it does
 
 - **Stories tab:** lists all published stories. Click Edit to change one, Delete to remove one (commits a deletion to GitHub).
-- **New story tab:** a form with all the fields (author, location, language, tags, content notes, audio URL, share consent, dates, plus a rich-text editor for the body). Click Publish — it creates the JSON file, updates `index.json`, and the site rebuilds within ~1 minute.
-- **Site content tab:** edit all the words shown on the public site — site title, tagline, About page, Why page, home teaser, contact email, available submission tags. Backed by a structured `content.json` file that the site loads at runtime.
+- **New story tab:** a form with all the fields (author, location, language, tags, content notes, audio URL, share consent, dates, plus a rich-text editor for the body). Click Publish. It creates the JSON file, updates `index.json`, and the site rebuilds within ~1 minute.
+- **Site content tab:** edit all the words shown on the public site. Site title, tagline, About page, Why page, home teaser, contact email, available submission tags. Backed by a structured `content.json` file that the site loads at runtime.
 - **Settings tab:** sign out, link to edit `index.html` directly on GitHub for site-wide layout/style changes.
 
-The editor in the New/Edit story screen detects when you're typing in Persian, Arabic, Chinese, etc. and switches direction and font accordingly — same as the public submission form.
+The editor in the New/Edit story screen detects when you're typing in Persian, Arabic, Chinese, etc. and switches direction and font accordingly. Same as the public submission form.
 
 ### Security notes
 
@@ -239,7 +239,7 @@ The editor in the New/Edit story screen detects when you're typing in Persian, A
 
 ### When the admin panel isn't enough
 
-The admin panel covers stories AND site text content. For deeper changes — colors, fonts, page layout, adding new pages, modifying the submission form fields, anything code-level — edit `index.html` directly on GitHub. There's a link to it from the Settings tab.
+The admin panel covers stories AND site text content. For deeper changes. Colors, fonts, page layout, adding new pages, modifying the submission form fields, anything code-level. Edit `index.html` directly on GitHub. There's a link to it from the Settings tab.
 
 ## Day-to-day workflow
 
@@ -248,7 +248,7 @@ The admin panel covers stories AND site text content. For deeper changes — col
 1. You get an email from Formspree with the full submission (both HTML and plain text)
 2. Read it. Sit with it.
 3. Optional: log it as an issue in your private tracking repo
-4. Reply from your project email — thank them, ask follow-up questions, clarify consent if needed
+4. Reply from your project email. Thank them, ask follow-up questions, clarify consent if needed
 5. If publishing, see "Publishing a story" below
 6. If not publishing, send a kind reply explaining
 
@@ -309,10 +309,10 @@ Everything you'd want to change is at the top of `index.html`:
 
 ## Things you might want to add later
 
-- **Spreadsheet integration** — Formspree can pipe submissions into Google Sheets automatically
-- **Newsletter** — Buttondown or Substack signup form on the About page
-- **Translation** — add a `language` field to each JSON, language filter to the UI
-- **Image support** — add an `image` field pointing to files in a new `stories/images/` folder
+- **Spreadsheet integration**. Formspree can pipe submissions into Google Sheets automatically
+- **Newsletter**. Buttondown or Substack signup form on the About page
+- **Translation**. Add a `language` field to each JSON, language filter to the UI
+- **Image support**. Add an `image` field pointing to files in a new `stories/images/` folder
 
 ## Help
 
@@ -321,13 +321,24 @@ Common fixes:
 - **Site loads but no stories:** check `stories/index.json` is valid JSON (jsonlint.com)
 - **Form doesn't submit:** check the Formspree endpoint is correctly pasted in `index.html`
 - **Pages doesn't update after a commit:** wait 2 minutes; GitHub Pages takes a moment to rebuild
-- **Editor toolbar buttons don't work:** the editor (TipTap) loads from a CDN at page load. If the user has a flaky connection, the editor may take a moment to appear — they'll see "Loading editor…" until it's ready. If TipTap fails to load entirely (very rare), you'd see this in the browser console.
+- **Editor toolbar buttons don't work:** the editor (TipTap) loads from a CDN at page load. If the user has a flaky connection, the editor may take a moment to appear. They'll see "Loading editor…" until it's ready. If TipTap fails to load entirely (very rare), you'd see this in the browser console.
 
 ## Notes on TipTap
 
-The site uses [TipTap](https://tiptap.dev) loaded from `esm.sh` as ES modules. This means:
+The site uses [TipTap](https://tiptap.dev) loaded from `cdn.jsdelivr.net` as ES modules. This means:
 
-- No build step required — it just works
-- ~150KB downloaded on first page load (cached after that)
-- The version is pinned in the script imports (currently 2.10.3) so it won't break unexpectedly if TipTap releases new versions
-- If you ever want to upgrade, change the version numbers in the four `import` lines at the top of the script section in `index.html`
+- No build step required. It just works
+- ~150KB downloaded only when a visitor opens the **Share your story** page (lazy-loaded). Other visitors never download it.
+- The version is pinned in `index.html` (currently `TIPTAP_VERSION = "2.11.5"`) so it won't break unexpectedly if TipTap releases new versions
+- To upgrade, change the value of `TIPTAP_VERSION` near the top of the script section in `index.html`. (Older code had four separate `import` lines. The new code uses dynamic `import()` so there's only one constant to change.)
+- If TipTap ever fails to load (CDN outage), the site falls back to a plain `<textarea>` automatically so submitters can still share their story.
+
+The **admin panel** uses a simpler `contenteditable` editor (not TipTap) for editing story bodies. Fewer dependencies, smaller surface area for the operator. If you'd prefer TipTap there too, see "Things you might want to add later" below.
+
+## Terms & license
+
+Each story is © its author. By submitting, the author grants Unedited a non-exclusive license to publish on this website under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (Attribution–NonCommercial–NoDerivatives). Readers can share with attribution; no commercial use; no derivative works.
+
+The full terms are written out in plain English on the **Terms** page on the site (`#terms`), and there's a license footer on every story. Authors can request changes or removal at any time. Book inclusion is a separate consent.
+
+The `_STORY_TEMPLATE.json` includes a `"license": "CC-BY-NC-ND-4.0"` field by default. You can override it per story (e.g. if an author asks for "all rights reserved" for their specific story).
