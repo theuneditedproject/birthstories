@@ -120,6 +120,7 @@
   /* === NAV (magazine-style underline) === */
   nav.main-nav {
     display: flex; gap: 0; padding: 0;
+    justify-content: center;
     border-top: 1px solid var(--rule);
     border-bottom: 1px solid var(--rule);
     margin-bottom: 48px;
@@ -136,14 +137,12 @@
     position: relative;
     transition: color 0.2s;
   }
-  nav.main-nav button:first-child { padding-left: 0; }
   nav.main-nav button:hover { color: var(--accent); }
   nav.main-nav button.active::after {
     content: ""; position: absolute;
     left: 22px; right: 22px; bottom: -1px; height: 3px;
     background: var(--ink);
   }
-  nav.main-nav button:first-child.active::after { left: 0; }
 
   main { padding-bottom: 96px; min-height: 60vh; }
   .page { display: none; }
