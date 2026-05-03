@@ -3,26 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Unedited. Birth stories in their own words</title>
-<meta name="description" content="A collective archive of birth stories from mothers around the world. Joyful, painful, ordinary. All of it. In their own words, in any language." />
+<title>Unedited / Birth Stories — In their own words</title>
+<meta name="description" content="An open archive of birth stories from mothers around the world. Joyful, painful, ordinary, all of it. In their own words, in any language. Birth Stories is the first edition of Unedited, a series of collective archives told whole." />
 <meta name="theme-color" content="#0F0F0F" />
 
 <!-- Open Graph / social previews -->
-<meta property="og:title" content="Unedited. Birth stories in their own words" />
-<meta property="og:description" content="A collective archive. Mothers around the world. Their words, untouched." />
+<meta property="og:title" content="Unedited / Birth Stories — In their own words" />
+<meta property="og:description" content="An open archive. Mothers around the world. Their words, untouched. The first edition of Unedited." />
 <meta property="og:type" content="website" />
 <meta property="og:image" content="og-image.svg" />
+<meta property="og:site_name" content="Unedited" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Unedited. Birth stories in their own words" />
-<meta name="twitter:description" content="A collective archive. Mothers around the world. Their words, untouched." />
+<meta name="twitter:title" content="Unedited / Birth Stories" />
+<meta name="twitter:description" content="An open archive. Mothers around the world. Their words, untouched." />
 
-<!-- Inline SVG favicon (no extra file needed) -->
-<link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="%23F4F1EC"/><circle cx="16" cy="16" r="9" fill="none" stroke="%230F0F0F" stroke-width="1.5"/><line x1="16" y1="2" x2="16" y2="30" stroke="%230F0F0F" stroke-width="1.5"/></svg>' />
+<!-- Inline SVG favicon — Echo mark, simplified for 32px scale -->
+<link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="%23F4F1EC"/><path d="M 8 7 Q 22 7, 22 16 Q 22 25, 8 25" fill="none" stroke="%230F0F0F" stroke-width="1.6"/><path d="M 13 12 Q 19 12, 19 16 Q 19 20, 13 20" fill="none" stroke="%230F0F0F" stroke-width="1.3"/><circle cx="7" cy="16" r="1.4" fill="%230F0F0F"/></svg>' />
 
 <!-- Editorial type. Fraunces for headlines + Inter for UI; multilingual fonts via display=swap -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=Vazirmatn:wght@400;500&family=Noto+Naskh+Arabic:wght@400;500&family=Noto+Serif+SC:wght@400;500&family=Noto+Serif+TC:wght@400;500&family=Noto+Serif+JP:wght@400;500&family=Noto+Serif+Devanagari:wght@400;500&family=Noto+Serif+Bengali:wght@400;500&family=Noto+Serif+Hebrew:wght@400;500&family=Noto+Serif+Thai:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@400;500;600&family=Vazirmatn:wght@400;500&family=Noto+Naskh+Arabic:wght@400;500&family=Noto+Serif+SC:wght@400;500&family=Noto+Serif+TC:wght@400;500&family=Noto+Serif+JP:wght@400;500&family=Noto+Serif+Devanagari:wght@400;500&family=Noto+Serif+Bengali:wght@400;500&family=Noto+Serif+Hebrew:wght@400;500&family=Noto+Serif+Thai:wght@400;500&display=swap" rel="stylesheet">
 <style>
   /* ============================================================
      UNEDITED. Bold & Contemporary design system
@@ -45,7 +46,7 @@
     --info-bg:    #E8E5DC; --info-text:    #2C2C2A;
 
     --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-    --font-serif: "Fraunces", "Iowan Old Style", Georgia, "Times New Roman", serif;
+    --font-serif: "Newsreader", "Iowan Old Style", Georgia, "Times New Roman", serif;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
@@ -98,13 +99,27 @@
   }
   h1.site-title {
     font-family: var(--font-serif);
-    font-size: clamp(48px, 9vw, 84px);
+    font-size: clamp(56px, 10vw, 96px);
     font-weight: 500;
-    margin: 0 0 14px;
-    letter-spacing: -0.035em;
-    line-height: 0.92;
+    margin: 0 0 0;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
     text-align: center;
     font-variation-settings: "opsz" 144;
+  }
+  .masthead-divider {
+    width: 56px; height: 1px;
+    background: var(--ink);
+    margin: 22px auto 18px;
+  }
+  .masthead-edition {
+    font-family: var(--font-sans);
+    font-size: 14px; font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+    color: var(--ink);
+    margin: 0 0 18px;
+    text-align: center;
   }
   .tagline {
     font-family: var(--font-serif);
@@ -116,6 +131,8 @@
     line-height: 1.4;
     font-variation-settings: "opsz" 24;
   }
+  /* Echo logo art is wider-than-tall — adjust hero container */
+  .hero-art-echo { width: 140px; height: auto; }
 
   /* === NAV (magazine-style underline) === */
   nav.main-nav {
@@ -950,6 +967,28 @@
     text-transform: uppercase; letter-spacing: 0.18em;
     border-bottom: 1px solid var(--ink); padding-bottom: 12px;
   }
+  /* Hero mark above page-eyebrow on inner pages — sets visual rhythm */
+  .page-hero-mark {
+    display: flex; justify-content: center;
+    color: var(--ink); margin: 8px auto 32px;
+  }
+  .page-hero-mark svg { display: block; }
+  /* Section-break dingbat — for use inside long prose */
+  .section-break {
+    display: flex; justify-content: center; align-items: center;
+    margin: 56px 0; gap: 18px; color: var(--ink-faint);
+  }
+  .section-break::before, .section-break::after {
+    content: ""; flex: 0 0 60px; height: 1px; background: var(--rule);
+  }
+  .section-break svg { display: block; color: var(--ink); }
+  /* Three-dot dingbat (asterism) — alternative inline divider */
+  .asterism {
+    text-align: center; margin: 48px 0;
+    font-family: var(--font-serif); font-size: 18px;
+    color: var(--ink-faint); letter-spacing: 1.2em;
+  }
+  .asterism::before { content: "· · ·"; }
   .why-title, .about-title, .terms-title {
     font-family: var(--font-serif);
     font-size: clamp(40px, 6vw, 56px); font-weight: 500;
@@ -1163,26 +1202,27 @@
 <div class="container">
   <header class="masthead">
     <div class="masthead-top">
-      <span class="vol">An Open Archive · Vol. 01</span>
+      <span class="vol">An Open Archive</span>
       <span aria-hidden="true">○</span>
-      <span>Mothers · Worldwide</span>
+      <span>Stories told whole</span>
     </div>
 
-    <!-- Hero art: an abstract "origin" mark. Circle (egg/sun/origin) with a single horizon line. -->
+    <!-- Echo logo: concentric arcs radiating from a single point — voice carrying outward. -->
     <div class="masthead-mark" aria-hidden="true">
-      <div class="hero-art">
-        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="60" cy="60" r="50" fill="none" stroke="currentColor" stroke-width="1.5"/>
-          <circle cx="60" cy="60" r="34" fill="none" stroke="currentColor" stroke-width="1"/>
-          <circle cx="60" cy="60" r="18" fill="currentColor" opacity="0.06"/>
-          <line x1="0" y1="60" x2="120" y2="60" stroke="currentColor" stroke-width="1"/>
-          <circle cx="60" cy="60" r="2.5" fill="currentColor"/>
+      <div class="hero-art hero-art-echo">
+        <svg viewBox="0 0 120 96" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 22 18 Q 76 18, 76 48 Q 76 78, 22 78" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M 38 30 Q 64 30, 64 48 Q 64 66, 38 66" fill="none" stroke="currentColor" stroke-width="1.25"/>
+          <path d="M 50 39 Q 56 39, 56 48 Q 56 57, 50 57" fill="none" stroke="currentColor" stroke-width="1"/>
+          <circle cx="20" cy="48" r="2.4" fill="currentColor"/>
         </svg>
       </div>
     </div>
 
-    <h1 class="site-title" id="ct-site-title">Unedited.</h1>
-    <p class="tagline" id="ct-site-tagline">Birth stories in their own words. From mothers around the world.</p>
+    <h1 class="site-title" id="ct-site-title">Unedited</h1>
+    <div class="masthead-divider" aria-hidden="true"></div>
+    <p class="masthead-edition" id="ct-edition">Birth Stories</p>
+    <p class="tagline" id="ct-site-tagline">In their own words. From mothers around the world.</p>
   </header>
 
   <nav class="main-nav" aria-label="Primary">
@@ -1240,11 +1280,11 @@
       <!-- Share-your-story invitation: shown after the lead story / gallery -->
       <section class="share-cta" id="ct-share-cta">
         <div class="share-cta-mark" aria-hidden="true">
-          <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" stroke-width="1"/>
-            <circle cx="20" cy="20" r="9" fill="none" stroke="currentColor" stroke-width="0.75"/>
-            <line x1="0" y1="20" x2="40" y2="20" stroke="currentColor" stroke-width="0.75"/>
-            <circle cx="20" cy="20" r="1.5" fill="currentColor"/>
+          <svg width="64" height="48" viewBox="0 0 64 48" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 14 8 Q 50 8, 50 24 Q 50 40, 14 40" fill="none" stroke="currentColor" stroke-width="1.25"/>
+            <path d="M 24 16 Q 42 16, 42 24 Q 42 32, 24 32" fill="none" stroke="currentColor" stroke-width="1"/>
+            <path d="M 32 21 Q 36 21, 36 24 Q 36 27, 32 27" fill="none" stroke="currentColor" stroke-width="0.85"/>
+            <circle cx="13" cy="24" r="1.6" fill="currentColor"/>
           </svg>
         </div>
         <h3 class="share-cta-title">Your story is welcome here.</h3>
@@ -1259,7 +1299,16 @@
     </div>
 
     <div class="page" id="page-submit">
-      <h2 id="ct-submit-title" style="font-family: 'Iowan Old Style', Georgia, serif; font-size: 26px; font-weight: 500; margin: 0 0 8px;">Share your story</h2>
+      <div class="page-hero-mark" aria-hidden="true">
+        <svg width="120" height="80" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 24 14 Q 86 14, 86 40 Q 86 66, 24 66" fill="none" stroke="currentColor" stroke-width="1.25"/>
+          <path d="M 40 24 Q 72 24, 72 40 Q 72 56, 40 56" fill="none" stroke="currentColor" stroke-width="1"/>
+          <path d="M 52 32 Q 60 32, 60 40 Q 60 48, 52 48" fill="none" stroke="currentColor" stroke-width="0.85"/>
+          <circle cx="22" cy="40" r="2.4" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="page-eyebrow">Share your story</div>
+      <h2 id="ct-submit-title" style="font-family: var(--font-serif); font-size: clamp(36px, 6vw, 52px); font-weight: 500; margin: 24px 0 18px; letter-spacing: -0.025em; line-height: 1.0;">In your own words.</h2>
       <p class="form-intro" id="ct-submit-intro">Tell it your way, in any language you like. Persian, Arabic, English, Dutch, Chinese, anything. The editor adjusts as you write so your story renders correctly in your script. Your work saves automatically. We review every submission and reply within a few days.</p>
 
       <div id="form-status"></div>
@@ -1455,6 +1504,14 @@
 
     <div class="page" id="page-why">
       <article class="why-page" id="ct-why-page">
+        <div class="page-hero-mark" aria-hidden="true">
+          <svg width="120" height="80" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 24 14 Q 86 14, 86 40 Q 86 66, 24 66" fill="none" stroke="currentColor" stroke-width="1.25"/>
+            <path d="M 40 24 Q 72 24, 72 40 Q 72 56, 40 56" fill="none" stroke="currentColor" stroke-width="1"/>
+            <path d="M 52 32 Q 60 32, 60 40 Q 60 48, 52 48" fill="none" stroke="currentColor" stroke-width="0.85"/>
+            <circle cx="22" cy="40" r="2.4" fill="currentColor"/>
+          </svg>
+        </div>
         <div class="page-eyebrow">Why this exists</div>
         <h2 class="why-title">Loading…</h2>
       </article>
@@ -1462,6 +1519,14 @@
 
     <div class="page" id="page-about">
       <article class="about-page" id="ct-about-page-wrap">
+        <div class="page-hero-mark" aria-hidden="true">
+          <svg width="120" height="80" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 24 14 Q 86 14, 86 40 Q 86 66, 24 66" fill="none" stroke="currentColor" stroke-width="1.25"/>
+            <path d="M 40 24 Q 72 24, 72 40 Q 72 56, 40 56" fill="none" stroke="currentColor" stroke-width="1"/>
+            <path d="M 52 32 Q 60 32, 60 40 Q 60 48, 52 48" fill="none" stroke="currentColor" stroke-width="0.85"/>
+            <circle cx="22" cy="40" r="2.4" fill="currentColor"/>
+          </svg>
+        </div>
         <div class="page-eyebrow">About the project</div>
         <div id="ct-about-page"></div>
       </article>
@@ -1469,6 +1534,14 @@
 
     <div class="page" id="page-terms">
       <article class="terms-page" id="ct-terms-page">
+        <div class="page-hero-mark" aria-hidden="true">
+          <svg width="120" height="80" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 24 14 Q 86 14, 86 40 Q 86 66, 24 66" fill="none" stroke="currentColor" stroke-width="1.25"/>
+            <path d="M 40 24 Q 72 24, 72 40 Q 72 56, 40 56" fill="none" stroke="currentColor" stroke-width="1"/>
+            <path d="M 52 32 Q 60 32, 60 40 Q 60 48, 52 48" fill="none" stroke="currentColor" stroke-width="0.85"/>
+            <circle cx="22" cy="40" r="2.4" fill="currentColor"/>
+          </svg>
+        </div>
         <div class="page-eyebrow">Terms &amp; license</div>
         <h2 class="terms-title">In favor of the storyteller.</h2>
 
@@ -1535,17 +1608,18 @@
 
   <footer>
     <div class="footer-mark" aria-hidden="true">
-      <svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="22" cy="22" r="18" fill="none" stroke="currentColor" stroke-width="1"/>
-        <circle cx="22" cy="22" r="10" fill="none" stroke="currentColor" stroke-width="1"/>
-        <line x1="0" y1="22" x2="44" y2="22" stroke="currentColor" stroke-width="0.75"/>
-        <circle cx="22" cy="22" r="1.5" fill="currentColor"/>
+      <svg width="64" height="48" viewBox="0 0 64 48" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 14 8 Q 50 8, 50 24 Q 50 40, 14 40" fill="none" stroke="currentColor" stroke-width="1.25"/>
+        <path d="M 24 16 Q 42 16, 42 24 Q 42 32, 24 32" fill="none" stroke="currentColor" stroke-width="1"/>
+        <path d="M 32 21 Q 36 21, 36 24 Q 36 27, 32 27" fill="none" stroke="currentColor" stroke-width="0.85"/>
+        <circle cx="13" cy="24" r="1.6" fill="currentColor"/>
       </svg>
     </div>
     <div class="footer-share" id="footer-share"></div>
-    <p id="ct-footer">Unedited · A collective project</p>
+    <p id="ct-footer">Unedited · Birth Stories · A collective archive</p>
     <div class="colophon">
-      Stories © their authors. All rights reserved. Published with permission on <em>Unedited</em>.
+      <p style="margin: 0 0 6px;">Birth Stories is the <strong>first edition</strong> of <em>Unedited</em>, a series of collective archives told whole.</p>
+      Stories © their authors. All rights reserved. Published with permission.
       Site design © Unedited. <a href="#" onclick="showPage('terms'); return false;">Terms</a>.
     </div>
   </footer>
@@ -1657,9 +1731,13 @@ function applySiteContent(c) {
   // Site-wide
   if (c.site) {
     setText("ct-site-title", c.site.title);
+    setText("ct-edition", c.site.edition);
     setText("ct-site-tagline", c.site.tagline);
     setText("ct-footer", c.site.footer);
-    if (c.site.title) document.title = c.site.title + ". Birth stories in their own words";
+    if (c.site.title) {
+      const ed = c.site.edition ? " / " + c.site.edition : "";
+      document.title = c.site.title + ed + " — In their own words";
+    }
   }
 
   // Home teaser
@@ -1964,13 +2042,14 @@ function renderFeatured(animate) {
     const featuredBylineHtml = '<p class="featured-byline">' + fBylineParts.join('<span class="byline-sep"> · </span>') + (hasAudio ? '<span class="byline-sep"> · </span><span class="audio-badge">▸ Audio</span>' : '') + '</p>';
 
     card.innerHTML =
-      '<svg class="featured-decoration" width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+      '<svg class="featured-decoration" width="280" height="220" viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
       '<g fill="none" stroke="currentColor" stroke-width="1">' +
-      '<circle cx="110" cy="110" r="100" />' +
-      '<circle cx="110" cy="110" r="68" />' +
-      '<circle cx="110" cy="110" r="36" />' +
-      '<line x1="0" y1="110" x2="220" y2="110" />' +
-      '</g></svg>' +
+      '<path d="M 30 30 Q 200 30, 200 110 Q 200 190, 30 190"/>' +
+      '<path d="M 70 60 Q 170 60, 170 110 Q 170 160, 70 160"/>' +
+      '<path d="M 110 90 Q 145 90, 145 110 Q 145 130, 110 130"/>' +
+      '</g>' +
+      '<circle cx="22" cy="110" r="3" fill="currentColor"/>' +
+      '</svg>' +
       '<div class="featured-num"><span>' + idStr + '</span><span>' + (isLeadStoryMode ? "An Open Archive" : positionStr) + '</span></div>' +
       featuredTitleHtml +
       featuredBylineHtml +
@@ -2179,11 +2258,11 @@ function openStory(id) {
   const inviteBlock =
     '<section class="share-cta compact">' +
       '<div class="share-cta-mark" aria-hidden="true">' +
-        '<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">' +
-          '<circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" stroke-width="1"/>' +
-          '<circle cx="20" cy="20" r="9" fill="none" stroke="currentColor" stroke-width="0.75"/>' +
-          '<line x1="0" y1="20" x2="40" y2="20" stroke="currentColor" stroke-width="0.75"/>' +
-          '<circle cx="20" cy="20" r="1.5" fill="currentColor"/>' +
+        '<svg width="64" height="48" viewBox="0 0 64 48" xmlns="http://www.w3.org/2000/svg">' +
+          '<path d="M 14 8 Q 50 8, 50 24 Q 50 40, 14 40" fill="none" stroke="currentColor" stroke-width="1.25"/>' +
+          '<path d="M 24 16 Q 42 16, 42 24 Q 42 32, 24 32" fill="none" stroke="currentColor" stroke-width="1"/>' +
+          '<path d="M 32 21 Q 36 21, 36 24 Q 36 27, 32 27" fill="none" stroke="currentColor" stroke-width="0.85"/>' +
+          '<circle cx="13" cy="24" r="1.6" fill="currentColor"/>' +
         '</svg>' +
       '</div>' +
       '<h3 class="share-cta-title">Have a story of your own?</h3>' +
@@ -2373,8 +2452,18 @@ function buildToolbar() {
     btn.title = b.title;
     btn.textContent = b.label;
     btn.dataset.cmd = b.cmd;
+    btn.tabIndex = -1; // keep keyboard focus on the editor, not the toolbar
     btn.addEventListener("mousedown", (e) => e.preventDefault());
-    btn.addEventListener("click", () => b.action());
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      b.action();
+      // Belt-and-suspenders: some browsers leave focus on the button despite
+      // mousedown.preventDefault. Explicitly return focus to the editor so
+      // the next keystroke (e.g. Enter to create a new paragraph) lands there.
+      if (editor) {
+        try { editor.commands.focus(); } catch (err) { /* ignore */ }
+      }
+    });
     toolbar.appendChild(btn);
   });
   toolbar.style.display = "flex";

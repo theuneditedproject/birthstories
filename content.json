@@ -1,8 +1,9 @@
 {
   "site": {
     "title": "Unedited",
-    "tagline": "Birth stories in their own words. From mothers around the world.",
-    "footer": "Unedited · A collective project",
+    "edition": "Birth Stories",
+    "tagline": "In their own words. From mothers around the world.",
+    "footer": "Unedited · Birth Stories · A collective archive",
     "contact_email": "unedited.voices.project@gmail.com"
   },
   "home_teaser": {
