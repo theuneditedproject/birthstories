@@ -167,6 +167,7 @@
   }
   .story-card:last-child { border-bottom: 1px solid var(--rule); }
   .story-card:hover { padding-left: 12px; }
+  .story-card:hover .story-title,
   .story-card:hover .story-author { color: var(--accent); }
   .story-card .story-num {
     font-family: var(--font-sans); font-size: 11px; font-weight: 500;
@@ -179,6 +180,19 @@
     text-transform: uppercase; letter-spacing: 0.12em;
     flex-wrap: wrap; align-items: center;
   }
+  .story-title {
+    font-family: var(--font-serif); font-size: 26px; font-weight: 500;
+    margin: 0 0 6px; line-height: 1.15; letter-spacing: -0.02em;
+    transition: color 0.2s;
+    font-variation-settings: "opsz" 48;
+  }
+  .story-card:hover .story-title { color: var(--accent); }
+  .story-byline {
+    font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+    color: var(--ink-faint); margin: 0 0 10px;
+    text-transform: uppercase; letter-spacing: 0.18em;
+  }
+  /* Legacy class for any older renders */
   .story-author {
     font-family: var(--font-serif); font-size: 26px; font-weight: 500;
     margin: 0 0 10px; line-height: 1.15; letter-spacing: -0.02em;
@@ -269,6 +283,18 @@
     text-transform: uppercase; letter-spacing: 0.12em;
     align-items: center; flex-wrap: wrap;
   }
+  .featured-title {
+    font-family: var(--font-serif); font-size: clamp(36px, 6vw, 54px);
+    font-weight: 500; margin: 0 0 18px; color: var(--ink);
+    letter-spacing: -0.03em; line-height: 1.0;
+    font-variation-settings: "opsz" 96;
+  }
+  .featured-byline {
+    font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+    color: var(--ink); margin: 0 0 26px;
+    text-transform: uppercase; letter-spacing: 0.18em;
+  }
+  /* Legacy: kept in case any older content references .featured-author */
   .featured-author {
     font-family: var(--font-serif); font-size: clamp(36px, 6vw, 54px);
     font-weight: 500; margin: 0 0 26px; color: var(--ink);
@@ -437,10 +463,19 @@
   .reader-title {
     font-family: var(--font-serif);
     font-size: clamp(40px, 7vw, 64px);
-    font-weight: 500; margin: 24px 0 14px;
+    font-weight: 500; margin: 24px 0 18px;
     letter-spacing: -0.03em; line-height: 1.0;
     font-variation-settings: "opsz" 96;
   }
+  .reader-byline {
+    font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+    color: var(--ink); margin: 0 0 36px;
+    text-transform: uppercase; letter-spacing: 0.18em;
+  }
+  /* If there's no title, the byline doesn't need top margin reduction */
+  .reader-content > .reader-byline:first-of-type { margin-top: 24px; }
+  .byline-sep { color: var(--ink-faint); margin: 0 6px; }
+  /* Legacy class retained in case it's referenced elsewhere */
   .reader-meta {
     font-family: var(--font-sans); font-size: 11px;
     color: var(--ink-faint); margin: 0 0 36px;
@@ -1231,6 +1266,12 @@
       <div id="draft-banner-slot"></div>
 
       <form id="story-form" novalidate>
+        <div class="form-group">
+          <label for="f-title">Title for your story <span class="opt">(optional)</span></label>
+          <input id="f-title" type="text" name="title" placeholder="A few words. E.g. 'Thirty-seven weeks', 'In the basement', 'My mother's hands'" />
+          <p class="help-text">If you don't have a title, that's fine. We'll publish it under your number.</p>
+        </div>
+
         <div class="form-row">
           <div class="form-group">
             <label for="f-author">How should we credit you? <span class="opt">*</span></label>
@@ -1913,6 +1954,15 @@ function renderFeatured(animate) {
           : '<figure class="story-cover" style="margin: 0 0 20px;"><img src="' + escapeHtml(s.cover_image) + '" alt="" loading="lazy"></figure>')
       : '';
 
+    const titleTextF = (s.title || "").trim();
+    const featuredTitleHtml = titleTextF
+      ? '<div class="featured-title"' + langAttrs + '>' + escapeHtml(titleTextF) + '</div>'
+      : '';
+    const fBylineParts = [escapeHtml(s.author)];
+    if (s.location) fBylineParts.push(escapeHtml(s.location));
+    if (s.year) fBylineParts.push(escapeHtml(s.year));
+    const featuredBylineHtml = '<p class="featured-byline">' + fBylineParts.join('<span class="byline-sep"> · </span>') + (hasAudio ? '<span class="byline-sep"> · </span><span class="audio-badge">▸ Audio</span>' : '') + '</p>';
+
     card.innerHTML =
       '<svg class="featured-decoration" width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
       '<g fill="none" stroke="currentColor" stroke-width="1">' +
@@ -1922,11 +1972,8 @@ function renderFeatured(animate) {
       '<line x1="0" y1="110" x2="220" y2="110" />' +
       '</g></svg>' +
       '<div class="featured-num"><span>' + idStr + '</span><span>' + (isLeadStoryMode ? "An Open Archive" : positionStr) + '</span></div>' +
-      '<div class="featured-meta">' +
-      (meta ? '<span>' + escapeHtml(meta) + '</span>' : '') +
-      (hasAudio ? '<span class="audio-badge">▸ Audio</span>' : '') +
-      '</div>' +
-      '<div class="featured-author"' + langAttrs + '>' + escapeHtml(s.author) + '</div>' +
+      featuredTitleHtml +
+      featuredBylineHtml +
       (s.content_notes ? '<div class="cw-badge" style="margin-bottom: 20px;">Content notes: ' + escapeHtml(s.content_notes) + '</div>' : '') +
       coverHtmlF +
       bodyBlock +
@@ -2043,11 +2090,21 @@ function renderStories() {
       ? '<span class="story-card-thumb" aria-hidden="true"><img src="' + escapeHtml(s.cover_image) + '" alt="" loading="lazy"></span>'
       : '';
 
-    return '<button type="button" class="story-card" data-id="' + escapeHtml(s.id) + '" aria-label="Open story ' + escapeHtml(s.id) + ' by ' + escapeHtml(s.author) + '">' +
+    const titleTextL = (s.title || "").trim();
+    // Title (when present) is the card headline; otherwise the author name fills that slot.
+    const cardHeadline = titleTextL
+      ? '<h3 class="story-title"' + excerptAttrs + '>' + escapeHtml(titleTextL) + '</h3>' +
+        '<p class="story-byline">' + escapeHtml(s.author) + '</p>'
+      : '<h3 class="story-title"' + excerptAttrs + '>' + escapeHtml(s.author) + '</h3>';
+    const ariaLabel = titleTextL
+      ? "Open story " + escapeHtml(s.id) + " — " + escapeHtml(titleTextL) + ", by " + escapeHtml(s.author)
+      : "Open story " + escapeHtml(s.id) + " by " + escapeHtml(s.author);
+
+    return '<button type="button" class="story-card" data-id="' + escapeHtml(s.id) + '" aria-label="' + ariaLabel + '">' +
       thumbHtml +
       '<span class="story-num">Nº ' + escapeHtml(s.id) + '</span>' +
       (meta || hasAudio ? '<div class="story-meta">' + (meta ? escapeHtml(meta) : "") + (hasAudio ? audioBadge : "") + '</div>' : "") +
-      '<h3 class="story-author"' + excerptAttrs + '>' + escapeHtml(s.author) + '</h3>' +
+      cardHeadline +
       (excerpt ? '<p class="story-excerpt"' + excerptAttrs + '>' + escapeHtml(excerpt) + '</p>' : "") +
       (s.content_notes ? '<span class="cw-badge">Content notes: ' + escapeHtml(s.content_notes) + '</span>' : "") +
       (tags ? '<div class="tag-row">' + tags + '</div>' : "") +
@@ -2139,11 +2196,23 @@ function openStory(id) {
     ? '<figure class="story-cover"><img src="' + escapeHtml(s.cover_image) + '" alt="" loading="lazy"></figure>'
     : '';
 
+  // Title (when present) is the H1. Author becomes a small editorial byline
+  // alongside location/year. When no title, the editorial Nº bar + byline
+  // carries the page header — no awkward author-as-headline.
+  const titleText = (s.title || "").trim();
+  const titleHtml = titleText
+    ? '<h2 class="reader-title"' + langAttrs + '>' + escapeHtml(titleText) + '</h2>'
+    : '';
+  const bylineParts = [escapeHtml(s.author)];
+  if (s.location) bylineParts.push(escapeHtml(s.location));
+  if (s.year) bylineParts.push(escapeHtml(s.year));
+  const bylineHtml = '<p class="reader-byline">' + bylineParts.join('<span class="byline-sep"> · </span>') + '</p>';
+
   document.getElementById("reader-content").innerHTML =
     '<button type="button" class="back-btn" onclick="showPage(\'stories\')" aria-label="Back to all stories">← All stories</button>' +
     '<div class="reader-num"><span>Nº ' + escapeHtml(s.id) + '</span><span>An Open Archive</span></div>' +
-    '<h2 class="reader-title">' + escapeHtml(s.author) + '</h2>' +
-    (meta ? '<p class="reader-meta">' + escapeHtml(meta) + '</p>' : "") +
+    titleHtml +
+    bylineHtml +
     (s.content_notes ? '<div class="cw-badge" style="margin-bottom: 24px;">Content notes: ' + escapeHtml(s.content_notes) + '</div>' : "") +
     coverHtml +
     audioHtml +
@@ -2431,6 +2500,7 @@ function getFormState() {
     if (fallback) bodyHtml = fallback.value;
   }
   return {
+    title: form.title ? form.title.value : "",
     author: form.author.value,
     location: form.location.value,
     year: form.year.value,
@@ -2485,6 +2555,7 @@ function loadDraft() {
 
 function applyDraft(d) {
   const form = document.getElementById("story-form");
+  if (form.title) form.title.value = d.title || "";
   form.author.value = d.author || "";
   form.location.value = d.location || "";
   form.year.value = d.year || "";
@@ -3047,6 +3118,7 @@ document.getElementById("story-form").addEventListener("submit", async (e) => {
   }
 
   const payload = new FormData();
+  if (state.title) payload.append("title", state.title);
   payload.append("author", state.author);
   payload.append("location", state.location);
   payload.append("year", state.year);
@@ -3080,7 +3152,7 @@ document.getElementById("story-form").addEventListener("submit", async (e) => {
   if (state.consent_book && state.long_term_contact) {
     payload.append("long_term_contact", state.long_term_contact);
   }
-  payload.append("_subject", (isAudioMode ? "New audio story: " : "New story: ") + state.author);
+  payload.append("_subject", (isAudioMode ? "New audio story: " : "New story: ") + (state.title ? state.title + " — " + state.author : state.author));
 
   try {
     const res = await fetch(CONFIG.formspreeEndpoint, {

@@ -4,6 +4,9 @@
   "id": "000",
   "_id_help": "Three-digit number, must match filename. e.g. 042 for the 42nd story",
 
+  "title": "",
+  "_title_help": "Optional. A short title for the story (a few words). If empty, the page is headed by the editorial Nº and the byline. Whatever the submitter chose, or extract a phrase she used as a heading in the body.",
+
   "author": "First name or 'Anonymous'",
   "_author_help": "How they want to be credited. Whatever they told you.",
 
