@@ -1082,6 +1082,51 @@
     .why-page .why-closing { font-size: 19px; }
   }
 
+  /* === PAGINATION (book-style page turns for long stories) === */
+  .story-pages {
+    position: relative;
+    min-height: 280px;
+  }
+  .story-page-content {
+    transition: opacity 0.22s ease;
+  }
+  .story-page-content.fading { opacity: 0; }
+  .story-page-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px; margin: 56px 0 0;
+    padding: 22px 0;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+  }
+  .page-arrow {
+    background: transparent; border: 1px solid var(--ink);
+    padding: 10px 18px; border-radius: 0;
+    font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+    color: var(--ink); cursor: pointer;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.15s;
+  }
+  .page-arrow:hover:not(:disabled) { background: var(--ink); color: var(--bg); }
+  .page-arrow:disabled { opacity: 0.25; cursor: not-allowed; }
+  .page-counter {
+    font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+    color: var(--ink); font-variant-numeric: tabular-nums;
+    letter-spacing: 0.22em; text-transform: uppercase;
+  }
+  /* Tail (license + share + invite) revealed only on the last page */
+  .reader-tail { animation: tail-fade-in 0.4s ease; }
+  @keyframes tail-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+  @media (max-width: 600px) {
+    .story-page-nav { gap: 8px; padding: 18px 0; }
+    .page-arrow { padding: 8px 12px; letter-spacing: 0.12em; }
+    .page-arrow span { display: none; }
+    .page-counter { font-size: 10px; }
+  }
+
   /* === IMAGE UPLOAD WIDGET === */
   .image-upload {
     margin-top: 6px;
@@ -2057,11 +2102,14 @@ function renderFeatured(animate) {
     const idStr = "Nº " + escapeHtml(s.id);
     const positionStr = (featuredIndex + 1) + " of " + displayedStories.length;
 
-    let bodyBlock;
+    // Body rendering depends on view:
+    // - Lead-story (single story shown as the home): full body, paginated
+    //   when long, with the license/share appearing only on the last page.
+    // - Multi-story featured carousel: just an excerpt and a CTA.
+    let bodyBlock = "";
+    let leadBodyHtmlForPagination = null;
     if (isLeadStoryMode && s.body) {
-      // Full body — render sanitized HTML inside a reader-style block
-      const bodyHtml = sanitizeStoryHtml(s.body);
-      bodyBlock = '<div class="featured-body reader-body"' + langAttrs + '>' + bodyHtml + '</div>';
+      leadBodyHtmlForPagination = sanitizeStoryHtml(s.body);
     } else {
       const excerpt = s.body ? excerptText(s.body, 380) : (hasAudio ? "Told in audio. Press to listen." : "");
       bodyBlock = excerpt ? '<p class="featured-excerpt"' + langAttrs + '>' + escapeHtml(excerpt) + '</p>' : '';
@@ -2116,19 +2164,25 @@ function renderFeatured(animate) {
       featuredBylineHtml +
       (s.content_notes ? '<div class="cw-badge" style="margin-bottom: 20px;">Content notes: ' + escapeHtml(s.content_notes) + '</div>' : '') +
       coverHtmlF +
-      bodyBlock +
-      (tags && !isLeadStoryMode ? '<div class="tag-row featured-tags">' + tags + '</div>' : '') +
-      (isLeadStoryMode ? '' : '<div class="featured-cta">Read this story</div>') +
-      licenseBlock +
-      shareBlock;
+      // In lead-story mode, the body is paginated; license/share are the
+      // tail and appear only on the final page. In carousel mode, the body
+      // is just an excerpt.
+      (leadBodyHtmlForPagination
+        ? buildPaginatedHtml(leadBodyHtmlForPagination, langAttrs, licenseBlock + shareBlock, "featured-body")
+        : (bodyBlock +
+           (tags && !isLeadStoryMode ? '<div class="tag-row featured-tags">' + tags + '</div>' : '') +
+           (isLeadStoryMode ? '' : '<div class="featured-cta">Read this story</div>') +
+           licenseBlock + shareBlock));
 
     if (isLeadStoryMode) {
       // Card is no longer a click target (story is fully shown)
       card.setAttribute("aria-label", "Story " + s.id + " by " + s.author);
       card.onclick = null;
       card.style.cursor = "default";
-      // Wire up share buttons inline
+      // Wire up share buttons inline (will only find them once last page is reached)
       if (shareAllowed) wireShareButtons(s.id);
+      // Wire up pagination if the body was paginated
+      wirePagination();
       // Update html lang for screen readers since this is the visible content
       if (langAttr) document.documentElement.lang = langAttr;
     } else {
@@ -2289,10 +2343,10 @@ function openStory(id) {
       '</div>';
   }
 
-  // If audio-only (no text body), show a friendly note
-  const bodyBlock = bodyHtml
-    ? '<div class="reader-body"' + langAttrs + '>' + bodyHtml + '</div>'
-    : (s.audio_url ? '<p style="color: var(--ink-soft); font-style: italic; margin-top: 24px;">This story is told in audio. Press play above to listen.</p>' : '');
+  // No-body case (audio-only): show a friendly note
+  const noBodyBlock = !bodyHtml && s.audio_url
+    ? '<p style="color: var(--ink-soft); font-style: italic; margin-top: 24px;">This story is told in audio. Press play above to listen.</p>'
+    : '';
 
   // Share buttons. Shown unless the author opted out (share_allowed === false)
   // Default to sharing-allowed to match the form default
@@ -2348,6 +2402,13 @@ function openStory(id) {
   if (s.year) bylineParts.push(escapeHtml(s.year));
   const bylineHtml = '<p class="reader-byline">' + bylineParts.join('<span class="byline-sep"> · </span>') + '</p>';
 
+  // Tail = license + share + invite. With pagination, this only appears on
+  // the last page; without pagination, it just follows the body normally.
+  const tailHtml = licenseBlock + shareBlock + inviteBlock;
+  const bodyAndTailBlock = bodyHtml
+    ? buildPaginatedHtml(bodyHtml, langAttrs, tailHtml)
+    : (noBodyBlock + tailHtml);
+
   document.getElementById("reader-content").innerHTML =
     '<button type="button" class="back-btn" onclick="showPage(\'stories\')" aria-label="Back to all stories">← All stories</button>' +
     '<div class="reader-num"><span>Nº ' + escapeHtml(s.id) + '</span><span>An Open Archive</span></div>' +
@@ -2356,13 +2417,12 @@ function openStory(id) {
     (s.content_notes ? '<div class="cw-badge" style="margin-bottom: 24px;">Content notes: ' + escapeHtml(s.content_notes) + '</div>' : "") +
     coverHtml +
     audioHtml +
-    bodyBlock +
-    licenseBlock +
-    shareBlock +
-    inviteBlock;
+    bodyAndTailBlock;
 
   // Wire up share button behaviors after insert
   if (shareAllowed) wireShareButtons(s.id);
+  // Wire up pagination if the body was paginated
+  wirePagination();
 
   // Update html lang for screen readers and search engines
   if (langAttr) document.documentElement.lang = langAttr;
@@ -3400,6 +3460,130 @@ function escapeHtml(str) {
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
+
+// ============================================================
+// PAGINATION (book-style page turns for long stories)
+// ============================================================
+const PAGINATION_THRESHOLD_WORDS = 600;
+const PAGINATION_TARGET_WORDS_PER_PAGE = 500;
+
+function _wordCount(html) {
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html || "";
+  const t = tmp.textContent || tmp.innerText || "";
+  return t.split(/\s+/).filter(Boolean).length;
+}
+
+// Split sanitized body HTML into an array of page-HTML strings, breaking at
+// top-level paragraph boundaries and aiming for ~PAGINATION_TARGET_WORDS_PER_PAGE
+// per page. Stories below the threshold are returned as a single page.
+function paginateBody(html, target = PAGINATION_TARGET_WORDS_PER_PAGE) {
+  if (_wordCount(html) < PAGINATION_THRESHOLD_WORDS) return [html];
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  const items = Array.from(tmp.children);
+  if (items.length === 0) return [html];
+  const pages = [[]];
+  let words = 0;
+  for (const item of items) {
+    const w = _wordCount(item.outerHTML);
+    if (words + w > target && pages[pages.length - 1].length > 0) {
+      pages.push([]);
+      words = 0;
+    }
+    pages[pages.length - 1].push(item.outerHTML);
+    words += w;
+  }
+  return pages.map(g => g.join(""));
+}
+
+// Per-render pagination state. There's only ever one paginated story on screen.
+const pagination = {
+  pages: [],
+  index: 0,
+  rootEl: null,
+  contentEl: null,
+  counterEl: null,
+  prevBtn: null,
+  nextBtn: null,
+  tailEl: null,
+  langAttrs: ""
+};
+
+function buildPaginatedHtml(bodyHtml, langAttrs, tailHtml, extraClass) {
+  const pages = paginateBody(bodyHtml);
+  pagination.pages = pages;
+  pagination.index = 0;
+  pagination.langAttrs = langAttrs;
+  const cls = "reader-body" + (extraClass ? " " + extraClass : "");
+  if (pages.length <= 1) {
+    // Single page — render plain body, no nav, tail follows naturally.
+    return '<div class="' + cls + '"' + langAttrs + '>' + bodyHtml + '</div>' + (tailHtml || '');
+  }
+  // Multi-page: build the paginated container + nav. Tail goes inside but is
+  // hidden until the last page is reached.
+  return '<div class="story-pages" id="story-pages">' +
+    '<div class="' + cls + ' story-page-content" id="story-page-content"' + langAttrs + '>' +
+      pages[0] +
+    '</div>' +
+    '<div class="story-page-nav" id="story-page-nav">' +
+      '<button type="button" class="page-arrow page-prev" id="page-prev" aria-label="Previous page" disabled>' +
+        '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="10,3 5,8 10,13"/></svg>' +
+        '<span>Previous</span>' +
+      '</button>' +
+      '<span class="page-counter" id="page-counter" aria-live="polite">1 / ' + pages.length + '</span>' +
+      '<button type="button" class="page-arrow page-next" id="page-next" aria-label="Next page">' +
+        '<span>Next</span>' +
+        '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6,3 11,8 6,13"/></svg>' +
+      '</button>' +
+    '</div>' +
+  '</div>' +
+  '<div class="reader-tail" id="reader-tail" style="display: none;">' + (tailHtml || '') + '</div>';
+}
+
+function wirePagination() {
+  pagination.rootEl = document.getElementById("story-pages");
+  pagination.contentEl = document.getElementById("story-page-content");
+  pagination.counterEl = document.getElementById("page-counter");
+  pagination.prevBtn = document.getElementById("page-prev");
+  pagination.nextBtn = document.getElementById("page-next");
+  pagination.tailEl = document.getElementById("reader-tail");
+  if (!pagination.rootEl) return; // no paginated story rendered
+  pagination.prevBtn.addEventListener("click", () => goToPage(pagination.index - 1));
+  pagination.nextBtn.addEventListener("click", () => goToPage(pagination.index + 1));
+}
+
+function goToPage(idx) {
+  if (idx < 0 || idx >= pagination.pages.length) return;
+  if (idx === pagination.index) return;
+  const c = pagination.contentEl;
+  if (!c) return;
+  c.classList.add("fading");
+  setTimeout(() => {
+    c.innerHTML = pagination.pages[idx];
+    pagination.index = idx;
+    c.classList.remove("fading");
+    pagination.counterEl.textContent = (idx + 1) + " / " + pagination.pages.length;
+    pagination.prevBtn.disabled = idx === 0;
+    pagination.nextBtn.disabled = idx === pagination.pages.length - 1;
+    // Reveal license/share/invite tail only when the reader reaches the end
+    if (pagination.tailEl) {
+      pagination.tailEl.style.display = (idx === pagination.pages.length - 1) ? "block" : "none";
+    }
+    // Bring the new page top into view
+    pagination.rootEl.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 220);
+}
+
+// Keyboard arrows turn pages, but only when nothing is being typed and a
+// paginated story is actually on screen.
+document.addEventListener("keydown", (e) => {
+  if (!pagination.rootEl) return;
+  if (document.activeElement && ["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) return;
+  if (document.activeElement && document.activeElement.isContentEditable) return;
+  if (e.key === "ArrowRight") { e.preventDefault(); goToPage(pagination.index + 1); }
+  else if (e.key === "ArrowLeft") { e.preventDefault(); goToPage(pagination.index - 1); }
+});
 
 function sanitizeStoryHtml(html) {
   if (!html) return "";
