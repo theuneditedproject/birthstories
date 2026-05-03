@@ -2390,6 +2390,20 @@ function checkForDraft() {
 }
 
 document.getElementById("story-form").addEventListener("input", scheduleSave);
+
+// Prevent accidental form submission when the submitter presses Enter inside
+// a text/email input field (e.g. author, email). The default browser behaviour
+// is to submit the form on Enter in any single-line input, which is wrong here:
+// they're still filling in metadata, not done writing. Only the explicit
+// "Submit story" button should submit. Enter inside the editor (TipTap or the
+// <textarea> fallback) is unaffected — it still creates a new paragraph/line.
+document.getElementById("story-form").addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
+  const t = e.target;
+  if (t.tagName === "INPUT" && (t.type === "text" || t.type === "email")) {
+    e.preventDefault();
+  }
+});
 document.getElementById("save-now-btn").addEventListener("click", () => {
   clearTimeout(saveTimer);
   saveDraft();
