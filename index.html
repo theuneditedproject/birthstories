@@ -205,20 +205,23 @@
     padding-bottom: 16px;
     border-bottom: 1px solid var(--rule);
   }
-  .view-toggle {
-    display: inline-flex; gap: 0; padding: 0;
-    border: 1px solid var(--ink); border-radius: 0; background: transparent;
+  .view-controls.hidden { display: none; }
+  .view-meta {
+    font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+    color: var(--ink-faint); letter-spacing: 0.18em; text-transform: uppercase;
   }
-  .view-btn {
-    background: transparent; border: none;
-    padding: 8px 16px; font-size: 11px; font-weight: 500;
-    color: var(--ink); cursor: pointer; font-family: var(--font-sans);
-    letter-spacing: 0.12em; text-transform: uppercase;
-    display: inline-flex; align-items: center; gap: 6px;
-    transition: all 0.15s; border-radius: 0;
+  .view-actions {
+    display: inline-flex; align-items: center; gap: 14px;
   }
-  .view-btn:hover { color: var(--accent); }
-  .view-btn.active { background: var(--ink); color: var(--bg); }
+  .view-link {
+    background: transparent; border: none; padding: 4px 0;
+    font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+    color: var(--ink); cursor: pointer;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    border-bottom: 1px solid var(--ink);
+    transition: color 0.15s;
+  }
+  .view-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
   .shuffle-btn {
     background: transparent; border: 1px solid var(--ink);
     padding: 8px 16px; font-size: 11px; font-weight: 500;
@@ -278,6 +281,48 @@
     font-variation-settings: "opsz" 18;
   }
   .featured-tags { margin-top: 24px; }
+  /* Lead-story mode: full body inside the featured card */
+  .featured-body {
+    font-family: var(--font-serif); font-size: 19px; line-height: 1.75;
+    color: var(--ink); margin: 0 0 24px;
+    font-variation-settings: "opsz" 18;
+  }
+  .featured-body p { margin: 0 0 1.2em; }
+  .featured-body p:last-child { margin-bottom: 0; }
+  .featured-body p:first-of-type::first-letter {
+    font-family: var(--font-serif); float: left;
+    font-size: 4.4em; line-height: 0.85;
+    padding: 8px 12px 0 0; font-weight: 500;
+    color: var(--ink); font-variation-settings: "opsz" 144;
+  }
+  .featured-body[dir="rtl"] p:first-of-type::first-letter {
+    float: right; padding: 8px 0 0 12px;
+  }
+  .featured-body blockquote {
+    border-left: 3px solid var(--ink); padding-left: 20px;
+    margin: 1.4em 0; color: var(--ink-soft); font-style: italic;
+  }
+  .featured-body h2, .featured-body h3 { font-weight: 500; margin: 1.4em 0 0.6em; letter-spacing: -0.01em; }
+  .featured-body h2 { font-size: 28px; }
+  .featured-body h3 { font-size: 22px; }
+  .featured-body ul, .featured-body ol { padding-left: 1.5em; margin: 0 0 1em; }
+  .featured-body li { margin-bottom: 0.4em; }
+  /* Drop-cap doesn't fit non-Latin scripts */
+  .featured-body[data-script="persian"] p:first-of-type::first-letter,
+  .featured-body[data-script="arabic"] p:first-of-type::first-letter,
+  .featured-body[data-script="hebrew"] p:first-of-type::first-letter,
+  .featured-body[data-script="chinese-simplified"] p:first-of-type::first-letter,
+  .featured-body[data-script="chinese-traditional"] p:first-of-type::first-letter,
+  .featured-body[data-script="japanese"] p:first-of-type::first-letter,
+  .featured-body[data-script="devanagari"] p:first-of-type::first-letter,
+  .featured-body[data-script="bengali"] p:first-of-type::first-letter,
+  .featured-body[data-script="thai"] p:first-of-type::first-letter {
+    float: none; font-size: inherit; padding: 0; line-height: inherit;
+  }
+  @media (max-width: 600px) {
+    .featured-body { font-size: 17px; }
+    .featured-body p:first-of-type::first-letter { font-size: 3.8em; }
+  }
   .featured-cta {
     display: inline-flex; align-items: center; gap: 8px;
     font-family: var(--font-sans); font-size: 12px;
@@ -989,21 +1034,17 @@
         <button class="why-teaser-link" onclick="showPage('why')">Read why this exists →</button>
       </div>
 
-      <div class="view-controls">
-        <div class="view-toggle">
-          <button type="button" class="view-btn active" data-view="featured" aria-label="Featured view">
-            <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><rect x="2" y="3" width="12" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
-            Featured
+      <div class="view-controls" id="view-controls">
+        <div class="view-meta" id="view-meta">An archive in progress</div>
+        <div class="view-actions">
+          <button type="button" class="shuffle-btn" id="shuffle-btn" aria-label="Shuffle stories">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="13,2 15,4 13,6"/><path d="M2,4 L11,4 C13,4 15,6 15,8"/><polyline points="13,10 15,12 13,14"/><path d="M2,12 L7,12 M11,12 L13,12"/><path d="M2,4 L7,4 L11,12"/></svg>
+            Shuffle
           </button>
-          <button type="button" class="view-btn" data-view="list" aria-label="List view">
-            <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><rect x="2" y="3" width="12" height="2" rx="0.5"/><rect x="2" y="7" width="12" height="2" rx="0.5"/><rect x="2" y="11" width="12" height="2" rx="0.5"/></svg>
-            All stories
+          <button type="button" class="view-link" id="view-all-link" aria-label="Switch view">
+            <span id="view-link-label">View all →</span>
           </button>
         </div>
-        <button type="button" class="shuffle-btn" id="shuffle-btn" aria-label="Shuffle stories">
-          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="13,2 15,4 13,6"/><path d="M2,4 L11,4 C13,4 15,6 15,8"/><polyline points="13,10 15,12 13,14"/><path d="M2,12 L7,12 M11,12 L13,12"/><path d="M2,4 L7,4 L11,12"/></svg>
-          Shuffle
-        </button>
       </div>
 
       <div class="filter-bar" id="filter-bar"></div>
@@ -1515,23 +1556,42 @@ function rebuildDisplayed() {
     displayedStories = allStories.slice();
   }
   featuredIndex = 0;
+  updateViewControlsVisibility();
+  updateViewLinkLabel();
   if (currentView === "featured") renderFeatured();
   else renderStories();
 }
 
-// View toggle
-document.querySelectorAll(".view-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const view = btn.dataset.view;
-    if (view === currentView) return;
-    currentView = view;
-    document.querySelectorAll(".view-btn").forEach(b => b.classList.toggle("active", b.dataset.view === view));
-    document.getElementById("featured-view").style.display = view === "featured" ? "block" : "none";
-    document.getElementById("list-view").style.display = view === "list" ? "block" : "none";
-    if (view === "featured") renderFeatured();
-    else renderStories();
-  });
+// View toggle: a single small link switches between featured and list views
+const viewLinkEl = document.getElementById("view-all-link");
+const viewLinkLabelEl = document.getElementById("view-link-label");
+viewLinkEl.addEventListener("click", () => {
+  currentView = currentView === "featured" ? "list" : "featured";
+  document.getElementById("featured-view").style.display = currentView === "featured" ? "block" : "none";
+  document.getElementById("list-view").style.display = currentView === "list" ? "block" : "none";
+  updateViewLinkLabel();
+  if (currentView === "featured") renderFeatured();
+  else renderStories();
 });
+
+function updateViewLinkLabel() {
+  if (!viewLinkLabelEl) return;
+  const n = displayedStories.length;
+  if (currentView === "featured") {
+    viewLinkLabelEl.textContent = n > 1 ? "View all (" + n + ") →" : "View all →";
+  } else {
+    viewLinkLabelEl.textContent = "← Featured view";
+  }
+}
+
+// Hide the view-controls bar entirely when we have 0 or 1 stories
+// (no point in Shuffle or View all when there's only one or none).
+function updateViewControlsVisibility() {
+  const ctrls = document.getElementById("view-controls");
+  if (!ctrls) return;
+  if (displayedStories.length <= 1) ctrls.classList.add("hidden");
+  else ctrls.classList.remove("hidden");
+}
 
 // Shuffle button
 document.getElementById("shuffle-btn").addEventListener("click", (e) => {
@@ -1589,6 +1649,14 @@ function renderFeatured(animate) {
   nextBtn.disabled = featuredIndex >= displayedStories.length - 1;
   counter.textContent = (featuredIndex + 1) + " / " + displayedStories.length;
 
+  // When there's only one story in the displayed set, the home page behaves
+  // like a magazine cover-story: render the full body inline (not an excerpt),
+  // hide prev/next, hide the click-to-open behavior (it's already open), and
+  // show share buttons inline at the bottom of the card.
+  const isLeadStoryMode = displayedStories.length === 1;
+  const featuredNav = document.querySelector(".featured-nav");
+  if (featuredNav) featuredNav.style.display = isLeadStoryMode ? "none" : "flex";
+
   const renderCard = () => {
     const s = displayedStories[featuredIndex];
     const meta = [s.location, s.year].filter(Boolean).join(" · ");
@@ -1599,9 +1667,36 @@ function renderFeatured(animate) {
     const langAttrs = ' data-script="' + scriptAttr + '" dir="' + dirAttr + '"' + (langAttr ? ' lang="' + langAttr + '"' : '');
     const hasAudio = !!s.audio_url;
     const tags = (s.tags || []).slice(0, 4).map(t => '<span class="tag">' + escapeHtml(t) + '</span>').join("");
-    const excerpt = s.body ? excerptText(s.body, 380) : (hasAudio ? "Told in audio. Press to listen." : "");
     const idStr = "Nº " + escapeHtml(s.id);
     const positionStr = (featuredIndex + 1) + " of " + displayedStories.length;
+
+    let bodyBlock;
+    if (isLeadStoryMode && s.body) {
+      // Full body — render sanitized HTML inside a reader-style block
+      const bodyHtml = sanitizeStoryHtml(s.body);
+      bodyBlock = '<div class="featured-body reader-body"' + langAttrs + '>' + bodyHtml + '</div>';
+    } else {
+      const excerpt = s.body ? excerptText(s.body, 380) : (hasAudio ? "Told in audio. Press to listen." : "");
+      bodyBlock = excerpt ? '<p class="featured-excerpt"' + langAttrs + '>' + escapeHtml(excerpt) + '</p>' : '';
+    }
+
+    // Share + license appear inline only in lead-story mode (one-story-on-home)
+    const shareAllowed = s.share_allowed !== false;
+    const shareBlock = (isLeadStoryMode && shareAllowed)
+      ? buildShareBlock({
+          title: "A birth story by " + s.author + " — Unedited",
+          text: s.body ? excerptText(s.body, 140) : "A birth story shared on Unedited.",
+          storyId: s.id
+        })
+      : '';
+    const licenseBlock = isLeadStoryMode
+      ? ('<div class="colophon" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--ink); ' +
+         'font-family: var(--font-sans); font-size: 11px; color: var(--ink-faint); letter-spacing: 0.06em; line-height: 1.7;">' +
+         'Story © ' + escapeHtml(s.author) + (s.year ? ', ' + escapeHtml(s.year) : '') +
+         '. Published with permission under ' +
+         '<a href="#" onclick="showPage(\'terms\'); return false;" style="color: var(--ink); border-bottom: 1px solid var(--rule);">CC&nbsp;BY-NC-ND&nbsp;4.0</a>.' +
+         '</div>')
+      : '';
 
     card.innerHTML =
       '<svg class="featured-decoration" width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
@@ -1611,19 +1706,33 @@ function renderFeatured(animate) {
       '<circle cx="110" cy="110" r="36" />' +
       '<line x1="0" y1="110" x2="220" y2="110" />' +
       '</g></svg>' +
-      '<div class="featured-num"><span>' + idStr + '</span><span>' + positionStr + '</span></div>' +
+      '<div class="featured-num"><span>' + idStr + '</span><span>' + (isLeadStoryMode ? "An Open Archive" : positionStr) + '</span></div>' +
       '<div class="featured-meta">' +
       (meta ? '<span>' + escapeHtml(meta) + '</span>' : '') +
       (hasAudio ? '<span class="audio-badge">▸ Audio</span>' : '') +
       '</div>' +
       '<div class="featured-author"' + langAttrs + '>' + escapeHtml(s.author) + '</div>' +
-      (excerpt ? '<p class="featured-excerpt"' + langAttrs + '>' + escapeHtml(excerpt) + '</p>' : '') +
-      (s.content_notes ? '<div class="cw-badge" style="margin-bottom: 16px;">Content notes: ' + escapeHtml(s.content_notes) + '</div>' : '') +
-      (tags ? '<div class="tag-row featured-tags">' + tags + '</div>' : '') +
-      '<div class="featured-cta">Read this story</div>';
+      (s.content_notes ? '<div class="cw-badge" style="margin-bottom: 20px;">Content notes: ' + escapeHtml(s.content_notes) + '</div>' : '') +
+      bodyBlock +
+      (tags && !isLeadStoryMode ? '<div class="tag-row featured-tags">' + tags + '</div>' : '') +
+      (isLeadStoryMode ? '' : '<div class="featured-cta">Read this story</div>') +
+      licenseBlock +
+      shareBlock;
 
-    card.setAttribute("aria-label", "Open story " + s.id + " by " + s.author);
-    card.onclick = () => openStory(s.id);
+    if (isLeadStoryMode) {
+      // Card is no longer a click target (story is fully shown)
+      card.setAttribute("aria-label", "Story " + s.id + " by " + s.author);
+      card.onclick = null;
+      card.style.cursor = "default";
+      // Wire up share buttons inline
+      if (shareAllowed) wireShareButtons(s.id);
+      // Update html lang for screen readers since this is the visible content
+      if (langAttr) document.documentElement.lang = langAttr;
+    } else {
+      card.setAttribute("aria-label", "Open story " + s.id + " by " + s.author);
+      card.onclick = () => openStory(s.id);
+      card.style.cursor = "pointer";
+    }
   };
 
   if (animate) {
