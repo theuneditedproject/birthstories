@@ -1269,7 +1269,7 @@
           </div>
           <div class="checkbox-row">
             <input type="checkbox" name="consent_license" id="c-license" required />
-            <label for="c-license">I keep copyright in my story. I license <em>Unedited</em> to publish it under <a href="#" onclick="showPage('terms'); return false;" style="color: var(--ink); border-bottom: 1px solid var(--ink);">CC&nbsp;BY-NC-ND&nbsp;4.0</a>. Readers can share with credit, no commercial use, no changes.</label>
+            <label for="c-license">I keep copyright in my story. I license <em>Unedited</em> to publish it (and translate, read aloud, or quote it for the project's own work) under <a href="#" onclick="showPage('terms'); return false;" style="color: var(--ink); border-bottom: 1px solid var(--ink);">CC&nbsp;BY-NC&nbsp;4.0</a>. Readers can share and adapt non-commercially with credit. <a href="#" onclick="showPage('terms'); return false;" style="color: var(--ink-soft);">Read the full terms.</a></label>
           </div>
           <div class="checkbox-row">
             <input type="checkbox" name="consent_share" id="c-share" checked />
@@ -1327,15 +1327,29 @@
 
         <div class="terms-summary">
           <strong>The short version</strong>
-          You wrote it, you own it. <em>Unedited</em> publishes it on this website. Readers can share with attribution. No one can sell it or change it without your permission. You can ask us to change or remove your story at any time.
+          You wrote it, you own it. <em>Unedited</em> publishes it on this website, and may translate, read aloud, or quote from it for the project's own work. Readers can share, translate, and adapt it for non-commercial purposes with credit. No one can sell it without your permission. You can ask us to change or remove your story at any time.
         </div>
 
         <h3>Copyright stays with you</h3>
-        <p>You hold full copyright in your own story. Submitting a story to <em>Unedited</em> does not transfer ownership. By submitting, you grant us a non-exclusive, royalty-free, worldwide license to publish your story on this website and in the project's official social channels. We can edit only for typos and clarity, never for tone or voice, and only with your awareness.</p>
+        <p>You hold full copyright in your own story. Submitting a story to <em>Unedited</em> does not transfer ownership.</p>
+
+        <h3>What you grant <em>Unedited</em> by submitting</h3>
+        <p>By submitting, you grant us a non-exclusive, royalty-free, worldwide license to:</p>
+        <ul>
+          <li>Publish your story on this website,</li>
+          <li>Share it on the project's social channels (Instagram, X, Telegram, etc.),</li>
+          <li>Include it in an official project newsletter or digest,</li>
+          <li>Translate it into other languages, with the original always available,</li>
+          <li>Read it aloud as part of an official project audio version, podcast episode, or live event,</li>
+          <li>Quote excerpts of it in press, partner publications, and educational material about the project,</li>
+          <li>Edit lightly for typos and clarity, never for tone or voice, and only with your awareness.</li>
+        </ul>
+        <p>Anything outside this list, especially inclusion in a future book, requires separate written consent from you. You can withdraw or restrict any of these uses at any time.</p>
 
         <h3>How readers may use these stories</h3>
-        <p>Stories on <em>Unedited</em> are published under the <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International license</a> (CC&nbsp;BY-NC-ND&nbsp;4.0).</p>
-        <p>That means readers may share a story (link to it, quote from it, post excerpts on social media) as long as they (a) credit the author the way she chose to be credited, (b) link back to <em>Unedited</em>, (c) do not use it commercially, and (d) do not modify the text. Anything beyond that needs the author's permission.</p>
+        <p>Stories on <em>Unedited</em> are published under the <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">Creative Commons Attribution-NonCommercial 4.0 International license</a> (CC&nbsp;BY-NC&nbsp;4.0).</p>
+        <p>That means readers may share a story, translate it, quote from it, post excerpts, or adapt it (for example, into a reading at an event, an academic essay, a community zine) as long as they (a) credit the author the way she chose to be credited, (b) link back to <em>Unedited</em>, and (c) do not use it commercially. Selling a story, putting it in a paid book or paid course, or using it in advertising requires the author's explicit permission.</p>
+        <p>If you would prefer a stricter license for your own story (no translations or adaptations without your direct permission), tell us when you submit and we will mark it accordingly.</p>
 
         <h3>The book is a separate decision</h3>
         <p>If your story is being considered for a future book, we will reach out separately to ask. Inclusion in a book is never automatic and never assumed from a website submission. You can say no, and the website publication is not affected by that decision.</p>
@@ -1367,7 +1381,7 @@
     <div class="footer-share" id="footer-share"></div>
     <p id="ct-footer">Unedited · A collective project</p>
     <div class="colophon">
-      Stories © their authors, published under <a href="#" onclick="showPage('terms'); return false;">CC&nbsp;BY-NC-ND&nbsp;4.0</a>.
+      Stories © their authors, published under <a href="#" onclick="showPage('terms'); return false;">CC&nbsp;BY-NC&nbsp;4.0</a>.
       Site design © Unedited. <a href="#" onclick="showPage('terms'); return false;">Terms &amp; license</a>.
     </div>
   </footer>
@@ -1764,7 +1778,7 @@ function renderFeatured(animate) {
          'font-family: var(--font-sans); font-size: 11px; color: var(--ink-faint); letter-spacing: 0.06em; line-height: 1.7;">' +
          'Story © ' + escapeHtml(s.author) + (s.year ? ', ' + escapeHtml(s.year) : '') +
          '. Published with permission under ' +
-         '<a href="#" onclick="showPage(\'terms\'); return false;" style="color: var(--ink); border-bottom: 1px solid var(--rule);">CC&nbsp;BY-NC-ND&nbsp;4.0</a>.' +
+         '<a href="#" onclick="showPage(\'terms\'); return false;" style="color: var(--ink); border-bottom: 1px solid var(--rule);">CC&nbsp;BY-NC&nbsp;4.0</a>.' +
          '</div>')
       : '';
 
@@ -1955,13 +1969,15 @@ function openStory(id) {
     storyId: s.id
   }) : '';
 
-  // Per-story license/credit line. Author retains copyright; CC BY-NC-ND 4.0
+  // Per-story license/credit line. Author retains copyright; default CC BY-NC 4.0
+  // Stories with explicit `license` field override the default in display.
+  const licenseLabel = (s.license && /ND/i.test(s.license)) ? "CC&nbsp;BY-NC-ND&nbsp;4.0" : "CC&nbsp;BY-NC&nbsp;4.0";
   const licenseBlock =
     '<div class="colophon" style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--ink); ' +
     'font-family: var(--font-sans); font-size: 11px; color: var(--ink-faint); letter-spacing: 0.06em; line-height: 1.7;">' +
     'Story © ' + escapeHtml(s.author) + (s.year ? ', ' + escapeHtml(s.year) : '') +
     '. Published with permission under ' +
-    '<a href="#" onclick="showPage(\'terms\'); return false;" style="color: var(--ink); border-bottom: 1px solid var(--rule);">CC&nbsp;BY-NC-ND&nbsp;4.0</a>.' +
+    '<a href="#" onclick="showPage(\'terms\'); return false;" style="color: var(--ink); border-bottom: 1px solid var(--rule);">' + licenseLabel + '</a>.' +
     '</div>';
 
   // Share-your-own-story invitation at the bottom of every story page.
@@ -2809,7 +2825,7 @@ document.getElementById("story-form").addEventListener("submit", async (e) => {
 
   payload.append("consent_author", state.consent_author ? "yes" : "no");
   payload.append("consent_publish", state.consent_publish ? "yes" : "no");
-  payload.append("consent_license", state.consent_license ? "yes (CC BY-NC-ND 4.0)" : "no");
+  payload.append("consent_license", state.consent_license ? "yes (CC BY-NC 4.0)" : "no");
   payload.append("consent_share", state.consent_share ? "yes" : "no");
   payload.append("consent_book", state.consent_book ? "yes" : "no");
   if (state.consent_book && state.long_term_contact) {

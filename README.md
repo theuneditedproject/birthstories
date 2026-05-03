@@ -337,8 +337,12 @@ The **admin panel** uses a simpler `contenteditable` editor (not TipTap) for edi
 
 ## Terms & license
 
-Each story is © its author. By submitting, the author grants Unedited a non-exclusive license to publish on this website under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (Attribution–NonCommercial–NoDerivatives). Readers can share with attribution; no commercial use; no derivative works.
+Each story is © its author. There are two layers of permission to keep in mind:
 
-The full terms are written out in plain English on the **Terms** page on the site (`#terms`), and there's a license footer on every story. Authors can request changes or removal at any time. Book inclusion is a separate consent.
+**1. What the project (you) may do with each story.** By submitting, the author grants Unedited a non-exclusive license to: publish on the website, share on official social channels, include in a project newsletter, translate (with the original kept available), read aloud as part of an official audio version or podcast, quote excerpts in press / partner publications, and edit lightly for typos and clarity. The author can withdraw or restrict any of this at any time. Book inclusion is a separate written consent.
 
-The `_STORY_TEMPLATE.json` includes a `"license": "CC-BY-NC-ND-4.0"` field by default. You can override it per story (e.g. if an author asks for "all rights reserved" for their specific story).
+**2. What readers (the public) may do.** Stories are published under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) (Attribution–NonCommercial). Readers can share, translate, and adapt for non-commercial purposes with credit. Selling, monetized commercial use, or putting a story in a paid product requires the author's explicit permission.
+
+The full plain-English version is on the **Terms** page on the site (`#terms`), and there's a license footer on every story.
+
+The `_STORY_TEMPLATE.json` defaults `"license": "CC-BY-NC-4.0"`. If a particular author wants stricter terms (e.g. no translations or adaptations without their explicit permission), set that one story's `license` field to `"CC-BY-NC-ND-4.0"` and the public footer for that story will display the stricter version.
