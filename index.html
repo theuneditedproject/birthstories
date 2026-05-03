@@ -961,6 +961,84 @@
     .why-page .why-closing { font-size: 19px; }
   }
 
+  /* === IMAGE UPLOAD WIDGET === */
+  .image-upload {
+    margin-top: 6px;
+  }
+  .image-upload-empty {
+    display: flex; justify-content: flex-start;
+  }
+  .image-upload-btn {
+    background: transparent; border: 1px dashed var(--ink);
+    padding: 24px 32px;
+    font-family: var(--font-sans); font-size: 11px;
+    color: var(--ink); cursor: pointer; border-radius: 0;
+    letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500;
+    display: inline-flex; align-items: center; gap: 12px;
+    transition: all 0.15s;
+  }
+  .image-upload-btn:hover { background: var(--ink); color: var(--bg); border-style: solid; }
+  .image-upload-btn svg { flex-shrink: 0; }
+  .image-upload-preview {
+    border: 1px solid var(--ink);
+    background: var(--bg-alt);
+    padding: 16px;
+  }
+  .image-upload-preview img {
+    display: block; width: 100%; height: auto;
+    max-height: 360px; object-fit: contain;
+    background: var(--surface);
+  }
+  .image-upload-actions {
+    display: flex; gap: 4px; align-items: center;
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid var(--rule-soft);
+    flex-wrap: wrap;
+  }
+  .image-upload-meta {
+    margin-left: auto;
+    font-family: var(--font-sans); font-size: 11px;
+    color: var(--ink-faint); letter-spacing: 0.06em;
+  }
+
+  /* === COVER IMAGE on rendered stories === */
+  .story-cover {
+    margin: 0 0 32px;
+    width: 100%;
+    background: var(--bg-alt);
+    border: 1px solid var(--rule-soft);
+  }
+  .story-cover img {
+    display: block; width: 100%; height: auto;
+    max-height: 480px; object-fit: cover;
+  }
+  /* Featured card cover (lead-story / cinematic) */
+  .featured-cover {
+    margin: 0 -64px 28px; /* break out of the card padding */
+    background: var(--bg-alt);
+  }
+  .featured-cover img {
+    display: block; width: 100%; height: auto;
+    max-height: 420px; object-fit: cover;
+  }
+  @media (max-width: 600px) {
+    .featured-cover { margin: 0 -26px 24px; }
+  }
+  /* List-view card thumbnail */
+  .story-card-thumb {
+    float: right; margin: 0 0 12px 18px;
+    width: 120px; height: 120px;
+    background: var(--bg-alt);
+    overflow: hidden;
+    border: 1px solid var(--rule-soft);
+  }
+  .story-card-thumb img {
+    display: block; width: 100%; height: 100%; object-fit: cover;
+  }
+  @media (max-width: 600px) {
+    .story-card-thumb { width: 84px; height: 84px; margin-left: 12px; }
+  }
+
   /* === SHARE-YOUR-STORY INVITATION === */
   .share-cta {
     text-align: center;
@@ -1255,6 +1333,34 @@
                 </a>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label id="image-label">Cover image <span class="opt">(optional)</span></label>
+          <div class="image-upload">
+            <input type="file" id="f-cover-image" accept="image/jpeg,image/png,image/heic,image/heif,image/webp" hidden aria-labelledby="image-label" />
+
+            <div class="image-upload-empty" id="image-upload-empty">
+              <button type="button" class="image-upload-btn" id="image-upload-btn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span>Add an image</span>
+              </button>
+            </div>
+
+            <div class="image-upload-preview" id="image-upload-preview" style="display: none;">
+              <img id="image-preview-img" alt="Your selected cover image" />
+              <div class="image-upload-actions">
+                <button type="button" class="ghost-btn" id="image-replace-btn">Replace</button>
+                <button type="button" class="ghost-btn" id="image-remove-btn">Remove</button>
+                <span class="image-upload-meta" id="image-upload-meta"></span>
+              </div>
+            </div>
+
+            <p class="help-text" id="image-upload-help">
+              Optional. If you'd like to add one, choose something that captures the feeling. A hand, a window, a sky, a piece of fabric, a hospital corridor, your pregnant body. <strong>Please do not upload recognizable photos of children.</strong> We won't publish images of identifiable babies or kids. JPG, PNG, HEIC, or WebP. Up to 5 MB.
+            </p>
+            <p class="help-text" id="image-upload-error" style="color: var(--error-text); display: none;"></p>
           </div>
         </div>
 
@@ -1799,6 +1905,14 @@ function renderFeatured(animate) {
          '</div>')
       : '';
 
+    // Optional cover. In lead-story mode it breaks out of the card padding;
+    // in compact featured mode (multi-story carousel) it sits within the card.
+    const coverHtmlF = s.cover_image
+      ? (isLeadStoryMode
+          ? '<figure class="featured-cover"><img src="' + escapeHtml(s.cover_image) + '" alt="" loading="lazy"></figure>'
+          : '<figure class="story-cover" style="margin: 0 0 20px;"><img src="' + escapeHtml(s.cover_image) + '" alt="" loading="lazy"></figure>')
+      : '';
+
     card.innerHTML =
       '<svg class="featured-decoration" width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
       '<g fill="none" stroke="currentColor" stroke-width="1">' +
@@ -1814,6 +1928,7 @@ function renderFeatured(animate) {
       '</div>' +
       '<div class="featured-author"' + langAttrs + '>' + escapeHtml(s.author) + '</div>' +
       (s.content_notes ? '<div class="cw-badge" style="margin-bottom: 20px;">Content notes: ' + escapeHtml(s.content_notes) + '</div>' : '') +
+      coverHtmlF +
       bodyBlock +
       (tags && !isLeadStoryMode ? '<div class="tag-row featured-tags">' + tags + '</div>' : '') +
       (isLeadStoryMode ? '' : '<div class="featured-cta">Read this story</div>') +
@@ -1924,7 +2039,12 @@ function renderStories() {
     const audioBadge = hasAudio ? '<span class="audio-badge" title="Audio story">▸ Audio</span>' : '';
     const excerpt = s.body ? excerptText(s.body) : (hasAudio ? "Told in audio. Press to listen." : "");
 
+    const thumbHtml = s.cover_image
+      ? '<span class="story-card-thumb" aria-hidden="true"><img src="' + escapeHtml(s.cover_image) + '" alt="" loading="lazy"></span>'
+      : '';
+
     return '<button type="button" class="story-card" data-id="' + escapeHtml(s.id) + '" aria-label="Open story ' + escapeHtml(s.id) + ' by ' + escapeHtml(s.author) + '">' +
+      thumbHtml +
       '<span class="story-num">Nº ' + escapeHtml(s.id) + '</span>' +
       (meta || hasAudio ? '<div class="story-meta">' + (meta ? escapeHtml(meta) : "") + (hasAudio ? audioBadge : "") + '</div>' : "") +
       '<h3 class="story-author"' + excerptAttrs + '>' + escapeHtml(s.author) + '</h3>' +
@@ -2014,12 +2134,18 @@ function openStory(id) {
       '<button type="button" class="share-cta-btn" onclick="showPage(\'submit\')">Share your story</button>' +
     '</section>';
 
+  // Optional cover image (renders only when set; nothing missing for stories without)
+  const coverHtml = s.cover_image
+    ? '<figure class="story-cover"><img src="' + escapeHtml(s.cover_image) + '" alt="" loading="lazy"></figure>'
+    : '';
+
   document.getElementById("reader-content").innerHTML =
     '<button type="button" class="back-btn" onclick="showPage(\'stories\')" aria-label="Back to all stories">← All stories</button>' +
     '<div class="reader-num"><span>Nº ' + escapeHtml(s.id) + '</span><span>An Open Archive</span></div>' +
     '<h2 class="reader-title">' + escapeHtml(s.author) + '</h2>' +
     (meta ? '<p class="reader-meta">' + escapeHtml(meta) + '</p>' : "") +
     (s.content_notes ? '<div class="cw-badge" style="margin-bottom: 24px;">Content notes: ' + escapeHtml(s.content_notes) + '</div>' : "") +
+    coverHtml +
     audioHtml +
     bodyBlock +
     licenseBlock +
@@ -2755,6 +2881,90 @@ async function uploadAudioToCloudinary(blob) {
   return { url: data.secure_url, duration: data.duration, format: data.format, bytes: data.bytes };
 }
 
+async function uploadImageToCloudinary(file) {
+  if (CONFIG.cloudinaryCloudName.includes("REPLACE_WITH") || CONFIG.cloudinaryUploadPreset.includes("REPLACE_WITH")) {
+    throw new Error("Image uploads aren't configured yet. The site owner needs to add Cloudinary credentials in index.html.");
+  }
+  const url = "https://api.cloudinary.com/v1_1/" + CONFIG.cloudinaryCloudName + "/image/upload";
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", CONFIG.cloudinaryUploadPreset);
+
+  const res = await fetch(url, { method: "POST", body: formData });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error("Image upload failed: " + errText);
+  }
+  const data = await res.json();
+  return { url: data.secure_url, width: data.width, height: data.height, format: data.format, bytes: data.bytes };
+}
+
+// ============================================================
+// COVER IMAGE PICKER — optional, single file, with preview
+// ============================================================
+const IMAGE_MAX_BYTES = 5 * 1024 * 1024;        // 5 MB
+const IMAGE_MIME_OK = /^image\/(jpeg|png|heic|heif|webp)$/i;
+let pendingCoverImage = null; // File object until submission
+
+function imageError(msg) {
+  const el = document.getElementById("image-upload-error");
+  if (!el) return;
+  if (msg) { el.textContent = msg; el.style.display = "block"; }
+  else { el.textContent = ""; el.style.display = "none"; }
+}
+
+function showImagePreview(file) {
+  pendingCoverImage = file;
+  const url = URL.createObjectURL(file);
+  document.getElementById("image-preview-img").src = url;
+  const sizeKb = Math.round(file.size / 1024);
+  const sizeText = sizeKb < 1024 ? sizeKb + " KB" : (sizeKb / 1024).toFixed(1) + " MB";
+  document.getElementById("image-upload-meta").textContent = sizeText;
+  document.getElementById("image-upload-empty").style.display = "none";
+  document.getElementById("image-upload-preview").style.display = "block";
+  imageError("");
+}
+
+function clearImagePreview() {
+  pendingCoverImage = null;
+  const img = document.getElementById("image-preview-img");
+  if (img.src) {
+    try { URL.revokeObjectURL(img.src); } catch (e) { /* ignore */ }
+    img.src = "";
+  }
+  document.getElementById("f-cover-image").value = "";
+  document.getElementById("image-upload-meta").textContent = "";
+  document.getElementById("image-upload-empty").style.display = "flex";
+  document.getElementById("image-upload-preview").style.display = "none";
+}
+
+function handleImageSelected(file) {
+  if (!file) return;
+  if (!IMAGE_MIME_OK.test(file.type)) {
+    imageError("That file type isn't supported. Please upload a JPG, PNG, HEIC, or WebP image.");
+    return;
+  }
+  if (file.size > IMAGE_MAX_BYTES) {
+    imageError("That image is larger than 5 MB. Please choose a smaller one or compress it first.");
+    return;
+  }
+  showImagePreview(file);
+}
+
+document.getElementById("image-upload-btn").addEventListener("click", () => {
+  document.getElementById("f-cover-image").click();
+});
+document.getElementById("f-cover-image").addEventListener("change", (e) => {
+  const file = e.target.files && e.target.files[0];
+  handleImageSelected(file);
+});
+document.getElementById("image-replace-btn").addEventListener("click", () => {
+  document.getElementById("f-cover-image").click();
+});
+document.getElementById("image-remove-btn").addEventListener("click", () => {
+  clearImagePreview();
+});
+
 document.getElementById("preview-btn").addEventListener("click", () => {
   const state = getFormState();
   const pane = document.getElementById("preview-pane");
@@ -2820,6 +3030,22 @@ document.getElementById("story-form").addEventListener("submit", async (e) => {
     }
   }
 
+  // Cover image upload (optional, runs in either text or audio mode)
+  let coverImageInfo = null;
+  if (pendingCoverImage) {
+    try {
+      btn.textContent = "Uploading image…";
+      coverImageInfo = await uploadImageToCloudinary(pendingCoverImage);
+      btn.textContent = "Submitting…";
+    } catch (err) {
+      console.error("Image upload error:", err);
+      showStatus("error", err.message || "Could not upload your image. You can submit without it, or try a smaller file.");
+      btn.textContent = "Submit story";
+      btn.disabled = false;
+      return;
+    }
+  }
+
   const payload = new FormData();
   payload.append("author", state.author);
   payload.append("location", state.location);
@@ -2839,6 +3065,13 @@ document.getElementById("story-form").addEventListener("submit", async (e) => {
     payload.append("story_text", plainText);
   }
 
+  if (coverImageInfo) {
+    payload.append("cover_image_url", coverImageInfo.url);
+    payload.append("cover_image_width", String(coverImageInfo.width || ""));
+    payload.append("cover_image_height", String(coverImageInfo.height || ""));
+    payload.append("cover_image_bytes", String(coverImageInfo.bytes || ""));
+  }
+
   payload.append("consent_author", state.consent_author ? "yes" : "no");
   payload.append("consent_publish", state.consent_publish ? "yes" : "no");
   payload.append("consent_license", state.consent_license ? "yes (all rights reserved; project grant)" : "no");
@@ -2856,6 +3089,7 @@ document.getElementById("story-form").addEventListener("submit", async (e) => {
     if (res.ok) {
       clearDraft();
       if (isAudioMode) clearRecording();
+      clearImagePreview();
       showStatus("success", "Thank you. Your story has been received and will be reviewed within a few days. We'll be in touch.");
       btn.textContent = "Submit story";
       btn.disabled = false;

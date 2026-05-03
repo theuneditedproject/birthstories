@@ -12,6 +12,17 @@ This is the everyday operations guide. Bookmark it, or print the section you nee
 4. **If you're publishing it:** follow the "Publish a new story" recipe below
 5. **If you're not publishing it:** send a kind reply explaining (it doesn't have to be long; "thank you for trusting us with this. We've decided not to include it because [reason]" is enough)
 
+### Notes on the cover image (when included)
+
+The submission email includes a `cover_image_url` field if the submitter uploaded an image. Before publishing:
+
+1. Click the URL and look at the image carefully. Specifically check for:
+   - **Recognizable children's faces.** If any child's face is identifiable, ask the submitter to crop or replace the image. We don't publish identifiable images of minors. This is non-negotiable, even if the submitter is the child's parent.
+   - **Identifying details that could compromise privacy.** Hospital wristbands with names/numbers, license plates, name badges on staff, very specific room numbers or signage. Crop or skip.
+   - **Anything that doesn't match the tone the submitter intended.** If the image is obviously a stock photo or AI-generated and feels off, you can ask if she'd like to swap.
+2. If the image is fine, paste the URL into the `cover_image` field of the story's JSON when you publish.
+3. If she didn't upload one, the story renders cleanly without — typography only. Don't add a default image.
+
 ### Notes on the consent fields in the email
 
 The submission email includes a few consent flags. Worth knowing what each means:

@@ -36,6 +36,9 @@
   "audio_duration_seconds": 0,
   "_audio_help": "audio_url is empty '' for text-only. For audio stories paste the Cloudinary URL ending in .webm/.mp3/.mp4. duration is in seconds.",
 
+  "cover_image": "",
+  "_cover_image_help": "Optional. Cloudinary URL of the cover image. Empty string '' if the story has no image. Submitter-uploaded; verify it doesn't show identifiable children before publishing.",
+
   "body": "<p>The story text. Use HTML if from the rich editor. Or plain text with double-newline paragraph breaks.</p>",
   "_body_help": "For audio-only stories, body can be empty string ''."
 }
