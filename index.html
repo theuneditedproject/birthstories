@@ -78,7 +78,14 @@
     outline: 2px solid var(--ink); outline-offset: 3px;
   }
 
-  .container { max-width: 760px; margin: 0 auto; padding: 0 28px; }
+  /* Container: wider on desktop, but body content stays at a comfortable
+     reading width via .col-narrow. Cover images, masthead, and gallery
+     use the full container width. Mobile collapses to single-column. */
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+  @media (max-width: 600px) { .container { padding: 0 18px; } }
+  /* A 'narrow column' centered inside the wider container — body text,
+     prose pages, and form sit here. */
+  .col-narrow { max-width: 680px; margin-left: auto; margin-right: auto; }
 
   /* === MASTHEAD (replaces simple header) === */
   header.masthead {
@@ -166,6 +173,15 @@
   .page.active { display: block; }
 
   /* === STORY CARDS (list view) === */
+  /* On desktop, cards lay out in a 2-column grid that uses the wider
+     container; on mobile they stack to a single column. */
+  #stories-list { display: grid; grid-template-columns: 1fr; gap: 0; }
+  @media (min-width: 800px) {
+    #stories-list {
+      grid-template-columns: 1fr 1fr;
+      column-gap: 56px;
+    }
+  }
   .story-card {
     background: transparent;
     border: none;
@@ -182,7 +198,13 @@
     font-family: inherit;
     position: relative;
   }
-  .story-card:last-child { border-bottom: 1px solid var(--rule); }
+  /* Last-row cards in the grid get a bottom border too */
+  #stories-list > .story-card:last-child,
+  #stories-list > .story-card:nth-last-child(2):nth-child(odd) { border-bottom: 1px solid var(--rule); }
+  @media (max-width: 799px) {
+    #stories-list > .story-card:nth-last-child(2):nth-child(odd) { border-bottom: none; }
+    .story-card:last-child { border-bottom: 1px solid var(--rule); }
+  }
   .story-card:hover { padding-left: 12px; }
   .story-card:hover .story-title,
   .story-card:hover .story-author { color: var(--accent); }
@@ -456,10 +478,30 @@
   }
 
   /* === READER (story page) === */
+  /* Reader fills the wider container; text elements inside cap at 680px
+     for line-length comfort. Cover image breaks out to full container. */
   .reader {
     background: transparent; border: none; border-radius: 0;
-    padding: 8px 0 0; max-width: 640px; margin: 0 auto;
+    padding: 8px 0 0;
+    max-width: 100%;
+    margin: 0 auto;
   }
+  .reader > .back-btn,
+  .reader > .reader-num,
+  .reader > .reader-title,
+  .reader > .reader-byline,
+  .reader > .reader-meta,
+  .reader > .cw-badge,
+  .reader > .story-audio,
+  .reader > .reader-body,
+  .reader > .colophon,
+  .reader > .share-section,
+  .reader > .share-cta {
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .reader > .share-cta { margin-top: 56px; }
   .back-btn {
     background: transparent; border: none; padding: 0;
     font-family: var(--font-sans); font-size: 11px; font-weight: 500;
@@ -560,6 +602,11 @@
   }
 
   /* === FORM === */
+  /* Submit page elements stay at a comfortable filling-out width inside
+     the wider container. */
+  #page-submit > * { max-width: 720px; margin-left: auto; margin-right: auto; }
+  #page-submit .page-hero-mark { /* flex-centered already */ }
+
   .form-intro {
     font-family: var(--font-serif); font-size: 18px; color: var(--ink-soft);
     margin: 0 0 36px; max-width: 580px; line-height: 1.55;
@@ -1093,10 +1140,24 @@
   }
   .featured-cover img {
     display: block; width: 100%; height: auto;
-    max-height: 420px; object-fit: cover;
+    max-height: 480px; object-fit: cover;
   }
   @media (max-width: 600px) {
     .featured-cover { margin: 0 -26px 24px; }
+  }
+  /* Featured-card body stays at reading width inside the now-wider card */
+  .featured-card .featured-body,
+  .featured-card .featured-author,
+  .featured-card .featured-title,
+  .featured-card .featured-byline,
+  .featured-card .featured-meta,
+  .featured-card .featured-num,
+  .featured-card .featured-tags,
+  .featured-card .colophon,
+  .featured-card .share-section {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
   }
   /* List-view card thumbnail */
   .story-card-thumb {
