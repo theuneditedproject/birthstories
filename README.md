@@ -337,12 +337,14 @@ The **admin panel** uses a simpler `contenteditable` editor (not TipTap) for edi
 
 ## Terms & license
 
-Each story is © its author. There are two layers of permission to keep in mind:
+Each story is © its author. **All rights reserved.** Two layers of permission to keep in mind:
 
 **1. What the project (you) may do with each story.** By submitting, the author grants Unedited a non-exclusive license to: publish on the website, share on official social channels, include in a project newsletter, translate (with the original kept available), read aloud as part of an official audio version or podcast, quote excerpts in press / partner publications, and edit lightly for typos and clarity. The author can withdraw or restrict any of this at any time. Book inclusion is a separate written consent.
 
-**2. What readers (the public) may do.** Stories are published under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) (Attribution–NonCommercial). Readers can share, translate, and adapt for non-commercial purposes with credit. Selling, monetized commercial use, or putting a story in a paid product requires the author's explicit permission.
+**2. What readers (the public) may do.** Read the story here on the site, share a *link* to it (the share buttons send links, not story text), and quote briefly with attribution. Readers cannot copy a full story to another website, translate it, adapt it, republish it, or use it commercially without the author's explicit permission. The site is the place these stories live.
 
-The full plain-English version is on the **Terms** page on the site (`#terms`), and there's a license footer on every story.
+The full plain-English version is on the **Terms** page on the site (`#terms`), and there's a copyright footer on every story.
 
-The `_STORY_TEMPLATE.json` defaults `"license": "CC-BY-NC-4.0"`. If a particular author wants stricter terms (e.g. no translations or adaptations without their explicit permission), set that one story's `license` field to `"CC-BY-NC-ND-4.0"` and the public footer for that story will display the stricter version.
+The `_STORY_TEMPLATE.json` defaults `"license": "all-rights-reserved"`. The field is mostly informational — what governs reader rights is what the Terms page says. If you ever want a story to be more openly shareable (rare for this project), you could mark it with a Creative Commons identifier and we'd extend the rendering logic.
+
+If you find a story republished without permission, the author can require it taken down. Help her send a takedown notice — most platforms (Medium, WordPress, Substack, etc.) have copyright-complaint forms that get acted on quickly.
