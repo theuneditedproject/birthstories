@@ -1,55 +1,48 @@
 # Images
 
-This folder holds the public-domain artwork that appears as page banners on Why, About, and Terms.
+By default, the Why, About, and Terms pages use **inline SVG illustrations** that are part of `index.html` itself. No image files are required for the site to work — and the SVG art is original to the project, no licensing concerns.
 
-The site looks for these three filenames specifically. **If a file is missing, that page just doesn't show its banner** — nothing breaks. So you can add them one at a time, or skip any you don't want.
+This folder is here for the day you want to swap in real photographs or paintings instead. Read on if that's what you're doing.
 
-## What goes where
+---
 
-### `why-hero.jpg` — Why this exists page
+## Swapping in real images
 
-**Käthe Kollwitz, *Mother with Child in Arms* (Mutter mit Kind im Arm), 1916.** Lithograph.
+Each banner page (Why, About, Terms) has its inline SVG inside a `<figure class="page-banner">` block in `index.html`. To replace an SVG with a real image:
 
-Source: The Museum of Modern Art (MoMA), New York
-URL: <https://www.moma.org/collection/works/65543>
+1. Find the `<figure class="page-banner">` for that page in `index.html` (search for it; there are three).
+2. Replace the entire `<svg>...</svg>` element with an `<img>` tag:
 
-License: Public domain (Kollwitz d. 1945; pre-1929 works are PD via copyright term in the US). MoMA may also flag the page with "Open Access" — verify the badge before download.
+   ```html
+   <img src="images/why-hero.jpg" alt="Description of the image">
+   ```
 
-How to download: open the URL, click the image to enlarge, right-click → Save image. If MoMA's reproduction has restrictions, fall back to Wikimedia Commons:
-<https://commons.wikimedia.org/wiki/Category:Mother_with_Child_in_Arms_by_K%C3%A4the_Kollwitz>
+3. Add a credit `<figcaption>` underneath the `<img>`:
 
-### `about-hero.jpg` — About the project page
+   ```html
+   <figcaption>Käthe Kollwitz, <em>Mother with Child in Arms</em>, 1916. <a href="...">Source</a>. License notice.</figcaption>
+   ```
 
-**Berthe Morisot, *The Cradle* (Le Berceau), 1872.** Oil on canvas.
+4. Drop the actual image file in this folder using the filename you specified.
+5. Commit and push.
 
-Source: Musée d'Orsay, Paris
-URL: <https://www.musee-orsay.fr/en/artworks/le-berceau-905>
+## Where to find public-domain art
 
-License: Public domain (Morisot d. 1895). The d'Orsay's high-resolution download is free for non-commercial use; for any use, the work itself is PD and you can use a Wikimedia Commons mirror without restriction:
-<https://commons.wikimedia.org/wiki/File:Berthe_Morisot_-_Le_berceau_-_The_Cradle.jpg>
+These are reliable, truly free open-access collections:
 
-### `terms-hero.jpg` — Terms & license page
+- **Wellcome Collection** (CC0 medical/historical) — https://wellcomecollection.org/search/works
+- **The Met Open Access** (CC0) — https://www.metmuseum.org/art/collection/search?showOnly=openAccess
+- **Smithsonian Open Access** (CC0) — https://www.si.edu/openaccess
+- **Rijksmuseum** (PD) — https://www.rijksmuseum.nl/en/rijksstudio
+- **Art Institute of Chicago** (PD) — https://www.artic.edu/collection?is_public_domain=1
+- **Wikimedia Commons** — https://commons.wikimedia.org/
 
-**William Hunter, *The Anatomy of the Human Gravid Uterus*, 1774.** Engraved by Jan van Rymsdyk. (Pick any plate that reads well as a banner — Plate VI is the most-reproduced full cross-section.)
+Search terms that work: *mother and child, maternity, pregnancy, childbirth, midwifery, gravid uterus, cradle, nativity*.
 
-Source: Wellcome Collection, London
-URL: <https://wellcomecollection.org/works/whtxg2sj>
-
-License: **CC0 / Public Domain** — Wellcome Collection explicitly grants free reuse for any purpose, including commercial. No attribution required, but they appreciate it. Click "Download" on the work page to get the high-res image.
-
-## How to install
-
-1. Download each image to your computer
-2. Rename to the filenames above (`why-hero.jpg`, `about-hero.jpg`, `terms-hero.jpg`)
-3. Drop them into this `images/` folder
-4. Commit + push: the site picks them up automatically — credit lines under each image are already wired in the HTML
+Look for "**CC0**" or "**Public Domain**" or "**Open Access**" on each work's page before downloading.
 
 ## Sizing tip
 
-The site renders banners up to 420px tall, full container width (~1080px on desktop). If your downloaded image is much larger than 1600px wide, consider resizing it down to ~1600x900 to keep page load fast. Any image editor or [tinyjpg.com](https://tinyjpg.com) works.
+Banner area renders up to ~420px tall and full container width (~1080px on desktop). If your image is much larger than 1600×900, resize down to that before uploading to keep page load fast.
 
-JPG is fine for these (they're paintings/lithographs, lossy compression is invisible). PNG only if you specifically want transparency.
-
-## Want a different image instead?
-
-Just swap the file in this folder. The HTML has the filename hardcoded; no need to edit anywhere else. If you also want to change the credit line below the image (artist, museum, link), that's in `index.html` — search for `page-banner` and you'll find each `<figcaption>`.
+JPG is fine for paintings and photographs. PNG only if you specifically want transparency.

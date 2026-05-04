@@ -1020,22 +1020,31 @@
     color: var(--ink); margin: 8px 0 28px;
   }
   .page-hero-mark svg { display: block; }
-  /* Full-width banner image at the top of an inner page (Why, About, Terms).
-     The image gracefully hides when the file is missing — page still works. */
+  /* Full-width banner art at the top of an inner page (Why, About, Terms).
+     Holds either an inline SVG (default) or a custom image dropped into
+     images/. Image-based banners use img.broken to gracefully hide a
+     missing file. */
   .page-banner {
-    margin: 0 0 32px;
+    margin: 0 0 36px;
     width: 100%;
+    color: var(--ink);
     background: var(--bg-alt);
+    border: 1px solid var(--rule-soft);
+    overflow: hidden;
+  }
+  .page-banner svg, .page-banner img {
+    display: block; width: 100%; height: auto;
   }
   .page-banner img {
-    display: block; width: 100%; height: auto;
     max-height: 420px; object-fit: cover;
   }
   .page-banner img.broken { display: none; }
   .page-banner figcaption {
     font-family: var(--font-sans); font-size: 11px;
-    color: var(--ink-faint); padding: 10px 2px 0;
+    color: var(--ink-faint); padding: 10px 14px;
     line-height: 1.5; letter-spacing: 0.04em;
+    background: var(--bg);
+    border-top: 1px solid var(--rule-soft);
   }
   .page-banner figcaption em { color: var(--ink-soft); }
   .page-banner figcaption a { color: var(--ink); border-bottom: 1px solid var(--rule); }
@@ -1632,8 +1641,34 @@
     <div class="page" id="page-why">
       <article class="why-page" id="ct-why-page">
         <figure class="page-banner">
-          <img src="images/why-hero.jpg" alt="Mother with Child in Arms, lithograph, Käthe Kollwitz, 1916." onerror="this.classList.add('broken'); this.parentElement.classList.add('no-image');">
-          <figcaption>Käthe Kollwitz, <em>Mother with Child in Arms</em>, 1916. Lithograph. <a href="https://www.moma.org/collection/works/65543" target="_blank" rel="noopener">The Museum of Modern Art</a>. Public domain.</figcaption>
+          <!-- "Holding": one figure enfolding another. Original ink illustration. -->
+          <svg viewBox="0 0 1080 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two abstract figures, one enfolding the other.">
+            <g fill="none" stroke="currentColor" stroke-linecap="round">
+              <!-- Outer enfolding body — broad shoulder/arm sweep -->
+              <path d="M 280 320 Q 220 220, 280 130 Q 360 60, 500 70 Q 660 80, 740 180 Q 780 260, 740 320" stroke-width="2.5"/>
+              <!-- Inner head/torso of outer figure -->
+              <ellipse cx="350" cy="115" rx="42" ry="50" stroke-width="2"/>
+              <!-- Cradled child form — head + small body -->
+              <ellipse cx="540" cy="190" rx="34" ry="40" stroke-width="1.75"/>
+              <path d="M 510 230 Q 540 270, 580 250" stroke-width="1.5"/>
+              <!-- Subtle shoulder line on outer figure -->
+              <path d="M 392 145 Q 460 135, 540 150" stroke-width="1.25"/>
+              <!-- Ground line / horizon (the world, the others) -->
+              <line x1="80" y1="320" x2="1000" y2="320" stroke-width="0.75"/>
+            </g>
+            <!-- Stippling: voices around -->
+            <g fill="currentColor" opacity="0.55">
+              <circle cx="120" cy="120" r="2"/>
+              <circle cx="80" cy="180" r="1.6"/>
+              <circle cx="100" cy="240" r="2"/>
+              <circle cx="850" cy="100" r="2"/>
+              <circle cx="900" cy="160" r="1.6"/>
+              <circle cx="860" cy="220" r="2"/>
+              <circle cx="940" cy="280" r="1.6"/>
+            </g>
+            <!-- Small mark indicating presence of the cradled one -->
+            <circle cx="540" cy="190" r="3" fill="currentColor"/>
+          </svg>
         </figure>
         <div class="page-hero-mark" aria-hidden="true">
           <svg width="100" height="80" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
@@ -1651,8 +1686,47 @@
     <div class="page" id="page-about">
       <article class="about-page" id="ct-about-page-wrap">
         <figure class="page-banner">
-          <img src="images/about-hero.jpg" alt="The Cradle, oil on canvas, Berthe Morisot, 1872." onerror="this.classList.add('broken'); this.parentElement.classList.add('no-image');">
-          <figcaption>Berthe Morisot, <em>The Cradle</em> (Le Berceau), 1872. Oil on canvas. <a href="https://www.musee-orsay.fr/en/artworks/le-berceau-905" target="_blank" rel="noopener">Musée d'Orsay</a>, Paris. Public domain.</figcaption>
+          <!-- "An Open Hand": gesture of welcome, gathering. Original ink illustration. -->
+          <svg viewBox="0 0 1080 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="An abstract open hand, gathering inward.">
+            <g fill="none" stroke="currentColor" stroke-linecap="round">
+              <!-- Wrist / arm leading from left -->
+              <path d="M 60 220 Q 180 220, 280 200" stroke-width="1.75"/>
+              <!-- Palm — large arc -->
+              <path d="M 280 200 Q 360 130, 470 180 Q 540 220, 540 280" stroke-width="2"/>
+              <!-- Five fingers, light and lyrical, fanned -->
+              <path d="M 350 120 Q 360 90, 380 70" stroke-width="1.5"/>
+              <path d="M 410 100 Q 425 70, 450 55" stroke-width="1.5"/>
+              <path d="M 460 95 Q 482 65, 510 55" stroke-width="1.5"/>
+              <path d="M 510 110 Q 535 85, 565 80" stroke-width="1.5"/>
+              <path d="M 540 150 Q 575 140, 610 145" stroke-width="1.5"/>
+              <!-- Subtle palm line / lifeline -->
+              <path d="M 320 200 Q 370 240, 420 250" stroke-width="0.9"/>
+              <path d="M 360 165 Q 400 195, 450 215" stroke-width="0.75"/>
+              <!-- Small forms that the hand might hold: drops, voices, lives -->
+              <circle cx="700" cy="180" r="14" stroke-width="1.25"/>
+              <circle cx="780" cy="220" r="10" stroke-width="1.1"/>
+              <circle cx="850" cy="160" r="8" stroke-width="1"/>
+              <circle cx="900" cy="200" r="6" stroke-width="0.9"/>
+            </g>
+            <!-- Solid dots inside the smaller forms -->
+            <g fill="currentColor">
+              <circle cx="700" cy="180" r="2"/>
+              <circle cx="780" cy="220" r="1.6"/>
+              <circle cx="850" cy="160" r="1.4"/>
+              <circle cx="900" cy="200" r="1.2"/>
+            </g>
+            <!-- Stippling — atmosphere -->
+            <g fill="currentColor" opacity="0.5">
+              <circle cx="650" cy="100" r="1.4"/>
+              <circle cx="720" cy="60" r="1.2"/>
+              <circle cx="820" cy="80" r="1.4"/>
+              <circle cx="950" cy="120" r="1.2"/>
+              <circle cx="980" cy="270" r="1.4"/>
+              <circle cx="630" cy="290" r="1.2"/>
+              <circle cx="120" cy="280" r="1.4"/>
+              <circle cx="200" cy="300" r="1.2"/>
+            </g>
+          </svg>
         </figure>
         <div class="page-hero-mark" aria-hidden="true">
           <svg width="100" height="80" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
@@ -1670,8 +1744,48 @@
     <div class="page" id="page-terms">
       <article class="terms-page" id="ct-terms-page">
         <figure class="page-banner">
-          <img src="images/terms-hero.jpg" alt="Plate from The Anatomy of the Human Gravid Uterus, William Hunter, 1774." onerror="this.classList.add('broken'); this.parentElement.classList.add('no-image');">
-          <figcaption>From William Hunter's <em>The Anatomy of the Human Gravid Uterus</em>, 1774. Engraved by Jan van Rymsdyk. <a href="https://wellcomecollection.org/works/whtxg2sj" target="_blank" rel="noopener">Wellcome Collection</a>. CC0 / Public Domain.</figcaption>
+          <!-- "Vessel": anatomical cross-section as a metaphor for guarding, holding. Original. -->
+          <svg viewBox="0 0 1080 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="An abstract vessel form with concentric layers and stippling.">
+            <g fill="none" stroke="currentColor">
+              <!-- Outer vessel — full pear-like shape -->
+              <path d="M 540 60 Q 380 80, 360 200 Q 360 320, 540 320 Q 720 320, 720 200 Q 700 80, 540 60 Z" stroke-width="1.75"/>
+              <!-- Mid layer -->
+              <path d="M 540 100 Q 420 115, 405 200 Q 405 285, 540 285 Q 675 285, 675 200 Q 660 115, 540 100 Z" stroke-width="1.1"/>
+              <!-- Inner core -->
+              <ellipse cx="540" cy="200" rx="80" ry="70" stroke-width="0.9"/>
+              <!-- Symmetric tendrils / vessels at the top, like fallopian arches -->
+              <path d="M 540 60 Q 460 30, 380 50" stroke-width="0.9"/>
+              <path d="M 540 60 Q 620 30, 700 50" stroke-width="0.9"/>
+              <path d="M 380 50 Q 360 70, 360 90" stroke-width="0.75"/>
+              <path d="M 700 50 Q 720 70, 720 90" stroke-width="0.75"/>
+            </g>
+            <!-- Stippling within the inner core — feeling of life -->
+            <g fill="currentColor" opacity="0.55">
+              <circle cx="510" cy="180" r="1.2"/>
+              <circle cx="525" cy="195" r="1.1"/>
+              <circle cx="545" cy="185" r="1.2"/>
+              <circle cx="560" cy="200" r="1.1"/>
+              <circle cx="540" cy="215" r="1.3"/>
+              <circle cx="525" cy="225" r="1.1"/>
+              <circle cx="555" cy="225" r="1"/>
+              <circle cx="500" cy="210" r="1.1"/>
+              <circle cx="570" cy="180" r="1.1"/>
+            </g>
+            <!-- Stippling between mid and outer layers — texture -->
+            <g fill="currentColor" opacity="0.32">
+              <circle cx="395" cy="160" r="1"/>
+              <circle cx="385" cy="200" r="1"/>
+              <circle cx="395" cy="240" r="1"/>
+              <circle cx="685" cy="160" r="1"/>
+              <circle cx="695" cy="200" r="1"/>
+              <circle cx="685" cy="240" r="1"/>
+            </g>
+            <!-- Center mark — the held thing -->
+            <circle cx="540" cy="200" r="3.5" fill="currentColor"/>
+            <!-- Subtle horizontal line through the form, like a horizon -->
+            <line x1="80" y1="200" x2="360" y2="200" stroke="currentColor" stroke-width="0.5"/>
+            <line x1="720" y1="200" x2="1000" y2="200" stroke="currentColor" stroke-width="0.5"/>
+          </svg>
         </figure>
         <div class="page-hero-mark" aria-hidden="true">
           <svg width="100" height="80" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
