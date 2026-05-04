@@ -1,48 +1,32 @@
 # Images
 
-By default, the Why, About, and Terms pages use **inline SVG illustrations** that are part of `index.html` itself. No image files are required for the site to work — and the SVG art is original to the project, no licensing concerns.
+Three public-domain paintings serve as banners on Why, About, and Terms.
 
-This folder is here for the day you want to swap in real photographs or paintings instead. Read on if that's what you're doing.
+## Currently installed
 
----
+| File | Painting | Page |
+|---|---|---|
+| `why-hero.jpg` | Gustav Klimt, *Hope II*, 1907–08 | Why |
+| `about-hero.jpg` | Paula Modersohn-Becker, *Nursing Mother* (Stillende Mutter), c. 1903 | About |
+| `terms-hero.jpg` | Paula Modersohn-Becker, *Girl with Small Child* (Mädchen mit Kleinkind), 1905 | Terms |
 
-## Swapping in real images
+All three artists died well before 1929 (Klimt 1918, Modersohn-Becker 1907), so the works are public domain worldwide. Source: Wikimedia Commons.
 
-Each banner page (Why, About, Terms) has its inline SVG inside a `<figure class="page-banner">` block in `index.html`. To replace an SVG with a real image:
+The credit caption under each image is set in `index.html` near each `<figure class="page-banner">`. Update those if you swap files.
 
-1. Find the `<figure class="page-banner">` for that page in `index.html` (search for it; there are three).
-2. Replace the entire `<svg>...</svg>` element with an `<img>` tag:
+## Swapping in a different image
 
-   ```html
-   <img src="images/why-hero.jpg" alt="Description of the image">
-   ```
+1. Drop a replacement at the same filename (e.g. `why-hero.jpg`).
+2. Update the caption in `index.html` to match (search for `page-banner`).
+3. Optimize: ~1800px on the longer side, JPEG quality 85 (use any image editor or `tinyjpg.com`). Keep files under ~1 MB for fast page loads.
 
-3. Add a credit `<figcaption>` underneath the `<img>`:
+## Where to find more public-domain art
 
-   ```html
-   <figcaption>Käthe Kollwitz, <em>Mother with Child in Arms</em>, 1916. <a href="...">Source</a>. License notice.</figcaption>
-   ```
+- **Wellcome Collection** (CC0 medical/historical): https://wellcomecollection.org/search/works
+- **The Met Open Access** (CC0): https://www.metmuseum.org/art/collection/search?showOnly=openAccess
+- **Smithsonian Open Access** (CC0): https://www.si.edu/openaccess
+- **Rijksmuseum** (PD): https://www.rijksmuseum.nl/en/rijksstudio
+- **Art Institute of Chicago** (PD): https://www.artic.edu/collection?is_public_domain=1
+- **Wikimedia Commons** (mixed PD/CC): https://commons.wikimedia.org/
 
-4. Drop the actual image file in this folder using the filename you specified.
-5. Commit and push.
-
-## Where to find public-domain art
-
-These are reliable, truly free open-access collections:
-
-- **Wellcome Collection** (CC0 medical/historical) — https://wellcomecollection.org/search/works
-- **The Met Open Access** (CC0) — https://www.metmuseum.org/art/collection/search?showOnly=openAccess
-- **Smithsonian Open Access** (CC0) — https://www.si.edu/openaccess
-- **Rijksmuseum** (PD) — https://www.rijksmuseum.nl/en/rijksstudio
-- **Art Institute of Chicago** (PD) — https://www.artic.edu/collection?is_public_domain=1
-- **Wikimedia Commons** — https://commons.wikimedia.org/
-
-Search terms that work: *mother and child, maternity, pregnancy, childbirth, midwifery, gravid uterus, cradle, nativity*.
-
-Look for "**CC0**" or "**Public Domain**" or "**Open Access**" on each work's page before downloading.
-
-## Sizing tip
-
-Banner area renders up to ~420px tall and full container width (~1080px on desktop). If your image is much larger than 1600×900, resize down to that before uploading to keep page load fast.
-
-JPG is fine for paintings and photographs. PNG only if you specifically want transparency.
+Search terms that work: *mother and child, maternity, pregnancy, childbirth, midwifery, gravid uterus, cradle, nativity, family group*.
