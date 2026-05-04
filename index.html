@@ -1020,6 +1020,27 @@
     color: var(--ink); margin: 8px 0 28px;
   }
   .page-hero-mark svg { display: block; }
+  /* Full-width banner image at the top of an inner page (Why, About, Terms).
+     The image gracefully hides when the file is missing — page still works. */
+  .page-banner {
+    margin: 0 0 32px;
+    width: 100%;
+    background: var(--bg-alt);
+  }
+  .page-banner img {
+    display: block; width: 100%; height: auto;
+    max-height: 420px; object-fit: cover;
+  }
+  .page-banner img.broken { display: none; }
+  .page-banner figcaption {
+    font-family: var(--font-sans); font-size: 11px;
+    color: var(--ink-faint); padding: 10px 2px 0;
+    line-height: 1.5; letter-spacing: 0.04em;
+  }
+  .page-banner figcaption em { color: var(--ink-soft); }
+  .page-banner figcaption a { color: var(--ink); border-bottom: 1px solid var(--rule); }
+  .page-banner figcaption a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
   /* Section-break dingbat — for use inside long prose */
   .section-break {
     display: flex; justify-content: center; align-items: center;
@@ -1610,6 +1631,10 @@
 
     <div class="page" id="page-why">
       <article class="why-page" id="ct-why-page">
+        <figure class="page-banner">
+          <img src="images/why-hero.jpg" alt="Mother with Child in Arms, lithograph, Käthe Kollwitz, 1916." onerror="this.classList.add('broken'); this.parentElement.classList.add('no-image');">
+          <figcaption>Käthe Kollwitz, <em>Mother with Child in Arms</em>, 1916. Lithograph. <a href="https://www.moma.org/collection/works/65543" target="_blank" rel="noopener">The Museum of Modern Art</a>. Public domain.</figcaption>
+        </figure>
         <div class="page-hero-mark" aria-hidden="true">
           <svg width="100" height="80" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
             <path d="M 4 14 Q 66 14, 66 40 Q 66 66, 4 66" fill="none" stroke="currentColor" stroke-width="1.25"/>
@@ -1625,6 +1650,10 @@
 
     <div class="page" id="page-about">
       <article class="about-page" id="ct-about-page-wrap">
+        <figure class="page-banner">
+          <img src="images/about-hero.jpg" alt="The Cradle, oil on canvas, Berthe Morisot, 1872." onerror="this.classList.add('broken'); this.parentElement.classList.add('no-image');">
+          <figcaption>Berthe Morisot, <em>The Cradle</em> (Le Berceau), 1872. Oil on canvas. <a href="https://www.musee-orsay.fr/en/artworks/le-berceau-905" target="_blank" rel="noopener">Musée d'Orsay</a>, Paris. Public domain.</figcaption>
+        </figure>
         <div class="page-hero-mark" aria-hidden="true">
           <svg width="100" height="80" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
             <path d="M 4 14 Q 66 14, 66 40 Q 66 66, 4 66" fill="none" stroke="currentColor" stroke-width="1.25"/>
@@ -1640,6 +1669,10 @@
 
     <div class="page" id="page-terms">
       <article class="terms-page" id="ct-terms-page">
+        <figure class="page-banner">
+          <img src="images/terms-hero.jpg" alt="Plate from The Anatomy of the Human Gravid Uterus, William Hunter, 1774." onerror="this.classList.add('broken'); this.parentElement.classList.add('no-image');">
+          <figcaption>From William Hunter's <em>The Anatomy of the Human Gravid Uterus</em>, 1774. Engraved by Jan van Rymsdyk. <a href="https://wellcomecollection.org/works/whtxg2sj" target="_blank" rel="noopener">Wellcome Collection</a>. CC0 / Public Domain.</figcaption>
+        </figure>
         <div class="page-hero-mark" aria-hidden="true">
           <svg width="100" height="80" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
             <path d="M 4 14 Q 66 14, 66 40 Q 66 66, 4 66" fill="none" stroke="currentColor" stroke-width="1.25"/>
