@@ -1255,6 +1255,43 @@
     .story-card-thumb { width: 84px; height: 84px; margin-left: 12px; }
   }
 
+  /* === FLOATING SHARE-YOUR-STORY BUTTON ===
+     Always visible bottom-right while reading or browsing stories;
+     hidden when the visitor is already on the submit page. */
+  .floating-share {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 50;
+    background: var(--ink);
+    color: var(--bg);
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    padding: 14px 22px;
+    font-family: var(--font-sans);
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(15, 15, 15, 0.18);
+    transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.18s, box-shadow 0.18s;
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .floating-share:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(15, 15, 15, 0.26);
+  }
+  .floating-share .arrow { font-size: 14px; }
+  .floating-share.hidden { display: none; }
+  @media (max-width: 600px) {
+    .floating-share {
+      bottom: 16px; right: 16px;
+      padding: 11px 14px; font-size: 10px;
+      letter-spacing: 0.14em; gap: 6px;
+    }
+  }
+
   /* === SHARE-YOUR-STORY INVITATION === */
   .share-cta {
     text-align: center;
@@ -1377,6 +1414,52 @@
 
   <main id="main-content" tabindex="-1">
     <div class="page active" id="page-stories">
+      <figure class="page-banner" style="margin-bottom: 28px;">
+        <svg viewBox="0 0 1080 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A chorus of voices: multiple radiating marks across an open horizon.">
+          <g fill="none" stroke="currentColor" stroke-linecap="round">
+            <!-- Far-left small voice -->
+            <path d="M 70 110 Q 116 110, 116 130 Q 116 150, 70 150" stroke-width="1"/>
+            <path d="M 86 122 Q 106 122, 106 130 Q 106 138, 86 138" stroke-width="0.85"/>
+            <!-- Mid-left medium voice -->
+            <path d="M 240 80 Q 320 80, 320 130 Q 320 180, 240 180" stroke-width="1.25"/>
+            <path d="M 270 100 Q 308 100, 308 130 Q 308 160, 270 160" stroke-width="1"/>
+            <path d="M 290 116 Q 296 116, 296 130 Q 296 144, 290 144" stroke-width="0.85"/>
+            <!-- Center large voice (lead) -->
+            <path d="M 470 60 Q 600 60, 600 130 Q 600 200, 470 200" stroke-width="1.5"/>
+            <path d="M 500 80 Q 580 80, 580 130 Q 580 180, 500 180" stroke-width="1.25"/>
+            <path d="M 530 100 Q 565 100, 565 130 Q 565 160, 530 160" stroke-width="1"/>
+            <path d="M 555 118 Q 552 118, 552 130 Q 552 142, 555 142" stroke-width="0.85"/>
+            <!-- Mid-right medium voice -->
+            <path d="M 730 90 Q 818 90, 818 130 Q 818 170, 730 170" stroke-width="1.25"/>
+            <path d="M 760 108 Q 805 108, 805 130 Q 805 152, 760 152" stroke-width="1"/>
+            <!-- Far-right small voice -->
+            <path d="M 920 100 Q 970 100, 970 130 Q 970 160, 920 160" stroke-width="1"/>
+            <path d="M 940 114 Q 960 114, 960 130 Q 960 146, 940 146" stroke-width="0.85"/>
+            <!-- Horizon line -->
+            <line x1="40" y1="220" x2="1040" y2="220" stroke-width="0.6"/>
+          </g>
+          <!-- Voice-source dots -->
+          <g fill="currentColor">
+            <circle cx="68" cy="130" r="1.6"/>
+            <circle cx="238" cy="130" r="2.2"/>
+            <circle cx="468" cy="130" r="3"/>
+            <circle cx="728" cy="130" r="2.2"/>
+            <circle cx="918" cy="130" r="1.6"/>
+          </g>
+          <!-- Stippling — atmosphere of voices around the horizon -->
+          <g fill="currentColor" opacity="0.45">
+            <circle cx="160" cy="40" r="1.1"/>
+            <circle cx="400" cy="32" r="1.2"/>
+            <circle cx="640" cy="28" r="1.1"/>
+            <circle cx="860" cy="44" r="1.2"/>
+            <circle cx="120" cy="200" r="1"/>
+            <circle cx="380" cy="208" r="1"/>
+            <circle cx="610" cy="206" r="1"/>
+            <circle cx="850" cy="202" r="1"/>
+          </g>
+        </svg>
+        <figcaption>An archive in progress. Each voice held whole.</figcaption>
+      </figure>
       <div class="why-teaser" id="ct-home-teaser">
         <p class="why-teaser-text">My birth story was painful. But the hardest part wasn't the pain. <em>I felt lonely.</em> If I had read another woman's story before mine, I would have known I wasn't the only one.</p>
         <p class="why-teaser-text">Birth stories, happy or painful, are magical. They need to be said. They need to be shared. They need to be preserved.</p>
@@ -1441,14 +1524,50 @@
     </div>
 
     <div class="page" id="page-submit">
-      <div class="page-hero-mark" aria-hidden="true">
-        <svg width="120" height="80" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
-          <path d="M 24 14 Q 86 14, 86 40 Q 86 66, 24 66" fill="none" stroke="currentColor" stroke-width="1.25"/>
-          <path d="M 40 24 Q 72 24, 72 40 Q 72 56, 40 56" fill="none" stroke="currentColor" stroke-width="1"/>
-          <path d="M 52 32 Q 60 32, 60 40 Q 60 48, 52 48" fill="none" stroke="currentColor" stroke-width="0.85"/>
-          <circle cx="22" cy="40" r="2.4" fill="currentColor"/>
+      <figure class="page-banner">
+        <svg viewBox="0 0 1080 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A single voice radiating outward across an open page; the invitation to write.">
+          <g fill="none" stroke="currentColor" stroke-linecap="round">
+            <!-- Center Echo, large, facing right — your voice, just emerging -->
+            <path d="M 360 60 Q 540 60, 540 130 Q 540 200, 360 200" stroke-width="1.5"/>
+            <path d="M 400 80 Q 520 80, 520 130 Q 520 180, 400 180" stroke-width="1.25"/>
+            <path d="M 440 100 Q 500 100, 500 130 Q 500 160, 440 160" stroke-width="1"/>
+            <path d="M 470 116 Q 484 116, 484 130 Q 484 144, 470 144" stroke-width="0.85"/>
+            <!-- Long horizon line — the page you're writing into -->
+            <line x1="40" y1="220" x2="1040" y2="220" stroke-width="0.6"/>
+            <!-- Faint guide lines — like writing rules -->
+            <line x1="600" y1="80" x2="1020" y2="80" stroke-width="0.4" opacity="0.4"/>
+            <line x1="600" y1="110" x2="1020" y2="110" stroke-width="0.4" opacity="0.4"/>
+            <line x1="600" y1="140" x2="1020" y2="140" stroke-width="0.4" opacity="0.4"/>
+            <line x1="600" y1="170" x2="1020" y2="170" stroke-width="0.4" opacity="0.4"/>
+          </g>
+          <!-- Voice-source dot -->
+          <circle cx="358" cy="130" r="3.2" fill="currentColor"/>
+          <!-- Stippling: words emerging into the page -->
+          <g fill="currentColor" opacity="0.55">
+            <circle cx="620" cy="80" r="1.4"/>
+            <circle cx="660" cy="80" r="1.1"/>
+            <circle cx="710" cy="80" r="1.4"/>
+            <circle cx="760" cy="80" r="1.1"/>
+            <circle cx="820" cy="80" r="1.2"/>
+            <circle cx="870" cy="80" r="1.1"/>
+            <circle cx="630" cy="110" r="1.2"/>
+            <circle cx="680" cy="110" r="1.4"/>
+            <circle cx="730" cy="110" r="1.1"/>
+            <circle cx="790" cy="110" r="1.4"/>
+            <circle cx="850" cy="110" r="1.1"/>
+            <circle cx="900" cy="110" r="1.2"/>
+            <circle cx="615" cy="140" r="1.4"/>
+            <circle cx="670" cy="140" r="1.2"/>
+            <circle cx="720" cy="140" r="1.4"/>
+            <circle cx="780" cy="140" r="1.1"/>
+            <circle cx="830" cy="140" r="1.4"/>
+            <circle cx="635" cy="170" r="1.2"/>
+            <circle cx="690" cy="170" r="1.4"/>
+            <circle cx="740" cy="170" r="1.1"/>
+          </g>
         </svg>
-      </div>
+        <figcaption>Tell it however it comes out. There's no right way.</figcaption>
+      </figure>
       <div class="page-eyebrow">Share your story</div>
       <h2 id="ct-submit-title" style="font-family: var(--font-serif); font-size: clamp(36px, 6vw, 52px); font-weight: 500; margin: 24px 0 18px; letter-spacing: -0.025em; line-height: 1.0;">In your own words.</h2>
       <p class="form-intro" id="ct-submit-intro">Tell it your way, in any language you like. Persian, Arabic, English, Dutch, Chinese, anything. The editor adjusts as you write so your story renders correctly in your script. Your work saves automatically. We review every submission and reply within a few days.</p>
@@ -1778,6 +1897,11 @@
     </div>
   </footer>
 </div>
+
+<button id="floating-share" class="floating-share" type="button" onclick="showPage('submit')" aria-label="Share your story">
+  <span>Share your story</span>
+  <span class="arrow" aria-hidden="true">→</span>
+</button>
 
 <noscript>
   <div style="max-width: 540px; margin: 80px auto; padding: 24px; font-family: Georgia, serif; line-height: 1.6;">
@@ -2557,6 +2681,9 @@ window.showPage = function(name) {
   if (main) main.focus({ preventScroll: true });
   // Reset html lang on non-story pages
   if (name !== "reader") document.documentElement.lang = "en";
+  // Hide the floating share-your-story button when already on submit page
+  const fab = document.getElementById("floating-share");
+  if (fab) fab.classList.toggle("hidden", name === "submit");
 };
 
 document.querySelectorAll(".nav-btn").forEach(btn => {
