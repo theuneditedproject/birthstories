@@ -1760,7 +1760,7 @@
         <p>We read every submission. We may decide not to publish a story for safety, accuracy, or editorial reasons. If we do, we'll tell you why. Your submission isn't shared anywhere; it stays in our private inbox.</p>
 
         <h3>Questions</h3>
-        <p>For removal requests, license questions, or anything else: <a id="ct-terms-contact" href="mailto:hello@example.com">hello@example.com</a>.</p>
+        <p>For removal requests, license questions, or anything else: <a id="ct-terms-contact" href="mailto:unedited.voices.project@gmail.com">unedited.voices.project@gmail.com</a>.</p>
       </article>
     </div>
   </main>
@@ -1793,26 +1793,40 @@
   <div style="max-width: 540px; margin: 80px auto; padding: 24px; font-family: Georgia, serif; line-height: 1.6;">
     <h1 style="font-size: 32px; margin: 0 0 14px;">Unedited</h1>
     <p>Birth stories in their own words. From mothers around the world.</p>
-    <p style="margin-top: 24px; font-size: 14px; color: #666;">This site needs JavaScript to load and display stories. If you'd rather not enable it, please email us and we'll send you a reading link or a PDF: <a href="mailto:hello@example.com">hello@example.com</a></p>
+    <p style="margin-top: 24px; font-size: 14px; color: #666;">This site needs JavaScript to load and display stories. If you'd rather not enable it, please email us and we'll send you a reading link or a PDF: <a href="mailto:unedited.voices.project@gmail.com">unedited.voices.project@gmail.com</a></p>
   </div>
 </noscript>
 
-<!-- TipTap is loaded as ES modules from cdn.jsdelivr.net.
-     Pinned to v2.11.5. To upgrade, change the version in all four import lines below. -->
-<script type="module">
-const TIPTAP_VERSION = "2.11.5";
-const TIPTAP_CDN = "https://cdn.jsdelivr.net/npm";
+<!-- TipTap loader.
+     Pinned to v2.11.5. The import map below is REQUIRED: without it, each
+     TipTap package bundles its own copy of ProseMirror, and Enter (split
+     block) throws "Can not convert <> to a Fragment (looks like multiple
+     versions of prosemirror-model were loaded)". The map pins @tiptap/pm
+     so every extension shares one ProseMirror instance.
 
+     To upgrade: change @2.11.5 in every line of the importmap. -->
+<script type="importmap">
+{
+  "imports": {
+    "@tiptap/core":                       "https://esm.sh/@tiptap/core@2.11.5",
+    "@tiptap/starter-kit":                "https://esm.sh/@tiptap/starter-kit@2.11.5",
+    "@tiptap/extension-placeholder":      "https://esm.sh/@tiptap/extension-placeholder@2.11.5",
+    "@tiptap/extension-character-count":  "https://esm.sh/@tiptap/extension-character-count@2.11.5",
+    "@tiptap/pm/":                        "https://esm.sh/@tiptap/pm@2.11.5/"
+  }
+}
+</script>
+<script type="module">
 // Editor modules are loaded lazily, only when the user opens the submit page.
 // Saves ~150KB of bandwidth + parse time on every other visit.
 let _tiptapModules = null;
 async function loadTiptap() {
   if (_tiptapModules) return _tiptapModules;
   const [coreMod, kitMod, phMod, ccMod] = await Promise.all([
-    import(`${TIPTAP_CDN}/@tiptap/core@${TIPTAP_VERSION}/+esm`),
-    import(`${TIPTAP_CDN}/@tiptap/starter-kit@${TIPTAP_VERSION}/+esm`),
-    import(`${TIPTAP_CDN}/@tiptap/extension-placeholder@${TIPTAP_VERSION}/+esm`),
-    import(`${TIPTAP_CDN}/@tiptap/extension-character-count@${TIPTAP_VERSION}/+esm`)
+    import("@tiptap/core"),
+    import("@tiptap/starter-kit"),
+    import("@tiptap/extension-placeholder"),
+    import("@tiptap/extension-character-count")
   ]);
   _tiptapModules = {
     Editor: coreMod.Editor,
@@ -1946,7 +1960,7 @@ function applySiteContent(c) {
     const wrap = document.getElementById("ct-about-page");
     if (wrap) {
       const a = c.about_page;
-      const email = (c.site && c.site.contact_email) || "hello@example.com";
+      const email = (c.site && c.site.contact_email) || "unedited.voices.project@gmail.com";
       // Intro: link the word "Why" to the why page if it appears
       const introWithLink = escapeHtml(a.intro || "").replace(
         /\bWhy\b/,
