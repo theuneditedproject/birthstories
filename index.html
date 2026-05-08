@@ -11,11 +11,15 @@
 <meta property="og:title" content="Unedited / Birth Stories — In their own words" />
 <meta property="og:description" content="An open archive. Mothers around the world. Their words, untouched. The first edition of Unedited." />
 <meta property="og:type" content="website" />
-<meta property="og:image" content="og-image.svg" />
+<meta property="og:image" content="og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Unedited — Birth stories, in their own words. From mothers around the world." />
 <meta property="og:site_name" content="Unedited" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Unedited / Birth Stories" />
 <meta name="twitter:description" content="An open archive. Mothers around the world. Their words, untouched." />
+<meta name="twitter:image" content="og-image.png" />
 
 <!-- Inline SVG favicon — Echo mark, simplified for 32px scale -->
 <link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="%23F4F1EC"/><path d="M 8 7 Q 22 7, 22 16 Q 22 25, 8 25" fill="none" stroke="%230F0F0F" stroke-width="1.6"/><path d="M 13 12 Q 19 12, 19 16 Q 19 20, 13 20" fill="none" stroke="%230F0F0F" stroke-width="1.3"/><circle cx="7" cy="16" r="1.4" fill="%230F0F0F"/></svg>' />
@@ -605,7 +609,6 @@
   /* Submit page elements stay at a comfortable filling-out width inside
      the wider container. */
   #page-submit > * { max-width: 720px; margin-left: auto; margin-right: auto; }
-  #page-submit .page-hero-mark { /* flex-centered already */ }
 
   .form-intro {
     font-family: var(--font-serif); font-size: 18px; color: var(--ink-soft);
@@ -1003,48 +1006,13 @@
     .why-teaser-text { font-size: 20px; }
   }
 
-  /* === WHY / ABOUT / TERMS PAGES (long-form prose) === */
+  /* === WHY / ABOUT / TERMS PAGES (long-form prose) ===
+     All three share the same pattern: optional painting at the top,
+     centered, followed by eyebrow, title, and prose. Same column width
+     on every page so navigation feels stable. */
   .why-page, .about-page, .terms-page {
     font-family: var(--font-serif); max-width: 620px;
     margin: 0 auto; padding: 8px 0 40px;
-  }
-  /* Why page: side-by-side image + text on desktop, stacked on mobile */
-  .why-page { max-width: 980px; }
-  .why-layout {
-    display: grid;
-    grid-template-columns: minmax(220px, 300px) 1fr;
-    gap: 56px;
-    align-items: start;
-    padding-top: 8px;
-  }
-  .why-image {
-    margin: 0;
-    position: sticky;
-    top: 24px;
-  }
-  .why-image img {
-    display: block;
-    width: 100%;
-    height: auto;
-    border: 1px solid var(--rule-soft);
-  }
-  .why-image figcaption {
-    font-family: var(--font-sans); font-size: 11px;
-    color: var(--ink-faint); margin-top: 12px;
-    line-height: 1.55; letter-spacing: 0.04em;
-  }
-  .why-image figcaption em { color: var(--ink-soft); }
-  @media (max-width: 800px) {
-    .why-page { max-width: 620px; }
-    .why-layout {
-      grid-template-columns: 1fr;
-      gap: 28px;
-    }
-    .why-image {
-      max-width: 280px;
-      margin: 0 auto;
-      position: static;
-    }
   }
   .page-eyebrow {
     font-family: var(--font-sans); font-size: 11px; font-weight: 500;
@@ -1052,23 +1020,13 @@
     text-transform: uppercase; letter-spacing: 0.18em;
     border-bottom: 1px solid var(--ink); padding-bottom: 12px;
   }
-  /* Hero mark above page-eyebrow on inner pages — left-aligned to match
-     the eyebrow line and title that follow. */
-  .page-hero-mark {
-    color: var(--ink); margin: 8px 0 28px;
-  }
-  .page-hero-mark svg { display: block; }
-  /* Full-width banner art at the top of an inner page (Why, About, Terms).
-     Paintings are centered within a cream-mat frame (object-fit: contain),
-     so portrait works display fully instead of being cropped. */
+  /* Painting at the top of an inner page (About, Terms). Minimal — no
+     frame, no border. Just the artwork centered, with a small italic
+     caption underneath in the body type. */
   .page-banner {
     margin: 0 0 36px;
-    width: 100%;
-    color: var(--ink);
-    background: var(--bg-alt);
-    border: 1px solid var(--rule-soft);
-    padding: 24px;
     text-align: center;
+    color: var(--ink);
   }
   .page-banner svg {
     display: block; width: 100%; height: auto; max-height: 360px;
@@ -1077,7 +1035,7 @@
     display: block;
     margin: 0 auto;
     max-width: 100%;
-    max-height: 560px;
+    max-height: 420px;
     width: auto;
     height: auto;
     object-fit: contain;
@@ -1085,10 +1043,8 @@
   .page-banner img.broken { display: none; }
   .page-banner figcaption {
     font-family: var(--font-sans); font-size: 11px;
-    color: var(--ink-faint); padding: 10px 14px;
-    line-height: 1.5; letter-spacing: 0.04em;
-    background: var(--bg);
-    border-top: 1px solid var(--rule-soft);
+    color: var(--ink-faint); margin-top: 12px;
+    line-height: 1.55; letter-spacing: 0.04em;
   }
   .page-banner figcaption em { color: var(--ink-soft); }
   .page-banner figcaption a { color: var(--ink); border-bottom: 1px solid var(--rule); }
@@ -1516,14 +1472,10 @@
     </div>
 
     <div class="page" id="page-submit">
-      <div class="page-hero-mark" aria-hidden="true">
-        <svg width="100" height="80" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
-          <path d="M 4 14 Q 66 14, 66 40 Q 66 66, 4 66" fill="none" stroke="currentColor" stroke-width="1.25"/>
-          <path d="M 20 24 Q 52 24, 52 40 Q 52 56, 20 56" fill="none" stroke="currentColor" stroke-width="1"/>
-          <path d="M 32 32 Q 40 32, 40 40 Q 40 48, 32 48" fill="none" stroke="currentColor" stroke-width="0.85"/>
-          <circle cx="2" cy="40" r="2.4" fill="currentColor"/>
-        </svg>
-      </div>
+      <figure class="page-banner">
+        <img src="images/kollwitz-mother-and-child.jpg" alt="Mother and Child by Käthe Kollwitz. A mother holding a child closely, drawn in lithographic charcoal.">
+        <figcaption>Käthe Kollwitz, <em>Mother and Child</em>. Lithograph. Public domain.</figcaption>
+      </figure>
       <div class="page-eyebrow">Share your story</div>
       <h2 id="ct-submit-title" style="font-family: var(--font-serif); font-size: clamp(36px, 6vw, 52px); font-weight: 500; margin: 24px 0 18px; letter-spacing: -0.025em; line-height: 1.0;">In your own words.</h2>
       <p class="form-intro" id="ct-submit-intro">Tell it your way, in any language you like. Persian, Arabic, English, Dutch, Chinese, anything. The editor adjusts as you write so your story renders correctly in your script. Your work saves automatically. We review every submission and reply within a few days.</p>
@@ -1721,15 +1673,13 @@
 
     <div class="page" id="page-why">
       <article class="why-page" id="ct-why-page-wrap">
-        <div class="why-layout">
-          <figure class="why-image">
-            <img src="images/why-hero.jpg" alt="Hope II by Gustav Klimt, 1907–08. A pregnant woman bowed over her belly, with three figures gathered below her.">
-            <figcaption>Gustav Klimt, <em>Hope II</em>, 1907–08. Oil, gold, and platinum on canvas. Public domain.</figcaption>
-          </figure>
-          <div class="why-content" id="ct-why-page">
-            <div class="page-eyebrow">Why this exists</div>
-            <h2 class="why-title">Loading…</h2>
-          </div>
+        <figure class="page-banner">
+          <img src="images/why-hero.jpg" alt="Hope II by Gustav Klimt, 1907–08. A pregnant woman bowed over her belly, with three figures gathered below her.">
+          <figcaption>Gustav Klimt, <em>Hope II</em>, 1907–08. Oil, gold, and platinum on canvas. Public domain.</figcaption>
+        </figure>
+        <div id="ct-why-page">
+          <div class="page-eyebrow">Why this exists</div>
+          <h2 class="why-title">Loading…</h2>
         </div>
       </article>
     </div>
@@ -1740,14 +1690,6 @@
           <img src="images/about-hero.jpg" alt="Nursing Mother by Paula Modersohn-Becker, c. 1903. A mother breastfeeding her infant, intimate and quiet.">
           <figcaption>Paula Modersohn-Becker, <em>Nursing Mother</em> (Stillende Mutter), c. 1903. Oil on canvas. Public domain.</figcaption>
         </figure>
-        <div class="page-hero-mark" aria-hidden="true">
-          <svg width="100" height="80" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
-            <path d="M 4 14 Q 66 14, 66 40 Q 66 66, 4 66" fill="none" stroke="currentColor" stroke-width="1.25"/>
-            <path d="M 20 24 Q 52 24, 52 40 Q 52 56, 20 56" fill="none" stroke="currentColor" stroke-width="1"/>
-            <path d="M 32 32 Q 40 32, 40 40 Q 40 48, 32 48" fill="none" stroke="currentColor" stroke-width="0.85"/>
-            <circle cx="2" cy="40" r="2.4" fill="currentColor"/>
-          </svg>
-        </div>
         <div class="page-eyebrow">About the project</div>
         <div id="ct-about-page"></div>
       </article>
@@ -1759,14 +1701,6 @@
           <img src="images/terms-hero.jpg" alt="Girl with Small Child by Paula Modersohn-Becker, 1905. An older child holding a younger one safely against her, in a quiet outdoor setting.">
           <figcaption>Paula Modersohn-Becker, <em>Girl with Small Child</em> (Mädchen mit Kleinkind), 1905. Oil on canvas. Public domain.</figcaption>
         </figure>
-        <div class="page-hero-mark" aria-hidden="true">
-          <svg width="100" height="80" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
-            <path d="M 4 14 Q 66 14, 66 40 Q 66 66, 4 66" fill="none" stroke="currentColor" stroke-width="1.25"/>
-            <path d="M 20 24 Q 52 24, 52 40 Q 52 56, 20 56" fill="none" stroke="currentColor" stroke-width="1"/>
-            <path d="M 32 32 Q 40 32, 40 40 Q 40 48, 32 48" fill="none" stroke="currentColor" stroke-width="0.85"/>
-            <circle cx="2" cy="40" r="2.4" fill="currentColor"/>
-          </svg>
-        </div>
         <div class="page-eyebrow">Terms &amp; license</div>
         <h2 class="terms-title">In favor of the storyteller.</h2>
 
