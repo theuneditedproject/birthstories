@@ -2748,6 +2748,10 @@ async function initEditor() {
       });
     }
 
+    // Diagnostic — visible in DevTools console — to confirm the editor wired
+    // up successfully. If a writer reports keys not working, this line is the
+    // first thing to look for.
+    if (window && window.console) console.info("[Unedited] TipTap editor ready");
     return editor;
   })();
   return editorLoadPromise;
@@ -2911,10 +2915,16 @@ document.getElementById("story-form").addEventListener("input", scheduleSave);
 // is to submit the form on Enter in any single-line input, which is wrong here:
 // they're still filling in metadata, not done writing. Only the explicit
 // "Submit story" button should submit. Enter inside the editor (TipTap or the
-// <textarea> fallback) is unaffected — it still creates a new paragraph/line.
+// <textarea> fallback) MUST be left alone so it creates a new paragraph/line.
 document.getElementById("story-form").addEventListener("keydown", (e) => {
   if (e.key !== "Enter") return;
   const t = e.target;
+  // Belt-and-suspenders: never interfere with Enter inside the rich-text
+  // editor (contenteditable, .ProseMirror) or the textarea fallback. Anything
+  // editable owns its own Enter behavior.
+  if (t.isContentEditable) return;
+  if (t.closest && t.closest(".ProseMirror, #editor-mount, #editor-wrap, textarea")) return;
+  if (t.tagName === "TEXTAREA") return;
   if (t.tagName === "INPUT" && (t.type === "text" || t.type === "email")) {
     e.preventDefault();
   }
