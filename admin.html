@@ -1170,26 +1170,43 @@ async function saveStory() {
 
 async function deleteStory(id) {
   const s = stories.find(x => x.id === id);
-  if (!s) return;
+  if (!s) {
+    alert("Story not found in the list. Try refreshing.");
+    return;
+  }
+  if (!s._filename) {
+    alert("Couldn't determine the filename for story " + id + ". Refresh the stories list and try again.");
+    return;
+  }
   if (!confirm(`Delete story "${s.author}" (${s.id})? This commits a deletion to GitHub.`)) return;
 
   showStatusBar("info", "Deleting…");
+  console.log("[deleteStory] starting", { id, filename: s._filename });
 
   try {
-    // Delete the story file
-    const fileSha = indexShas[s._filename];
-    await ghDelete("stories/" + s._filename, `Remove story ${id}`, fileSha);
+    // Get a fresh SHA for the story file in case the cached one is stale.
+    const file = await ghGet("stories/" + s._filename);
+    if (!file) throw new Error("File not found on GitHub: stories/" + s._filename);
+    console.log("[deleteStory] fetched file sha", file.sha);
+    await ghDelete("stories/" + s._filename, `Remove story ${id}`, file.sha);
+    console.log("[deleteStory] file deleted");
 
-    // Update index.json
+    // Update index.json with a fresh SHA too.
     const indexFile = await ghGet("stories/index.json");
+    if (!indexFile) throw new Error("stories/index.json not found");
     const indexData = JSON.parse(base64ToUtf8(indexFile.content));
     indexData.stories = indexData.stories.filter(e => e.id !== id);
     await ghPut("stories/index.json", JSON.stringify(indexData, null, 2) + "\n", `Remove story ${id} from index`, indexFile.sha);
+    console.log("[deleteStory] index.json updated");
 
     showStatusBar("success", "Deleted.");
     await loadStories();
   } catch (err) {
-    showStatusBar("error", "Delete failed: " + err.message);
+    console.error("[deleteStory] failed", err);
+    showStatusBar("error", "Delete failed.");
+    // Persistent (alert) so you can actually read the error.
+    alert("Delete failed: " + (err && err.message ? err.message : String(err)) +
+          "\n\nOpen the browser console (View → Developer → Developer Tools, then the Console tab) for the full request log, and paste it back so I can debug.");
   }
 }
 
