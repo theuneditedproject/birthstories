@@ -3,6 +3,10 @@
     {
       "id": "001",
       "file": "001-the-founder.json"
+    },
+    {
+      "id": "002",
+      "file": "002-tester-story.json"
     }
   ]
 }
