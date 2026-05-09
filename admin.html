@@ -275,6 +275,7 @@
       <div class="tabs">
         <button class="tab active" data-tab="stories">Stories</button>
         <button class="tab" data-tab="new">New story</button>
+        <button class="tab" data-tab="invitees">Invitees</button>
         <button class="tab" data-tab="content">Site content</button>
         <button class="tab" data-tab="settings">Settings</button>
       </div>
@@ -424,6 +425,78 @@
           <button class="btn-secondary" onclick="resetForm()">Reset form</button>
           <button class="btn-secondary" id="cancel-edit-btn" onclick="resetForm()" style="display: none;">Cancel edit</button>
         </div>
+      </div>
+
+      <!-- INVITEES TAB -->
+      <div class="tab-pane" id="tab-invitees">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap;">
+          <h2 style="margin: 0;">Invitees</h2>
+          <div class="btn-row">
+            <button class="btn-secondary" onclick="invSelectAll()">Select all</button>
+            <button class="btn-secondary" onclick="invClearSelection()">Clear selection</button>
+            <button class="btn-primary" onclick="invComposeInvitation()">✉ Compose invitation</button>
+          </div>
+        </div>
+        <p style="color: var(--text-soft); font-size: 14px; margin: -4px 0 16px;">A private list of women you'd like to invite to share their stories. <strong>This list lives only in your browser</strong> (localStorage). It never leaves your machine, never goes to GitHub, never appears on the public site. Use Export below to back it up.</p>
+
+        <div id="inv-status"></div>
+
+        <details style="margin-bottom: 18px;">
+          <summary style="cursor: pointer; font-weight: 500;">+ Add a new invitee</summary>
+          <div style="border: 1px solid var(--border, #ddd); border-radius: 4px; padding: 14px 16px; margin-top: 8px;">
+            <div class="row">
+              <div class="field">
+                <label>Name <span class="opt">*</span></label>
+                <input type="text" id="inv-add-name" placeholder="First name or full name" />
+              </div>
+              <div class="field">
+                <label>Email <span class="opt">*</span></label>
+                <input type="email" id="inv-add-email" placeholder="email@example.com" />
+              </div>
+            </div>
+            <div class="field">
+              <label>Notes <span class="opt">optional</span></label>
+              <input type="text" id="inv-add-notes" placeholder="e.g. friend from college, doula in Lisbon, met at the conference" />
+            </div>
+            <div class="btn-row" style="margin-top: 10px;">
+              <button class="btn-primary" onclick="invAddPerson()">Add to list</button>
+            </div>
+          </div>
+        </details>
+
+        <div id="inv-list">
+          <div class="empty">No invitees yet. Add one above.</div>
+        </div>
+
+        <details style="margin-top: 28px;">
+          <summary style="cursor: pointer; font-weight: 500;">Email template</summary>
+          <div style="border: 1px solid var(--border, #ddd); border-radius: 4px; padding: 14px 16px; margin-top: 8px;">
+            <p style="margin: 0 0 10px; color: var(--text-soft); font-size: 13px;">Editable. Tokens like <code>{{name}}</code> are replaced with each recipient's first name when you compose. The template is saved locally as you type.</p>
+            <div class="field">
+              <label>Subject</label>
+              <input type="text" id="inv-template-subject" oninput="invSaveTemplate()" />
+            </div>
+            <div class="field">
+              <label>Body</label>
+              <textarea id="inv-template-body" rows="14" oninput="invSaveTemplate()" style="width: 100%; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px;"></textarea>
+            </div>
+            <div class="btn-row">
+              <button class="btn-secondary" onclick="invResetTemplate()">Reset to default</button>
+            </div>
+          </div>
+        </details>
+
+        <details style="margin-top: 16px;">
+          <summary style="cursor: pointer; font-weight: 500;">Backup / restore</summary>
+          <div style="border: 1px solid var(--border, #ddd); border-radius: 4px; padding: 14px 16px; margin-top: 8px;">
+            <p style="margin: 0 0 10px; color: var(--text-soft); font-size: 13px;">Save your invitee list to a file you keep safe (treat it like an address book — don't email it to yourself unencrypted). Restore on a new device by importing.</p>
+            <div class="btn-row">
+              <button class="btn-secondary" onclick="invExport()">Export to JSON file</button>
+              <input type="file" id="inv-import-file" accept="application/json" style="display: none;" onchange="invImport(this)" />
+              <button class="btn-secondary" onclick="document.getElementById('inv-import-file').click()">Import from JSON file</button>
+            </div>
+          </div>
+        </details>
       </div>
 
       <!-- SITE CONTENT TAB -->
@@ -1081,6 +1154,10 @@ async function saveStory() {
       // New publish: show confirmation panel with manage URL + pre-drafted email.
       // Don't reset form — Mosi reviews the panel first, then dismisses.
       const authorEmail = document.getElementById("f-author-email").value.trim();
+      // Privately remember which email goes with which story (browser-only,
+      // never sent to GitHub or the public site). Used by the Invitees tab
+      // to mark "already submitted".
+      if (authorEmail) saveStoryEmailLocally(story.id, authorEmail);
       renderPublishConfirmation(story, manageToken, authorEmail);
     }
   } catch (err) {
@@ -1636,6 +1713,324 @@ async function copyToClipboard(text, btn) {
     showStatusBar("error", "Copy failed. Select and copy manually.");
   }
 }
+
+// ============================================================
+// PRIVATE EMAIL MAP (browser-only — never leaves the device)
+// Lets the Invitees tab know which authors have already submitted,
+// without putting any email on the public site.
+// ============================================================
+
+const STORY_EMAIL_KEY = "unedited.story_emails.v1";
+
+function loadStoryEmails() {
+  try { return JSON.parse(localStorage.getItem(STORY_EMAIL_KEY) || "{}"); }
+  catch { return {}; }
+}
+
+function saveStoryEmailLocally(storyId, email) {
+  if (!storyId || !email) return;
+  const map = loadStoryEmails();
+  map[storyId] = String(email).trim().toLowerCase();
+  try { localStorage.setItem(STORY_EMAIL_KEY, JSON.stringify(map)); } catch {}
+}
+
+// ============================================================
+// INVITEES (browser-only list of people to invite)
+// ============================================================
+
+const INVITEES_KEY = "unedited.invitees.v1";
+const INV_TEMPLATE_KEY = "unedited.invitation_template.v1";
+
+const DEFAULT_TEMPLATE = {
+  subject: "Would you share your birth story?",
+  body:
+"Dear {{name}},\n" +
+"\n" +
+"I'm writing to invite you to share your birth story for a project I'm working on called Unedited (https://uneditedvoices). It's a collective archive of birth stories from women all over the world, told in their own words. Joyful ones, painful ones, ordinary ones.\n" +
+"\n" +
+"You can submit in any language. Use your full name, a first name, initials, or stay completely anonymous. Your story stays your copyright. You can edit or remove it at any time.\n" +
+"\n" +
+"If you'd like to share, the form is here: https://uneditedvoices/#submit\n" +
+"\n" +
+"And if not, that's also fine. Either way, thank you for reading this.\n" +
+"\n" +
+"With care,\n" +
+"Samira"
+};
+
+let invitees = [];
+
+function loadInvitees() {
+  try { invitees = JSON.parse(localStorage.getItem(INVITEES_KEY) || "[]"); }
+  catch { invitees = []; }
+  if (!Array.isArray(invitees)) invitees = [];
+}
+
+function persistInvitees() {
+  try { localStorage.setItem(INVITEES_KEY, JSON.stringify(invitees)); }
+  catch (e) { showStatusBar("error", "Couldn't save to browser storage."); }
+}
+
+function loadInvitationTemplate() {
+  try {
+    const t = JSON.parse(localStorage.getItem(INV_TEMPLATE_KEY) || "null");
+    return t && t.subject && t.body ? t : { ...DEFAULT_TEMPLATE };
+  } catch { return { ...DEFAULT_TEMPLATE }; }
+}
+
+function invSaveTemplate() {
+  const t = {
+    subject: document.getElementById("inv-template-subject").value,
+    body: document.getElementById("inv-template-body").value
+  };
+  try { localStorage.setItem(INV_TEMPLATE_KEY, JSON.stringify(t)); } catch {}
+}
+
+function invResetTemplate() {
+  if (!confirm("Reset the email template to the default?")) return;
+  document.getElementById("inv-template-subject").value = DEFAULT_TEMPLATE.subject;
+  document.getElementById("inv-template-body").value = DEFAULT_TEMPLATE.body;
+  invSaveTemplate();
+}
+
+// Compute status: not_contacted | invited | submitted
+function invStatusOf(person) {
+  // Submitted? If any locally-known story author email matches.
+  const map = loadStoryEmails();
+  const target = (person.email || "").trim().toLowerCase();
+  if (target) {
+    for (const [storyId, email] of Object.entries(map)) {
+      if (email === target) return { status: "submitted", storyId };
+    }
+  }
+  if (person.invited_at) return { status: "invited" };
+  return { status: "not_contacted" };
+}
+
+function invStatusBadge(s) {
+  if (s.status === "submitted") return `<span style="color: var(--success-text, #1f7a1f); font-weight: 500;">✓ Submitted${s.storyId ? " (#" + escapeHtml(s.storyId) + ")" : ""}</span>`;
+  if (s.status === "invited") return `<span style="color: var(--text-soft);">✉ Invited</span>`;
+  return `<span style="color: var(--text-soft);">○ Not contacted</span>`;
+}
+
+function invRender() {
+  const list = document.getElementById("inv-list");
+  if (!list) return;
+  if (invitees.length === 0) {
+    list.innerHTML = '<div class="empty">No invitees yet. Add one above.</div>';
+    invUpdateCounts();
+    return;
+  }
+  list.innerHTML = invitees.map((p, i) => {
+    const s = invStatusOf(p);
+    const submittedRow = s.status === "submitted" ? '' : '<input type="checkbox" class="inv-check" data-idx="' + i + '" />';
+    const invitedAt = p.invited_at ? new Date(p.invited_at).toISOString().slice(0, 10) : "";
+    return `
+      <div class="story-row" style="display: grid; grid-template-columns: 32px 1fr auto; gap: 12px; align-items: center; padding: 12px; border-bottom: 1px solid var(--border, #eee);" data-idx="${i}">
+        <div>${submittedRow}</div>
+        <div>
+          <div style="font-weight: 500;">${escapeHtml(p.name || "—")}</div>
+          <div style="color: var(--text-soft); font-size: 13px;">${escapeHtml(p.email || "")}${p.notes ? " · " + escapeHtml(p.notes) : ""}${invitedAt ? " · invited " + invitedAt : ""}</div>
+          <div style="font-size: 13px; margin-top: 4px;">${invStatusBadge(s)}</div>
+        </div>
+        <div class="story-row-actions">
+          <button onclick="invEditPerson(${i})">Edit</button>
+          <button class="danger" onclick="invDeletePerson(${i})">Remove</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+  invUpdateCounts();
+}
+
+function invUpdateCounts() {
+  const total = invitees.length;
+  const stats = invitees.reduce((acc, p) => {
+    const s = invStatusOf(p).status;
+    acc[s] = (acc[s] || 0) + 1;
+    return acc;
+  }, {});
+  const status = document.getElementById("inv-status");
+  if (!status) return;
+  if (total === 0) { status.innerHTML = ""; return; }
+  status.innerHTML = `<p style="color: var(--text-soft); font-size: 13px; margin: 0 0 12px;">${total} total · ${stats.submitted || 0} submitted · ${stats.invited || 0} invited · ${stats.not_contacted || 0} not yet contacted</p>`;
+}
+
+function invAddPerson() {
+  const name = document.getElementById("inv-add-name").value.trim();
+  const email = document.getElementById("inv-add-email").value.trim();
+  const notes = document.getElementById("inv-add-notes").value.trim();
+  if (!name || !email) { showStatusBar("error", "Name and email are required."); return; }
+  // Reject duplicates by email
+  if (invitees.some(p => (p.email || "").toLowerCase() === email.toLowerCase())) {
+    showStatusBar("error", "Already on the list."); return;
+  }
+  invitees.push({ name, email, notes, invited_at: null });
+  persistInvitees();
+  document.getElementById("inv-add-name").value = "";
+  document.getElementById("inv-add-email").value = "";
+  document.getElementById("inv-add-notes").value = "";
+  invRender();
+  showStatusBar("success", "Added.");
+}
+
+function invEditPerson(idx) {
+  const p = invitees[idx];
+  if (!p) return;
+  const newName = prompt("Name", p.name || "");
+  if (newName === null) return;
+  const newEmail = prompt("Email", p.email || "");
+  if (newEmail === null) return;
+  const newNotes = prompt("Notes (optional)", p.notes || "");
+  if (newNotes === null) return;
+  p.name = newName.trim();
+  p.email = newEmail.trim();
+  p.notes = newNotes.trim();
+  persistInvitees();
+  invRender();
+}
+
+function invDeletePerson(idx) {
+  const p = invitees[idx];
+  if (!p) return;
+  if (!confirm(`Remove "${p.name}" from your invitee list?`)) return;
+  invitees.splice(idx, 1);
+  persistInvitees();
+  invRender();
+}
+
+function invSelectAll() {
+  document.querySelectorAll(".inv-check").forEach(c => c.checked = true);
+}
+
+function invClearSelection() {
+  document.querySelectorAll(".inv-check").forEach(c => c.checked = false);
+}
+
+function firstNameOf(name) {
+  return (name || "").split(/\s+/)[0] || name || "";
+}
+
+function fillTemplate(template, person) {
+  return template
+    .replace(/\{\{\s*name\s*\}\}/g, firstNameOf(person.name))
+    .replace(/\{\{\s*fullname\s*\}\}/g, person.name || "")
+    .replace(/\{\{\s*email\s*\}\}/g, person.email || "");
+}
+
+function invComposeInvitation() {
+  const checks = document.querySelectorAll(".inv-check:checked");
+  if (checks.length === 0) {
+    showStatusBar("error", "Select one or more invitees first."); return;
+  }
+  const selected = Array.from(checks).map(c => invitees[parseInt(c.dataset.idx, 10)]).filter(Boolean);
+  const tpl = {
+    subject: document.getElementById("inv-template-subject").value || DEFAULT_TEMPLATE.subject,
+    body: document.getElementById("inv-template-body").value || DEFAULT_TEMPLATE.body
+  };
+
+  // If only ONE recipient, personalize and use a To: + body. Otherwise use BCC.
+  if (selected.length === 1) {
+    const p = selected[0];
+    const subject = fillTemplate(tpl.subject, p);
+    const body = fillTemplate(tpl.body, p);
+    const url = "mailto:" + encodeURIComponent(p.email)
+      + "?subject=" + encodeURIComponent(subject)
+      + "&body=" + encodeURIComponent(body);
+    window.location.href = url;
+    p.invited_at = new Date().toISOString();
+    persistInvitees();
+    invRender();
+    showStatusBar("success", "Marked as invited.");
+    return;
+  }
+
+  // Multiple recipients: open ONE composed email per person so each is
+  // personalized. Mailto can't BCC + personalize at the same time, so we
+  // open a sequence (browser usually queues these, but warn the user).
+  if (!confirm(`This will open ${selected.length} pre-filled emails (one per person, so we can personalize each). Continue?`)) return;
+
+  selected.forEach((p, i) => {
+    const subject = fillTemplate(tpl.subject, p);
+    const body = fillTemplate(tpl.body, p);
+    const url = "mailto:" + encodeURIComponent(p.email)
+      + "?subject=" + encodeURIComponent(subject)
+      + "&body=" + encodeURIComponent(body);
+    setTimeout(() => { window.open(url, "_blank"); }, i * 400);
+    p.invited_at = new Date().toISOString();
+  });
+  persistInvitees();
+  setTimeout(invRender, selected.length * 400 + 200);
+  showStatusBar("success", `Opened ${selected.length} drafts. Marked as invited.`);
+}
+
+function invExport() {
+  const data = {
+    exported_at: new Date().toISOString(),
+    invitees,
+    template: {
+      subject: document.getElementById("inv-template-subject").value,
+      body: document.getElementById("inv-template-body").value
+    }
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "unedited-invitees-" + new Date().toISOString().slice(0, 10) + ".json";
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
+  showStatusBar("success", "Exported.");
+}
+
+function invImport(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data.invitees)) throw new Error("Missing 'invitees' array");
+      const merge = confirm("Merge with existing list (OK), or replace it (Cancel)?");
+      if (merge) {
+        const existing = new Set(invitees.map(p => (p.email || "").toLowerCase()));
+        for (const p of data.invitees) {
+          if (!existing.has((p.email || "").toLowerCase())) invitees.push(p);
+        }
+      } else {
+        invitees = data.invitees;
+      }
+      persistInvitees();
+      if (data.template && data.template.subject && data.template.body) {
+        document.getElementById("inv-template-subject").value = data.template.subject;
+        document.getElementById("inv-template-body").value = data.template.body;
+        invSaveTemplate();
+      }
+      invRender();
+      showStatusBar("success", "Imported.");
+    } catch (err) {
+      showStatusBar("error", "Import failed: " + err.message);
+    }
+    input.value = "";
+  };
+  reader.readAsText(file);
+}
+
+// Wire up: load invitees + template on init, refresh whenever the tab opens
+function invInitOnce() {
+  loadInvitees();
+  const tpl = loadInvitationTemplate();
+  document.getElementById("inv-template-subject").value = tpl.subject;
+  document.getElementById("inv-template-body").value = tpl.body;
+  invRender();
+}
+// Initialize invitees + template on script load (the form fields exist in the DOM by then).
+invInitOnce();
+// Re-render every time the Invitees tab is shown (status may have changed
+// because a story was just published, etc.). Listener runs in addition to the
+// generic tab handler — they don't conflict.
+document.querySelectorAll('.tab[data-tab="invitees"]').forEach(t =>
+  t.addEventListener("click", () => setTimeout(invRender, 0))
+);
 
 
 </script>

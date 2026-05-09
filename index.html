@@ -1367,6 +1367,23 @@
     font-family: var(--font-serif); font-size: 18px; font-style: italic;
   }
 </style>
+
+<!-- Privacy-respecting analytics (Cloudflare Web Analytics).
+     Cookieless. No tracking pixels. No consent banner needed.
+     To activate: replace REPLACE_WITH_CF_BEACON_TOKEN below with your token
+     from https://dash.cloudflare.com/?to=/:account/web-analytics. While the
+     placeholder is in place, the script is inert (it doesn't load). -->
+<script>
+(function() {
+  var CF_TOKEN = "REPLACE_WITH_CF_BEACON_TOKEN";
+  if (!CF_TOKEN || CF_TOKEN.indexOf("REPLACE_WITH") === 0) return;
+  var s = document.createElement("script");
+  s.defer = true;
+  s.src = "https://static.cloudflareinsights.com/beacon.min.js";
+  s.setAttribute("data-cf-beacon", JSON.stringify({ token: CF_TOKEN }));
+  document.head.appendChild(s);
+})();
+</script>
 </head>
 <body>
 

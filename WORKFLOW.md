@@ -177,6 +177,24 @@ Doesn't have to be exact. The point is to keep the project moving without it tak
 
 ---
 
+## Turning on visitor analytics (optional)
+
+The site is wired for **Cloudflare Web Analytics** — free, cookieless, no consent banner needed. By default it's off (the snippet is inert until you paste in a token).
+
+To turn it on:
+
+1. Go to https://dash.cloudflare.com/?to=/:account/web-analytics and sign in (free account is fine).
+2. Click "Add a site" → choose "Manual setup" (since GitHub Pages isn't behind Cloudflare's proxy by default).
+3. Enter your site URL. Cloudflare gives you a long token like `abc123def456…`
+4. Open `index.html` in the repo, search for `REPLACE_WITH_CF_BEACON_TOKEN`, paste the token in its place. Commit.
+5. Within a few hours the dashboard fills in: pageviews, top pages, countries, browsers. No personal data, no IP logging, no third-party tracking.
+
+If you'd rather not use Cloudflare, you can swap the snippet for **GoatCounter** (also free, even more independent): replace the script block with the one-liner from goatcounter.com/code. Both are equally privacy-respecting; Cloudflare is faster/easier, GoatCounter is more independent.
+
+If you decide you don't want analytics at all, just leave the placeholder in place — the snippet stays inert.
+
+---
+
 ## Worth keeping handy
 
 - Your GitHub repo URL: `https://github.com/YOUR-USERNAME/unedited`
