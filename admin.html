@@ -176,6 +176,32 @@
   .status-bar.success { background: var(--success-bg); color: var(--success-text); }
   .status-bar.error { background: var(--error-bg); color: var(--error-text); }
   .status-bar.info { background: var(--info-bg); color: var(--info-text); }
+
+  /* Paste-submission modal */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+    display: none; align-items: center; justify-content: center;
+    z-index: 200; padding: 20px;
+  }
+  .modal-backdrop.visible { display: flex; }
+  .modal-card {
+    background: var(--bg, #fff); color: var(--text, #111);
+    width: min(720px, 100%); max-height: 90vh; overflow: auto;
+    border-radius: 8px; padding: 22px 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .modal-card h3 { margin: 0 0 6px; }
+  .modal-card .modal-subtitle { color: var(--text-soft); font-size: 13px; margin: 0 0 14px; }
+  .modal-card textarea {
+    width: 100%; min-height: 260px; font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 13px; padding: 10px 12px; border: 1px solid var(--border, #ccc);
+    border-radius: 4px; box-sizing: border-box; resize: vertical;
+  }
+  .modal-card .modal-actions { display: flex; gap: 10px; margin-top: 14px; justify-content: flex-end; flex-wrap: wrap; }
+  .modal-card .parse-result { font-size: 13px; margin-top: 10px; }
+  .modal-card .parse-result.error { color: var(--error-text); }
+  .modal-card .parse-result.warn { color: #a36400; }
+  .modal-card .parse-result.success { color: var(--success-text); }
+  .modal-card .parse-list { margin: 6px 0 0; padding-left: 18px; }
 </style>
 </head>
 <body>
@@ -269,7 +295,17 @@
         <h2 id="form-title">Publish a new story</h2>
         <p id="form-subtitle" style="color: var(--text-soft); font-size: 14px; margin: -8px 0 24px;">Fill in the details from a submission email or voice note. The story goes live within ~1 minute of saving.</p>
 
+        <div class="btn-row" id="paste-row" style="margin: 0 0 18px;">
+          <button type="button" class="btn-secondary" onclick="openPasteModal()" title="Paste a Formspree email or Telegram reply to auto-fill the form">📋 Paste submission</button>
+          <span style="color: var(--text-soft); font-size: 13px;">Auto-fills every field below from a submission email. You still review &amp; click Publish.</span>
+        </div>
+
         <div id="form-status"></div>
+
+        <div class="field">
+          <label>Title <span class="opt">optional</span></label>
+          <input type="text" id="f-title" placeholder="A few words. Leave blank to publish under the editorial Nº." />
+        </div>
 
         <div class="row">
           <div class="field">
@@ -346,6 +382,15 @@
           <div class="field">
             <label>Audio duration (seconds) <span class="opt">optional</span></label>
             <input type="number" id="f-audio-duration" min="0" placeholder="e.g. 1245" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Cover image URL <span class="opt">optional</span></label>
+          <input type="url" id="f-cover-image" placeholder="https://res.cloudinary.com/... (paste from cover_image_url in submission email)" oninput="updateCoverPreview()" />
+          <p class="help">Before publishing: open the URL and verify the image does NOT show identifiable children's faces, hospital wristbands with names/numbers, license plates, or staff name badges.</p>
+          <div id="cover-preview" style="margin-top: 10px; display: none;">
+            <img id="cover-preview-img" alt="Cover preview" style="max-width: 240px; max-height: 180px; border-radius: 4px; border: 1px solid var(--border, #ddd);" />
           </div>
         </div>
 
@@ -892,6 +937,7 @@ function editStory(id) {
   document.getElementById("save-btn").textContent = "Save changes";
   document.getElementById("cancel-edit-btn").style.display = "inline-block";
 
+  document.getElementById("f-title").value = s.title || "";
   document.getElementById("f-author").value = s.author || "";
   document.getElementById("f-location").value = s.location || "";
   document.getElementById("f-year").value = s.year || "";
@@ -899,6 +945,8 @@ function editStory(id) {
   document.getElementById("f-content-notes").value = s.content_notes || "";
   document.getElementById("f-audio-url").value = s.audio_url || "";
   document.getElementById("f-audio-duration").value = s.audio_duration_seconds || "";
+  document.getElementById("f-cover-image").value = s.cover_image || "";
+  updateCoverPreview();
   document.getElementById("f-share-allowed").checked = s.share_allowed !== false;
   document.getElementById("f-submitted-at").value = s.submitted_at || "";
   document.getElementById("f-published-at").value = s.published_at || "";
@@ -922,9 +970,10 @@ function resetForm() {
   document.getElementById("save-btn").textContent = "Publish";
   document.getElementById("cancel-edit-btn").style.display = "none";
 
-  ["f-author","f-location","f-year","f-content-notes","f-audio-url","f-audio-duration"].forEach(id => {
+  ["f-title","f-author","f-location","f-year","f-content-notes","f-audio-url","f-audio-duration","f-cover-image"].forEach(id => {
     document.getElementById(id).value = "";
   });
+  updateCoverPreview();
   document.getElementById("f-language").value = "en";
   document.getElementById("f-share-allowed").checked = true;
   selectedTags.clear();
@@ -964,6 +1013,7 @@ async function saveStory() {
 
   const story = {
     id,
+    title: document.getElementById("f-title").value.trim(),
     author,
     location: document.getElementById("f-location").value.trim(),
     year: document.getElementById("f-year").value.trim(),
@@ -971,10 +1021,12 @@ async function saveStory() {
     content_notes: document.getElementById("f-content-notes").value.trim(),
     language: document.getElementById("f-language").value,
     share_allowed: document.getElementById("f-share-allowed").checked,
+    license: "all-rights-reserved",
     submitted_at: document.getElementById("f-submitted-at").value.trim(),
     published_at: document.getElementById("f-published-at").value.trim(),
     audio_url: audioUrl,
     audio_duration_seconds: parseInt(document.getElementById("f-audio-duration").value, 10) || 0,
+    cover_image: document.getElementById("f-cover-image").value.trim(),
     body
   };
 
@@ -1154,7 +1206,310 @@ function detectScript(text) {
     enterAdmin();
   }
 })();
+
+// ============================================================
+// PASTE-AND-PARSE SUBMISSION
+// ============================================================
+
+// Cover image preview
+function updateCoverPreview() {
+  const url = (document.getElementById("f-cover-image").value || "").trim();
+  const wrap = document.getElementById("cover-preview");
+  const img = document.getElementById("cover-preview-img");
+  if (url && /^https?:\/\//i.test(url)) {
+    img.src = url;
+    wrap.style.display = "";
+  } else {
+    img.removeAttribute("src");
+    wrap.style.display = "none";
+  }
+}
+
+// Modal open/close
+function openPasteModal() {
+  document.getElementById("paste-modal").classList.add("visible");
+  document.getElementById("paste-input").value = "";
+  document.getElementById("paste-result").innerHTML = "";
+  setTimeout(() => document.getElementById("paste-input").focus(), 50);
+}
+function closePasteModal() {
+  document.getElementById("paste-modal").classList.remove("visible");
+}
+
+// Field labels we recognize when scanning a Formspree-style email.
+// Lowercased, with non-alphanumeric collapsed (so "Story HTML" == "story_html").
+const PASTE_FIELDS = {
+  "title": "title",
+  "author": "author",
+  "location": "location",
+  "year": "year",
+  "email": "email",
+  "tags": "tags",
+  "contentnotes": "content_notes",
+  "storymode": "story_mode",
+  "storyhtml": "story_html",
+  "storytext": "story_text",
+  "audiourl": "audio_url",
+  "audiodurationseconds": "audio_duration_seconds",
+  "audioformat": "audio_format",
+  "audiosizebytes": "audio_size_bytes",
+  "coverimageurl": "cover_image_url",
+  "coverimagewidth": "cover_image_width",
+  "coverimageheight": "cover_image_height",
+  "coverimagebytes": "cover_image_bytes",
+  "consentauthor": "consent_author",
+  "consentpublish": "consent_publish",
+  "consentlicense": "consent_license",
+  "consentshare": "consent_share",
+  "consentbook": "consent_book",
+  "longtermcontact": "long_term_contact"
+};
+
+function normalizeKey(k) {
+  return k.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+// Parse a Formspree-style key:value email body. Tolerant to:
+//   - "key: value" inline
+//   - "Key Name\nvalue\n" (label on its own line)
+//   - multi-line values (collected until next recognized field)
+function parseFormspree(raw) {
+  const lines = raw.replace(/\r\n/g, "\n").split("\n");
+  const out = {};
+  let curKey = null;
+  let curVal = [];
+
+  function flush() {
+    if (curKey != null) {
+      const joined = curVal.join("\n").trim();
+      if (joined !== "" || !(curKey in out)) out[curKey] = joined;
+    }
+    curKey = null; curVal = [];
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    // Inline "key: value"
+    let m = line.match(/^\s*([A-Za-z][A-Za-z0-9 _-]{0,40}?)\s*:\s*(.*)$/);
+    if (m) {
+      const norm = normalizeKey(m[1]);
+      if (PASTE_FIELDS[norm]) {
+        flush();
+        curKey = PASTE_FIELDS[norm];
+        if (m[2].trim() !== "") curVal.push(m[2]);
+        continue;
+      }
+    }
+    // Label on its own line (no colon, but the next non-empty line is the value)
+    const stripped = line.trim();
+    const norm = normalizeKey(stripped);
+    if (stripped && PASTE_FIELDS[norm] && stripped.length < 40) {
+      flush();
+      curKey = PASTE_FIELDS[norm];
+      continue;
+    }
+    if (curKey != null) curVal.push(line);
+  }
+  flush();
+  return out;
+}
+
+// Parse a Telegram-style numbered reply (1-7 from WORKFLOW.md prompt).
+// 1=author, 2=location, 3=year, 4=content_notes, 5=consent_publish, 6=consent_share, 7=consent_book.
+function parseTelegram(raw) {
+  const map = { 1:"author", 2:"location", 3:"year", 4:"content_notes", 5:"consent_publish", 6:"consent_share", 7:"consent_book" };
+  const out = {};
+  const lines = raw.replace(/\r\n/g, "\n").split("\n");
+  for (const line of lines) {
+    const m = line.match(/^\s*([1-7])[\.\)\-:]\s*(.+?)\s*$/);
+    if (m) {
+      const k = map[parseInt(m[1], 10)];
+      if (k && !out[k]) out[k] = m[2].trim();
+    }
+  }
+  return Object.keys(out).length >= 3 ? out : null;
+}
+
+// Detect best-effort language from text using script ranges. Returns BCP-47 or "" if unknown.
+function detectLanguage(text) {
+  if (!text) return "";
+  const t = text.replace(/<[^>]*>/g, "");
+  if (/[؀-ۿݐ-ݿ]/.test(t)) {
+    // Persian uses ک, گ, پ, چ, ژ, ی not in Arabic core; Arabic uses ي ك etc.
+    if (/[پچژکگی]/.test(t)) return "fa";
+    return "ar";
+  }
+  if (/[֐-׿]/.test(t)) return "he";
+  if (/[一-鿿]/.test(t)) return "zh";
+  if (/[぀-ゟ゠-ヿ]/.test(t)) return "ja";
+  if (/[가-힯]/.test(t)) return "ko";
+  if (/[ऀ-ॿ]/.test(t)) return "hi";
+  if (/[ঀ-৿]/.test(t)) return "bn";
+  if (/[฀-๿]/.test(t)) return "th";
+  return "en";
+}
+
+function isYes(v) {
+  if (typeof v !== "string") return false;
+  return /^(y|yes|true)\b/i.test(v.trim());
+}
+
+const VALID_TAGS = ["hospital","home","birth-center","water-birth","c-section","vbac","induction","unmedicated","epidural","premature","twins","surrogacy","adoption","loss","first-baby","rainbow-baby"];
+
+function applyParsed(parsed, summary) {
+  // Title / author / location / year
+  if (parsed.title) document.getElementById("f-title").value = parsed.title;
+  if (parsed.author) document.getElementById("f-author").value = parsed.author;
+  if (parsed.location) document.getElementById("f-location").value = parsed.location;
+  if (parsed.year) document.getElementById("f-year").value = parsed.year;
+
+  // Content notes
+  if (parsed.content_notes) document.getElementById("f-content-notes").value = parsed.content_notes;
+
+  // Tags (comma-separated → set of valid tags)
+  if (parsed.tags) {
+    const wanted = parsed.tags.split(/[,;\n]/).map(s => s.trim().toLowerCase()).filter(Boolean);
+    const matched = wanted.filter(t => VALID_TAGS.includes(t));
+    selectedTags = new Set(matched);
+    document.querySelectorAll("#tag-picker .tag-pick").forEach(b => {
+      b.classList.toggle("active", selectedTags.has(b.dataset.tag));
+    });
+    const unknown = wanted.filter(t => !VALID_TAGS.includes(t));
+    if (unknown.length) summary.warn.push("Unknown tag(s) ignored: " + unknown.join(", "));
+  }
+
+  // Body — prefer story_html, fall back to story_text wrapped in <p>
+  let bodyHtml = "";
+  if (parsed.story_html) {
+    bodyHtml = parsed.story_html;
+  } else if (parsed.story_text) {
+    bodyHtml = parsed.story_text.split(/\n\s*\n/).map(p => "<p>" + p.replace(/\n/g, "<br>") + "</p>").join("");
+  }
+  if (bodyHtml) {
+    document.getElementById("editor").innerHTML = bodyHtml;
+    if (typeof updateEditorScript === "function") updateEditorScript();
+  }
+
+  // Language — auto-detect from body if not set
+  const detected = detectLanguage(bodyHtml || parsed.story_text || "");
+  if (detected) {
+    const sel = document.getElementById("f-language");
+    const has = Array.from(sel.options).some(o => o.value === detected);
+    if (has) {
+      sel.value = detected;
+      summary.notes.push("Language auto-detected: " + detected + " (review!)");
+    }
+  }
+
+  // Audio
+  if (parsed.audio_url) document.getElementById("f-audio-url").value = parsed.audio_url;
+  if (parsed.audio_duration_seconds) document.getElementById("f-audio-duration").value = parsed.audio_duration_seconds;
+
+  // Cover image
+  if (parsed.cover_image_url) {
+    document.getElementById("f-cover-image").value = parsed.cover_image_url;
+    updateCoverPreview();
+    summary.notes.push("Cover image set — VERIFY no identifiable children/PII before publishing.");
+  }
+
+  // share_allowed: defaults true, only false if consent_share explicitly says no
+  if (parsed.consent_share != null) {
+    const yes = isYes(parsed.consent_share);
+    document.getElementById("f-share-allowed").checked = yes;
+    if (!yes) summary.notes.push("Author opted OUT of social sharing — share_allowed=false.");
+  }
+
+  // consent_book → flag for offline tracking
+  if (parsed.consent_book && isYes(parsed.consent_book)) {
+    summary.warn.push("Author opted IN to book contact" + (parsed.long_term_contact ? " (long-term contact: " + parsed.long_term_contact + ")" : "") + ". Log this in your private tracking repo.");
+  }
+
+  // submitted_at default = today (Formspree doesn't include a timestamp field by default)
+  const today = new Date().toISOString().slice(0, 10);
+  if (!document.getElementById("f-submitted-at").value) document.getElementById("f-submitted-at").value = today;
+  if (!document.getElementById("f-published-at").value) document.getElementById("f-published-at").value = today;
+}
+
+function runPaste() {
+  const raw = document.getElementById("paste-input").value;
+  const resultEl = document.getElementById("paste-result");
+  if (!raw.trim()) {
+    resultEl.className = "parse-result error";
+    resultEl.textContent = "Paste an email or Telegram reply first.";
+    return;
+  }
+
+  const summary = { notes: [], warn: [] };
+  let parsed = parseFormspree(raw);
+  let source = "Formspree email";
+
+  // If Formspree parser found very little, try Telegram fallback
+  const fieldsFound = Object.keys(parsed).filter(k => parsed[k]).length;
+  if (fieldsFound < 2) {
+    const tg = parseTelegram(raw);
+    if (tg) { parsed = tg; source = "Telegram numbered reply"; }
+  }
+
+  if (Object.keys(parsed).filter(k => parsed[k]).length === 0) {
+    resultEl.className = "parse-result error";
+    resultEl.textContent = "Couldn't recognize any fields in the paste. Make sure you're pasting the email body (with field labels), not just the story text.";
+    return;
+  }
+
+  applyParsed(parsed, summary);
+
+  const filled = [];
+  if (parsed.title) filled.push("title");
+  if (parsed.author) filled.push("author");
+  if (parsed.location) filled.push("location");
+  if (parsed.year) filled.push("year");
+  if (parsed.tags) filled.push("tags");
+  if (parsed.content_notes) filled.push("content_notes");
+  if (parsed.story_html || parsed.story_text) filled.push("body");
+  if (parsed.audio_url) filled.push("audio");
+  if (parsed.cover_image_url) filled.push("cover_image");
+
+  let html = '<strong>Filled from ' + source + ':</strong> ' + (filled.join(", ") || "(nothing)") + ".";
+  if (summary.notes.length || summary.warn.length) {
+    html += '<ul class="parse-list">';
+    summary.warn.forEach(w => html += '<li style="color:#a36400;">⚠ ' + escapeHtml(w) + '</li>');
+    summary.notes.forEach(n => html += '<li>' + escapeHtml(n) + '</li>');
+    html += '</ul>';
+  }
+  html += '<p style="margin-top:10px;">Review every field before clicking <em>Publish</em>. Especially: <strong>language</strong>, <strong>cover image content</strong>, and <strong>tags</strong>.</p>';
+  resultEl.className = "parse-result success";
+  resultEl.innerHTML = html;
+
+  // Close after a short pause so the user sees the summary, then scrolls to top of form
+  setTimeout(() => {
+    closePasteModal();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, 1800);
+}
+
+// Esc closes the modal
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") {
+    const m = document.getElementById("paste-modal");
+    if (m && m.classList.contains("visible")) closePasteModal();
+  }
+});
+
 </script>
+
+<!-- PASTE SUBMISSION MODAL -->
+<div class="modal-backdrop" id="paste-modal" onclick="if(event.target===this) closePasteModal()">
+  <div class="modal-card">
+    <h3>Paste a submission</h3>
+    <p class="modal-subtitle">Paste a Formspree email body, or a Telegram numbered reply (1–7 answers). I'll extract every field I can recognize and fill the form. You still review and click Publish.</p>
+    <textarea id="paste-input" placeholder="Paste the full email body here.&#10;&#10;Formspree emails look like:&#10;title: Thirty-seven weeks&#10;author: Maria&#10;location: Lisbon, Portugal&#10;year: 2023&#10;tags: hospital, first-baby&#10;content_notes: medical trauma&#10;story_html: <p>It started at...</p>&#10;cover_image_url: https://res.cloudinary.com/...&#10;consent_share: yes&#10;consent_book: no"></textarea>
+    <div id="paste-result"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" onclick="closePasteModal()">Cancel</button>
+      <button type="button" class="btn-primary" onclick="runPaste()">Parse &amp; fill form</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
