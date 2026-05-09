@@ -1763,6 +1763,69 @@
         <p>For removal requests, license questions, or anything else: <a id="ct-terms-contact" href="mailto:unedited.voices.project@gmail.com">unedited.voices.project@gmail.com</a>.</p>
       </article>
     </div>
+
+    <div class="page" id="page-manage">
+      <article class="terms-page">
+        <div class="page-eyebrow">Manage your story</div>
+
+        <div id="manage-loading">
+          <h2 class="terms-title">Verifying your link…</h2>
+          <p>One moment.</p>
+        </div>
+
+        <div id="manage-error" style="display: none;">
+          <h2 class="terms-title">We couldn't verify this link.</h2>
+          <p id="manage-error-text"></p>
+          <p>If you've lost your link, email <a id="ct-manage-contact" href="mailto:unedited.voices.project@gmail.com">unedited.voices.project@gmail.com</a> from the same address you submitted from, and we'll help.</p>
+        </div>
+
+        <div id="manage-content" style="display: none;">
+          <h2 class="terms-title">Your story.</h2>
+
+          <div class="terms-summary">
+            <strong>Story <span id="manage-story-id"></span></strong>
+            <p style="margin: 6px 0 0;">
+              <span id="manage-story-author"></span><span id="manage-story-meta"></span>
+              · <a id="manage-story-link" target="_blank" rel="noopener">Open the published page →</a>
+            </p>
+          </div>
+
+          <h3>Request a change</h3>
+          <p>Tell us what you'd like changed — a typo, a name, content notes, anything. We read every request and reply within a few days.</p>
+          <form id="manage-change-form" novalidate>
+            <div class="form-group">
+              <label for="manage-change-text">What should change?</label>
+              <textarea id="manage-change-text" name="message" rows="5" placeholder="e.g. Please remove the doctor's name in paragraph 3, or change my credit from 'Maria L.' to just 'M.'"></textarea>
+            </div>
+            <div class="button-row">
+              <button type="submit" class="submit-btn" id="manage-change-btn">Send change request</button>
+            </div>
+            <p class="help-text" id="manage-change-status" style="display: none;"></p>
+          </form>
+
+          <h3 style="margin-top: 36px;">Remove your story</h3>
+          <p>You can have your story taken down at any time, for any reason or no reason. We remove it within a few days. Your name and any drafts go with it.</p>
+          <form id="manage-remove-form" novalidate>
+            <div class="form-group">
+              <div class="checkbox-row">
+                <input type="checkbox" id="manage-remove-confirm" required />
+                <label for="manage-remove-confirm">I want my story removed from the site.</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="manage-remove-reason">Anything you'd like us to know <span class="opt">(optional)</span></label>
+              <textarea id="manage-remove-reason" name="reason" rows="4" placeholder="You don't need to give a reason. If something happened that we should be aware of, you can tell us."></textarea>
+            </div>
+            <div class="button-row">
+              <button type="submit" class="submit-btn" id="manage-remove-btn">Send removal request</button>
+            </div>
+            <p class="help-text" id="manage-remove-status" style="display: none;"></p>
+          </form>
+
+          <p style="margin-top: 36px; color: var(--text-soft); font-size: 14px;">Prefer to write us directly? Email <a href="mailto:unedited.voices.project@gmail.com">unedited.voices.project@gmail.com</a>. Quote your story number so we know which one.</p>
+        </div>
+      </article>
+    </div>
   </main>
 
   <footer>
@@ -2036,6 +2099,11 @@ async function loadStories() {
     const m = location.hash.match(/^#story=([\w-]+)/);
     if (m && allStories.find(s => s.id === m[1])) {
       openStory(m[1]);
+    }
+
+    // Deep link support: #manage?id=ID&token=TOKEN routes to the manage page
+    if (/^#manage(\?|$)/.test(location.hash)) {
+      window.showPage("manage");
     }
   } catch (err) {
     console.error("Failed to load stories:", err);
@@ -2575,6 +2643,10 @@ window.showPage = function(name) {
   // Lazy-init the editor only when the user actually opens the submit page
   if (name === "submit") {
     initEditor().then(() => checkForDraft());
+  }
+  // Initialize the manage page when navigated to via the secret link
+  if (name === "manage") {
+    initManagePage();
   }
   // Move focus to the new page heading for screen-reader users
   const main = document.getElementById("main-content");
@@ -3752,6 +3824,185 @@ loadSiteContent();
 loadStories();
 // Editor (TipTap) is loaded lazily, only when the user opens the submit page.
 // See showPage("submit") → initEditor() in the showPage handler above.
+
+// ============================================================
+// MANAGE PAGE
+// Authors get a private link of the form
+//   #manage?id=004&token=ABCDEF…
+// The story JSON only stores sha256(token). The page hashes the user's token
+// client-side and compares it to story.token_hash. No server.
+// ============================================================
+
+// Parse the bit AFTER `?` of the hash — i.e. for "#manage?id=4&token=x"
+// returns { id: "4", token: "x" }.
+function parseManageHashQuery() {
+  const i = location.hash.indexOf("?");
+  if (i < 0) return {};
+  const params = new URLSearchParams(location.hash.slice(i + 1));
+  const out = {};
+  for (const [k, v] of params.entries()) out[k] = v;
+  return out;
+}
+
+async function manageSha256Hex(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+function manageShowState(state) {
+  document.getElementById("manage-loading").style.display = state === "loading" ? "" : "none";
+  document.getElementById("manage-error").style.display = state === "error" ? "" : "none";
+  document.getElementById("manage-content").style.display = state === "content" ? "" : "none";
+}
+
+function manageShowError(text) {
+  document.getElementById("manage-error-text").textContent = text;
+  manageShowState("error");
+}
+
+let manageVerifiedStory = null;
+
+async function initManagePage() {
+  manageShowState("loading");
+  manageVerifiedStory = null;
+
+  const params = parseManageHashQuery();
+  const id = (params.id || "").trim();
+  const token = (params.token || "").trim();
+
+  if (!id || !token) {
+    manageShowError("This link is missing the story ID or the token. Open the link from the email exactly as it was sent.");
+    return;
+  }
+
+  // Stories should already be loaded by loadStories(). If not, give it a moment.
+  if (!Array.isArray(allStories) || allStories.length === 0) {
+    let waited = 0;
+    while ((!Array.isArray(allStories) || allStories.length === 0) && waited < 5000) {
+      await new Promise(r => setTimeout(r, 200));
+      waited += 200;
+    }
+  }
+
+  const story = (allStories || []).find(s => s.id === id);
+  if (!story) {
+    manageShowError("We couldn't find a story with that ID. The story may have already been removed, or the link is mistyped.");
+    return;
+  }
+
+  if (!story.token_hash) {
+    manageShowError("This story doesn't have a manage link associated with it. Email the project address to request changes or removal.");
+    return;
+  }
+
+  const hash = await manageSha256Hex(token);
+  if (hash !== story.token_hash) {
+    manageShowError("This link doesn't match the story. The token may have been mistyped, or a newer link was issued.");
+    return;
+  }
+
+  // Verified — show the manage UI.
+  manageVerifiedStory = story;
+  document.getElementById("manage-story-id").textContent = story.id;
+  document.getElementById("manage-story-author").textContent = story.author || "—";
+  let meta = "";
+  if (story.location) meta += " · " + story.location;
+  if (story.year) meta += " · " + story.year;
+  document.getElementById("manage-story-meta").textContent = meta;
+  document.getElementById("manage-story-link").href = "#story=" + encodeURIComponent(story.id);
+
+  manageShowState("content");
+}
+
+async function submitManageRequest(kind, fields) {
+  if (!manageVerifiedStory) return false;
+  if (!CONFIG || !CONFIG.formspreeEndpoint || CONFIG.formspreeEndpoint.includes("REPLACE_WITH")) {
+    return { ok: false, msg: "The site isn't configured to send requests yet. Please email us instead." };
+  }
+  const payload = new FormData();
+  payload.append("request_type", kind); // "change" or "remove"
+  payload.append("story_id", manageVerifiedStory.id);
+  payload.append("story_author", manageVerifiedStory.author || "");
+  payload.append("story_title", manageVerifiedStory.title || "");
+  Object.entries(fields || {}).forEach(([k, v]) => payload.append(k, v));
+  payload.append("_subject",
+    (kind === "remove" ? "[MANAGE] Removal request" : "[MANAGE] Change request")
+    + " — Story " + manageVerifiedStory.id
+    + (manageVerifiedStory.author ? " (" + manageVerifiedStory.author + ")" : "")
+  );
+  try {
+    const res = await fetch(CONFIG.formspreeEndpoint, {
+      method: "POST", body: payload, headers: { Accept: "application/json" }
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, msg: "Sending failed. Please try again, or email us directly." };
+  }
+}
+
+// Wire the change form
+document.getElementById("manage-change-form").addEventListener("submit", async function(e) {
+  e.preventDefault();
+  const text = document.getElementById("manage-change-text").value.trim();
+  const status = document.getElementById("manage-change-status");
+  const btn = document.getElementById("manage-change-btn");
+  if (!text) {
+    status.style.display = ""; status.style.color = "var(--error-text)";
+    status.textContent = "Tell us what you'd like changed.";
+    return;
+  }
+  btn.disabled = true; btn.textContent = "Sending…";
+  const result = await submitManageRequest("change", { message: text });
+  btn.disabled = false; btn.textContent = "Send change request";
+  status.style.display = "";
+  if (result.ok) {
+    status.style.color = "var(--success-text, #1f7a1f)";
+    status.textContent = "Sent. We'll reply within a few days.";
+    document.getElementById("manage-change-text").value = "";
+  } else {
+    status.style.color = "var(--error-text, #b00020)";
+    status.textContent = result.msg;
+  }
+});
+
+// Wire the removal form
+document.getElementById("manage-remove-form").addEventListener("submit", async function(e) {
+  e.preventDefault();
+  const confirm = document.getElementById("manage-remove-confirm").checked;
+  const reason = document.getElementById("manage-remove-reason").value.trim();
+  const status = document.getElementById("manage-remove-status");
+  const btn = document.getElementById("manage-remove-btn");
+  if (!confirm) {
+    status.style.display = ""; status.style.color = "var(--error-text)";
+    status.textContent = "Tick the checkbox to confirm.";
+    return;
+  }
+  btn.disabled = true; btn.textContent = "Sending…";
+  const result = await submitManageRequest("remove", { reason });
+  btn.disabled = false; btn.textContent = "Send removal request";
+  status.style.display = "";
+  if (result.ok) {
+    status.style.color = "var(--success-text, #1f7a1f)";
+    status.textContent = "Sent. We'll remove the story within a few days and reply to confirm.";
+    document.getElementById("manage-remove-confirm").checked = false;
+    document.getElementById("manage-remove-reason").value = "";
+  } else {
+    status.style.color = "var(--error-text, #b00020)";
+    status.textContent = result.msg;
+  }
+});
+
+// Re-run init if the URL hash changes (e.g. browser back/forward)
+window.addEventListener("hashchange", () => {
+  if (/^#manage(\?|$)/.test(location.hash)) {
+    if (!document.getElementById("page-manage").classList.contains("active")) {
+      window.showPage("manage");
+    } else {
+      initManagePage();
+    }
+  }
+});
 </script>
 
 </body>

@@ -301,10 +301,17 @@
         </div>
 
         <div id="form-status"></div>
+        <div id="publish-confirmation" style="display: none;"></div>
 
         <div class="field">
           <label>Title <span class="opt">optional</span></label>
           <input type="text" id="f-title" placeholder="A few words. Leave blank to publish under the editorial Nº." />
+        </div>
+
+        <div class="field">
+          <label>Author email <span class="opt">used only to draft the publish confirmation — NOT saved to the public JSON</span></label>
+          <input type="email" id="f-author-email" placeholder="maria@example.com" />
+          <p class="help">Filled automatically when you Paste a submission. We use it to pre-draft the confirmation email after you click Publish.</p>
         </div>
 
         <div class="row">
@@ -970,7 +977,7 @@ function resetForm() {
   document.getElementById("save-btn").textContent = "Publish";
   document.getElementById("cancel-edit-btn").style.display = "none";
 
-  ["f-title","f-author","f-location","f-year","f-content-notes","f-audio-url","f-audio-duration","f-cover-image"].forEach(id => {
+  ["f-title","f-author","f-author-email","f-location","f-year","f-content-notes","f-audio-url","f-audio-duration","f-cover-image"].forEach(id => {
     document.getElementById(id).value = "";
   });
   updateCoverPreview();
@@ -1011,6 +1018,17 @@ async function saveStory() {
   const isEdit = !!editingId;
   const id = isEdit ? editingId : nextStoryId();
 
+  // For new stories, generate a manage token. For edits, preserve the existing hash.
+  let manageToken = null;
+  let tokenHash = "";
+  if (isEdit) {
+    const existingStory = stories.find(x => x.id === editingId);
+    tokenHash = (existingStory && existingStory.token_hash) || "";
+  } else {
+    manageToken = generateManageToken();
+    tokenHash = await sha256Hex(manageToken);
+  }
+
   const story = {
     id,
     title: document.getElementById("f-title").value.trim(),
@@ -1027,6 +1045,7 @@ async function saveStory() {
     audio_url: audioUrl,
     audio_duration_seconds: parseInt(document.getElementById("f-audio-duration").value, 10) || 0,
     cover_image: document.getElementById("f-cover-image").value.trim(),
+    token_hash: tokenHash,
     body
   };
 
@@ -1054,9 +1073,16 @@ async function saveStory() {
 
     showFormStatus("success", `Story ${isEdit ? "updated" : "published"}. Site rebuilds within ~1 minute.`);
     showStatusBar("success", "Saved.");
-    resetForm();
     await loadStories();
-    setTimeout(() => switchTab("stories"), 1200);
+    if (isEdit) {
+      resetForm();
+      setTimeout(() => switchTab("stories"), 1200);
+    } else {
+      // New publish: show confirmation panel with manage URL + pre-drafted email.
+      // Don't reset form — Mosi reviews the panel first, then dismisses.
+      const authorEmail = document.getElementById("f-author-email").value.trim();
+      renderPublishConfirmation(story, manageToken, authorEmail);
+    }
   } catch (err) {
     showFormStatus("error", "Save failed: " + err.message);
   } finally {
@@ -1357,9 +1383,10 @@ function isYes(v) {
 const VALID_TAGS = ["hospital","home","birth-center","water-birth","c-section","vbac","induction","unmedicated","epidural","premature","twins","surrogacy","adoption","loss","first-baby","rainbow-baby"];
 
 function applyParsed(parsed, summary) {
-  // Title / author / location / year
+  // Title / author / location / year / email
   if (parsed.title) document.getElementById("f-title").value = parsed.title;
   if (parsed.author) document.getElementById("f-author").value = parsed.author;
+  if (parsed.email) document.getElementById("f-author-email").value = parsed.email;
   if (parsed.location) document.getElementById("f-location").value = parsed.location;
   if (parsed.year) document.getElementById("f-year").value = parsed.year;
 
@@ -1494,6 +1521,122 @@ document.addEventListener("keydown", function(e) {
     if (m && m.classList.contains("visible")) closePasteModal();
   }
 });
+
+// ============================================================
+// MANAGE TOKEN + POST-PUBLISH CONFIRMATION
+// ============================================================
+
+// Generate a 16-byte URL-safe token (~22 chars). 128 bits of entropy.
+function generateManageToken() {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  let s = btoa(String.fromCharCode.apply(null, bytes));
+  return s.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+// SHA-256 hex digest of a string. Used to verify the manage token client-side.
+async function sha256Hex(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+// Build the public site base URL from the admin's GitHub config.
+// Mosi can override by setting cfg.siteUrl in localStorage if she has a custom domain.
+function siteBaseUrl() {
+  if (cfg && cfg.siteUrl) return cfg.siteUrl.replace(/\/+$/, "");
+  if (cfg && cfg.owner && cfg.repo) {
+    return `https://${cfg.owner}.github.io/${cfg.repo}`;
+  }
+  return "";
+}
+
+function renderPublishConfirmation(story, token, authorEmail) {
+  const base = siteBaseUrl();
+  const storyUrl = base + "/#story=" + encodeURIComponent(story.id);
+  const manageUrl = base + "/#manage?id=" + encodeURIComponent(story.id) + "&token=" + encodeURIComponent(token);
+
+  const subject = "Your story is now on Unedited";
+  const greeting = "Dear " + (story.author || "writer") + ",";
+  const bodyLines = [
+    greeting,
+    "",
+    "Thank you for trusting Unedited with your story. It is now published:",
+    storyUrl,
+    "",
+    "If you ever want to change anything, or remove your story entirely, you can request that here:",
+    manageUrl,
+    "",
+    "This link is private to you. Please don't share it. We'll never publish it. Keep this email so you can find the link later.",
+    "",
+    "You can also reply to this email at any time and we will help.",
+    "",
+    "With care,",
+    "Unedited"
+  ];
+  const emailBody = bodyLines.join("\n");
+  const mailto = "mailto:" + encodeURIComponent(authorEmail || "") + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(emailBody);
+
+  const panel = document.getElementById("publish-confirmation");
+  panel.innerHTML = `
+    <div style="border: 1px solid var(--border, #ddd); border-radius: 6px; padding: 18px 20px; margin: 0 0 18px; background: var(--bg-alt, #f8f6f2);">
+      <h3 style="margin: 0 0 6px;">Story ${escapeHtml(story.id)} published.</h3>
+      <p style="margin: 0 0 14px; color: var(--text-soft); font-size: 14px;">Now send the author their confirmation email. It contains a private link they can use later to change or remove their story.</p>
+
+      <div class="field" style="margin: 0 0 12px;">
+        <label style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-soft);">Story URL</label>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input type="text" readonly value="${escapeAttr(storyUrl)}" style="flex: 1; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px;" onclick="this.select()" />
+          <button type="button" class="btn-secondary" onclick="copyToClipboard('${escapeAttr(storyUrl)}', this)">Copy</button>
+        </div>
+      </div>
+
+      <div class="field" style="margin: 0 0 12px;">
+        <label style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-soft);">Manage URL <span style="color: #a36400;">(secret — author only)</span></label>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input type="text" readonly value="${escapeAttr(manageUrl)}" style="flex: 1; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px;" onclick="this.select()" />
+          <button type="button" class="btn-secondary" onclick="copyToClipboard('${escapeAttr(manageUrl)}', this)">Copy</button>
+        </div>
+        <p class="help" style="margin-top: 6px;">The token is one-way hashed in the story JSON. After this page reloads, this raw URL is gone — you can only retrieve it from the email you send the author. If they lose the email, you can issue a new token by editing the story and saving (which regenerates).</p>
+      </div>
+
+      <div class="field" style="margin: 0 0 12px;">
+        <label style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-soft);">Pre-drafted email${authorEmail ? " to " + escapeHtml(authorEmail) : " (no author email captured — you'll need to address it)"}</label>
+        <textarea readonly style="width: 100%; min-height: 200px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px;">${escapeHtml(emailBody)}</textarea>
+        <div class="btn-row" style="margin-top: 8px;">
+          <a class="btn-primary" href="${escapeAttr(mailto)}" target="_blank" style="text-decoration: none; display: inline-block;">Open in your email client</a>
+          <button type="button" class="btn-secondary" onclick="copyToClipboard(${JSON.stringify(emailBody)}, this)">Copy email body</button>
+        </div>
+      </div>
+
+      <div class="btn-row" style="margin-top: 8px;">
+        <button type="button" class="btn-secondary" onclick="dismissPublishConfirmation()">I sent the email — clear this</button>
+      </div>
+    </div>
+  `;
+  panel.style.display = "";
+  panel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function dismissPublishConfirmation() {
+  document.getElementById("publish-confirmation").style.display = "none";
+  document.getElementById("publish-confirmation").innerHTML = "";
+  resetForm();
+  switchTab("stories");
+}
+
+async function copyToClipboard(text, btn) {
+  try {
+    await navigator.clipboard.writeText(text);
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = "Copied ✓";
+      setTimeout(() => btn.textContent = orig, 1500);
+    }
+  } catch (e) {
+    showStatusBar("error", "Copy failed. Select and copy manually.");
+  }
+}
+
 
 </script>
 

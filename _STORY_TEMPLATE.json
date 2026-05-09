@@ -42,6 +42,9 @@
   "cover_image": "",
   "_cover_image_help": "Optional. Cloudinary URL of the cover image. Empty string '' if the story has no image. Submitter-uploaded; verify it doesn't show identifiable children before publishing.",
 
+  "token_hash": "",
+  "_token_hash_help": "Optional. SHA-256 hex digest of the author's manage token. The admin panel sets this automatically when publishing. Lets the author visit /#manage?id=NNN&token=XYZ to request a change or removal without going through email. Empty string '' means no manage link is issued for this story (older stories without a token).",
+
   "body": "<p>The story text. Use HTML if from the rich editor. Or plain text with double-newline paragraph breaks.</p>",
   "_body_help": "For audio-only stories, body can be empty string ''."
 }
