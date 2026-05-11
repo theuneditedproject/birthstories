@@ -2087,6 +2087,7 @@
     <p id="ct-footer">Unedited · Birth Stories · A collective archive</p>
     <div class="colophon">
       <p style="margin: 0 0 6px;">Birth Stories is the <strong>first edition</strong> of <em>Unedited</em>, a series of collective archives told whole.</p>
+      <p style="margin: 0 0 10px;">A project by the <a href="https://dornafoundation.org" target="_blank" rel="noopener" style="color: var(--ink); border-bottom: 1px solid var(--ink);">Dorna Foundation</a> and the <strong>Rhea Mothers Alliance Foundation</strong>.</p>
       Stories © their authors. All rights reserved. Published with permission.
       Site design © Unedited. <a href="#" onclick="showPage('terms'); return false;">Terms</a>.
     </div>
@@ -2297,6 +2298,25 @@ function applySiteContent(c) {
       if (a.book_title || a.book_text) {
         html += '<h3>' + escapeHtml(a.book_title || "") + '</h3>';
         html += '<p>' + escapeHtml(a.book_text || "") + '</p>';
+      }
+      if (a.behind_title || a.behind_text) {
+        html += '<h3>' + escapeHtml(a.behind_title || "") + '</h3>';
+        // Allow basic emphasis (<strong>, <em>) and simple https links so we
+        // can credit & link the foundations — but no inline event handlers
+        // or other tags. We rebuild allowed tags from the already-escaped string.
+        let safeBehind = escapeHtml(a.behind_text || "")
+          .replace(/&lt;(\/?(?:strong|em|b|i))&gt;/g, "<$1>")
+          // Allow <a href="https://..." target=... rel=...>...</a>
+          .replace(
+            /&lt;a\s+href=&quot;(https?:\/\/[^&"<>\s]+)&quot;(?:\s+target=&quot;([^"&<>]+)&quot;)?(?:\s+rel=&quot;([^"&<>]+)&quot;)?&gt;/g,
+            (_m, href, target, rel) => {
+              const t = target ? ' target="' + target + '"' : '';
+              const r = rel ? ' rel="' + rel + '"' : ' rel="noopener"';
+              return '<a href="' + href + '" style="color: var(--ink); border-bottom: 1px solid var(--ink);"' + t + r + '>';
+            }
+          )
+          .replace(/&lt;\/a&gt;/g, "</a>");
+        html += '<p>' + safeBehind + '</p>';
       }
       if (a.contact_title || a.contact_text) {
         html += '<h3>' + escapeHtml(a.contact_title || "") + '</h3>';
