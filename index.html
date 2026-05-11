@@ -585,7 +585,9 @@
   [data-script="bengali"] { font-family: "Noto Serif Bengali", var(--font-serif); line-height: 1.9; }
   [data-script="thai"] { font-family: "Noto Serif Thai", var(--font-serif); line-height: 1.9; }
 
-  /* Drop-cap doesn't fit non-Latin scripts. Disable it */
+  /* Drop-cap doesn't fit non-Latin scripts. Disable it.
+     Also disabled on pages 2+ of a paginated story (.no-dropcap is set
+     by goToPage when idx !== 0). */
   .reader-body[data-script="persian"] p:first-of-type::first-letter,
   .reader-body[data-script="arabic"] p:first-of-type::first-letter,
   .reader-body[data-script="hebrew"] p:first-of-type::first-letter,
@@ -594,7 +596,8 @@
   .reader-body[data-script="japanese"] p:first-of-type::first-letter,
   .reader-body[data-script="devanagari"] p:first-of-type::first-letter,
   .reader-body[data-script="bengali"] p:first-of-type::first-letter,
-  .reader-body[data-script="thai"] p:first-of-type::first-letter {
+  .reader-body[data-script="thai"] p:first-of-type::first-letter,
+  .reader-body.no-dropcap p:first-of-type::first-letter {
     float: none; font-size: inherit; padding: 0; line-height: inherit;
   }
 
@@ -1365,6 +1368,84 @@
   .editor-loading {
     min-height: 360px; padding: 28px 32px; color: var(--ink-faint);
     font-family: var(--font-serif); font-size: 18px; font-style: italic;
+  }
+
+  /* =====================================================================
+     RESPONSIVE FITNESS — defensive rules so the site fits every viewport.
+     Applied at the end so they override earlier specificity safely.
+     ===================================================================== */
+
+  /* Allow long URLs / long author names / non-Latin words to wrap instead
+     of pushing the layout wider than the viewport. */
+  body { overflow-wrap: break-word; -webkit-text-size-adjust: 100%; }
+  html, body { max-width: 100%; overflow-x: clip; }
+
+  /* Any image or inline media in a story / banner / cover should never
+     exceed its container. Caps height so tall portraits don't dominate. */
+  img, svg, video { max-width: 100%; }
+  img, video { height: auto; }
+
+  /* Flex children inside `display: flex` containers default to min-width:auto,
+     which is what causes overflow when a label or paragraph is long. */
+  nav.main-nav button, .featured-num, .story-meta, .featured-meta,
+  .reader-num, .share-row, .button-row, .checkbox-row, .form-row,
+  .story-page-nav { min-width: 0; }
+  .featured-num, .reader-num { flex-wrap: wrap; gap: 8px; }
+
+  /* Honor iOS safe-area-inset so the floating Share button isn't hidden
+     under the home indicator. */
+  .floating-share {
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    right: calc(24px + env(safe-area-inset-right, 0px));
+  }
+
+  /* Section-break dividers were fixed 60px lines — scale them on narrow. */
+  @media (max-width: 600px) {
+    .section-break::before, .section-break::after { flex-basis: 40px; }
+    .section-break { margin: 36px 0; gap: 12px; }
+  }
+
+  /* Compact tweaks for narrow phones (320–400px). The existing 600px and
+     800px breakpoints cover most cases; this block tightens the edges. */
+  @media (max-width: 480px) {
+    .container { padding: 0 16px; }
+    .featured-card { padding: 26px 18px; min-height: 320px; }
+    .featured-cover { margin: 0 -18px 22px; }
+    .featured-card .featured-cover { margin: 0 -18px 22px; }
+    .featured-num { font-size: 10px; letter-spacing: 0.14em; padding-bottom: 10px; margin-bottom: 18px; }
+    .featured-meta { gap: 10px; font-size: 10px; letter-spacing: 0.08em; margin-bottom: 18px; }
+    h1.site-title { font-size: clamp(40px, 12vw, 64px); }
+    .tagline { font-size: 16px; margin-bottom: 28px; padding: 0 8px; }
+    .masthead-edition { font-size: 12px; letter-spacing: 0.24em; }
+    .reader-title { font-size: clamp(32px, 8vw, 44px); }
+    .featured-title { font-size: clamp(28px, 8vw, 42px); }
+    .share-cta-title { font-size: clamp(24px, 6vw, 32px); }
+    .why-title, .about-title, .terms-title { font-size: clamp(32px, 7vw, 44px); }
+    nav.main-nav button { padding: 14px 14px; font-size: 11px; letter-spacing: 0.1em; }
+    nav.main-nav button.active::after { left: 14px; right: 14px; }
+    .story-card { padding: 22px 0 24px; }
+    .story-card-thumb { width: 72px; height: 72px; margin: 0 0 10px 10px; }
+    .story-title, .story-author { font-size: 22px; }
+    .submit-btn, .secondary-btn { padding: 14px 22px; font-size: 11px; }
+    .share-cta-btn { padding: 14px 28px; font-size: 11px; letter-spacing: 0.14em; }
+    .button-row { gap: 8px; margin-top: 24px; padding-top: 18px; }
+    .page-banner img { max-height: 280px; }
+    .page-banner figcaption { font-size: 10px; }
+    .terms-page .terms-summary { padding: 18px 18px; font-size: 16px; }
+    .story-cover img { max-height: 320px; }
+    .featured-cover img { max-height: 320px; }
+    .floating-share { padding: 10px 12px; gap: 6px; }
+  }
+
+  /* Extra-narrow safety (≤360px — older iPhone SE width). */
+  @media (max-width: 360px) {
+    .container { padding: 0 14px; }
+    h1.site-title { font-size: clamp(36px, 14vw, 52px); }
+    .tagline { font-size: 15px; }
+    .featured-card { padding: 22px 14px; }
+    .featured-cover { margin: 0 -14px 20px; }
+    .submit-btn, .secondary-btn, .share-cta-btn { letter-spacing: 0.1em; }
+    nav.main-nav button { padding: 12px 10px; }
   }
 </style>
 
@@ -3752,6 +3833,8 @@ function goToPage(idx) {
     c.innerHTML = pagination.pages[idx];
     pagination.index = idx;
     c.classList.remove("fading");
+    // Drop-cap (the big first letter) should appear only on page 1.
+    c.classList.toggle("no-dropcap", idx !== 0);
     pagination.counterEl.textContent = (idx + 1) + " / " + pagination.pages.length;
     pagination.prevBtn.disabled = idx === 0;
     pagination.nextBtn.disabled = idx === pagination.pages.length - 1;
