@@ -1447,6 +1447,153 @@
     .submit-btn, .secondary-btn, .share-cta-btn { letter-spacing: 0.1em; }
     nav.main-nav button { padding: 12px 10px; }
   }
+
+  /* === SHARE KIT (invite-to-share modal) === */
+  .share-spread-link {
+    display: inline-block;
+    margin-top: 22px;
+    padding: 6px 0;
+    background: transparent; border: none;
+    color: var(--ink-soft);
+    font-family: var(--font-sans);
+    font-size: 12px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    cursor: pointer;
+    border-bottom: 1px solid var(--rule);
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .share-spread-link:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .sk-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(15,15,15,0.62);
+    display: none; align-items: flex-start; justify-content: center;
+    z-index: 200; padding: 24px 16px;
+    overflow-y: auto;
+  }
+  .sk-backdrop.visible { display: flex; }
+  .sk-card {
+    background: var(--bg);
+    width: min(640px, 100%);
+    margin: auto;
+    padding: 28px 28px 24px;
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    color: var(--ink);
+    font-family: var(--font-sans);
+  }
+  .sk-card h3 {
+    font-family: var(--font-serif);
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 500; margin: 0 0 8px;
+    letter-spacing: -0.02em; line-height: 1.1;
+    font-variation-settings: "opsz" 32;
+  }
+  .sk-intro {
+    font-size: 14px; color: var(--ink-soft);
+    line-height: 1.55; margin: 0 0 18px;
+  }
+  .sk-format-toggle {
+    display: inline-flex; gap: 0;
+    border: 1px solid var(--ink);
+    margin: 0 0 16px;
+  }
+  .sk-format-toggle button {
+    background: transparent; border: none;
+    padding: 8px 16px;
+    font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink); cursor: pointer;
+  }
+  .sk-format-toggle button.active {
+    background: var(--ink); color: var(--bg);
+  }
+  .sk-preview {
+    display: flex; justify-content: center;
+    margin: 0 0 16px;
+    background: var(--bg-alt);
+    padding: 14px;
+    border: 1px solid var(--rule);
+  }
+  .sk-preview canvas {
+    max-width: 100%; height: auto;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  }
+  .sk-caption-wrap { margin: 0 0 16px; }
+  .sk-caption-wrap label {
+    display: block; font-size: 11px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 6px;
+  }
+  .sk-caption-wrap textarea {
+    width: 100%; min-height: 140px;
+    padding: 10px 12px;
+    border: 1px solid var(--ink); border-radius: 0;
+    font-family: var(--font-serif); font-size: 14px; line-height: 1.55;
+    background: var(--bg); color: var(--ink);
+    box-sizing: border-box; resize: vertical;
+  }
+  .sk-actions {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin: 0 0 14px;
+  }
+  .sk-btn {
+    flex: 1 1 auto; min-width: 140px;
+    background: var(--ink); color: var(--bg);
+    border: 1px solid var(--ink); border-radius: 0;
+    padding: 12px 18px;
+    font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    cursor: pointer; text-decoration: none; text-align: center;
+    transition: all 0.15s;
+  }
+  .sk-btn:hover { background: var(--accent); border-color: var(--accent); }
+  .sk-btn.secondary { background: transparent; color: var(--ink); }
+  .sk-btn.secondary:hover { background: var(--ink); color: var(--bg); }
+  .sk-platforms {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin: 8px 0 16px;
+  }
+  .sk-platform {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 130px;
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 10px 12px;
+    background: transparent; color: var(--ink);
+    border: 1px solid var(--rule);
+    font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; text-decoration: none;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .sk-platform:hover { color: var(--accent); border-color: var(--accent); }
+  .sk-platform svg { flex-shrink: 0; }
+  .sk-footnote {
+    font-size: 12px; color: var(--ink-faint);
+    line-height: 1.45; margin: 4px 0 14px;
+  }
+  .sk-close {
+    background: transparent; border: none;
+    color: var(--ink-soft); cursor: pointer;
+    font-family: var(--font-sans); font-size: 11px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .sk-close:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .sk-status {
+    font-size: 12px; color: var(--success-text, #1f7a1f);
+    margin: 0 0 12px; min-height: 18px;
+  }
+  .sk-status.error { color: var(--error-text, #b00020); }
+  @media (max-width: 480px) {
+    .sk-card { padding: 22px 18px 18px; }
+    .sk-btn { min-width: 110px; padding: 11px 12px; font-size: 10px; letter-spacing: 0.12em; }
+    .sk-platform { min-width: calc(50% - 4px); font-size: 10px; padding: 9px 6px; }
+  }
 </style>
 
 <!-- Privacy-respecting analytics (Cloudflare Web Analytics).
@@ -1562,6 +1709,7 @@
         <p class="share-cta-sub">If you've lived through a birth, your words belong in this archive. Happy, painful, ordinary, complicated, all of it. In any language. With your name, or anonymous.</p>
         <button type="button" class="share-cta-btn" onclick="showPage('submit')">Share your story</button>
         <p class="share-cta-note">Takes a few minutes. We reply within a few days.</p>
+        <button type="button" class="share-spread-link" onclick="openShareKit()">Or help us reach more women — get a ready-to-post invitation →</button>
       </section>
     </div>
 
@@ -4103,7 +4251,386 @@ window.addEventListener("hashchange", () => {
     }
   }
 });
+
+// ============================================================
+// SHARE KIT — "Spread the word"
+// Gives anyone (the founder, a reader) a ready-to-post invitation:
+//   - a rendered Instagram-friendly image (square or vertical)
+//   - a pre-composed caption (editable)
+//   - one-click share to X, WhatsApp, Telegram, Facebook, email
+//   - native Web Share API on mobile (passes the image too)
+//   - download for Instagram (no web upload API exists)
+// ============================================================
+
+const SHARE_KIT_DEFAULT_CAPTION = (
+  "Unedited is a collective archive of birth stories from women around the world — told in their own words, in any language. Joyful, painful, ordinary, complicated. All of it.\n" +
+  "\n" +
+  "If you've lived through a birth, your story is welcome. With your name, or anonymous.\n" +
+  "\n" +
+  "Read or share at: " + location.origin + (location.pathname || "/") + "\n" +
+  "\n" +
+  "#unedited #birthstories #motherhood #intheirownwords"
+);
+
+const shareKit = {
+  format: "square",   // "square" (1080x1080) or "story" (1080x1920)
+  canvas: null,
+  pngBlob: null,
+};
+
+function openShareKit() {
+  document.getElementById("share-kit-modal").classList.add("visible");
+  document.body.style.overflow = "hidden";
+  // Initialize caption on first open
+  const ta = document.getElementById("sk-caption");
+  if (ta && !ta.value) ta.value = SHARE_KIT_DEFAULT_CAPTION;
+  renderShareKit();
+}
+
+function closeShareKit() {
+  document.getElementById("share-kit-modal").classList.remove("visible");
+  document.body.style.overflow = "";
+}
+
+function setShareKitFormat(fmt) {
+  shareKit.format = fmt;
+  document.querySelectorAll(".sk-format-toggle button").forEach(b => {
+    b.classList.toggle("active", b.dataset.format === fmt);
+  });
+  renderShareKit();
+}
+
+async function renderShareKit() {
+  const cv = document.getElementById("sk-canvas");
+  if (!cv) return;
+  // Logical pixel dimensions. Instagram square is 1080x1080; story is 1080x1920.
+  const dims = shareKit.format === "story" ? { w: 1080, h: 1920 } : { w: 1080, h: 1080 };
+  cv.width = dims.w;
+  cv.height = dims.h;
+  // CSS-size — preview is smaller so it fits the modal.
+  cv.style.width = "min(420px, 100%)";
+  cv.style.aspectRatio = (dims.w + "/" + dims.h);
+  cv.style.height = "auto";
+
+  // Wait for webfonts so the rendered image uses the site's typography.
+  if (document.fonts && document.fonts.ready) {
+    try { await document.fonts.ready; } catch (e) {}
+  }
+
+  const ctx = cv.getContext("2d");
+  const W = dims.w, H = dims.h;
+
+  // Background — warm cream like the site.
+  const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+  bgGrad.addColorStop(0, "#FAF7F0");
+  bgGrad.addColorStop(1, "#F3EEDF");
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Inner frame border (typographic page feel)
+  const frameInset = Math.round(W * 0.06);
+  ctx.strokeStyle = "rgba(15,15,15,0.18)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(frameInset, frameInset, W - frameInset * 2, H - frameInset * 2);
+
+  const cx = W / 2;
+  // Site mark (the echo arcs) — drawn as SVG paths in canvas.
+  function drawEcho(centerX, centerY, scale) {
+    ctx.save();
+    ctx.translate(centerX - 32 * scale, centerY - 24 * scale);
+    ctx.scale(scale, scale);
+    ctx.strokeStyle = "#0F0F0F";
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.lineWidth = 1.25;
+    ctx.beginPath();
+    ctx.moveTo(14, 8);
+    ctx.bezierCurveTo(50, 8, 50, 8, 50, 24);
+    ctx.bezierCurveTo(50, 40, 50, 40, 14, 40);
+    ctx.stroke();
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(24, 16);
+    ctx.bezierCurveTo(42, 16, 42, 16, 42, 24);
+    ctx.bezierCurveTo(42, 32, 42, 32, 24, 32);
+    ctx.stroke();
+    ctx.lineWidth = 0.85;
+    ctx.beginPath();
+    ctx.moveTo(32, 21);
+    ctx.bezierCurveTo(36, 21, 36, 21, 36, 24);
+    ctx.bezierCurveTo(36, 27, 36, 27, 32, 27);
+    ctx.stroke();
+    ctx.fillStyle = "#0F0F0F";
+    ctx.beginPath();
+    ctx.arc(13, 24, 1.6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Layout: place pieces along the vertical center, top-down.
+  let y;
+  if (shareKit.format === "story") {
+    y = H * 0.18;
+    drawEcho(cx, y, 2.4);
+    y += 80;
+  } else {
+    y = H * 0.16;
+    drawEcho(cx, y, 2.2);
+    y += 70;
+  }
+
+  // Tag line / edition above the title
+  ctx.fillStyle = "#0F0F0F";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "alphabetic";
+  ctx.font = "500 " + Math.round(W * 0.022) + "px 'Inter', system-ui, sans-serif";
+  ctx.letterSpacing = "0.32em"; // not actually supported in Canvas; emulate via spacing
+  drawTracking(ctx, "BIRTH STORIES — A COLLECTIVE ARCHIVE", cx, y + 30, 5);
+  y += 80;
+
+  // Site title — large, serif, the brand mark
+  ctx.fillStyle = "#0F0F0F";
+  const titleSize = shareKit.format === "story" ? Math.round(W * 0.16) : Math.round(W * 0.13);
+  ctx.font = "500 " + titleSize + "px 'Newsreader', 'Iowan Old Style', Georgia, serif";
+  ctx.fillText("Unedited", cx, y + titleSize);
+  y += titleSize + 24;
+
+  // Divider rule
+  ctx.strokeStyle = "#0F0F0F";
+  ctx.lineWidth = 1.4;
+  ctx.beginPath();
+  ctx.moveTo(cx - 80, y);
+  ctx.lineTo(cx + 80, y);
+  ctx.stroke();
+  y += 50;
+
+  // Subtitle / poetic line — serif italic
+  const subSize = shareKit.format === "story" ? Math.round(W * 0.055) : Math.round(W * 0.046);
+  ctx.font = "italic 400 " + subSize + "px 'Newsreader', Georgia, serif";
+  ctx.fillStyle = "#3A3A3A";
+  const subLines = [
+    "In their own words.",
+    "From mothers around the world."
+  ];
+  for (const line of subLines) {
+    ctx.fillText(line, cx, y + subSize);
+    y += subSize + 12;
+  }
+  y += 30;
+
+  // Body call to action
+  const ctaSize = shareKit.format === "story" ? Math.round(W * 0.04) : Math.round(W * 0.032);
+  ctx.font = "400 " + ctaSize + "px 'Newsreader', Georgia, serif";
+  ctx.fillStyle = "#0F0F0F";
+  const ctaLines = wrapText(
+    ctx,
+    "If you've lived through a birth, your story belongs here. Joyful, painful, ordinary, all of it. In any language. With your name, or anonymous.",
+    W - frameInset * 2 - 60
+  );
+  for (const line of ctaLines) {
+    ctx.fillText(line, cx, y + ctaSize);
+    y += ctaSize * 1.45;
+  }
+  y += 30;
+
+  // Bottom: URL + mark
+  const url = location.origin + (location.pathname || "/");
+  const urlClean = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  const urlY = shareKit.format === "story" ? H - H * 0.12 : H - H * 0.12;
+  ctx.font = "500 " + Math.round(W * 0.028) + "px 'Inter', system-ui, sans-serif";
+  ctx.fillStyle = "#0F0F0F";
+  drawTracking(ctx, "→ READ + SHARE AT", cx, urlY - 32, 4);
+  ctx.font = "500 " + Math.round(W * 0.035) + "px 'Newsreader', Georgia, serif";
+  ctx.fillText(urlClean, cx, urlY + 8);
+
+  // Convert to a PNG blob for sharing/downloading
+  await new Promise(resolve => {
+    cv.toBlob(blob => { shareKit.pngBlob = blob; resolve(); }, "image/png", 0.92);
+  });
+}
+
+// Canvas's letter-spacing is not supported until very recently. Emulate it.
+function drawTracking(ctx, text, cx, y, tracking) {
+  const chars = text.split("");
+  const widths = chars.map(c => ctx.measureText(c).width);
+  const totalWidth = widths.reduce((a, b) => a + b, 0) + tracking * (chars.length - 1);
+  let x = cx - totalWidth / 2;
+  for (let i = 0; i < chars.length; i++) {
+    ctx.textAlign = "left";
+    ctx.fillText(chars[i], x, y);
+    x += widths[i] + tracking;
+  }
+  ctx.textAlign = "center";
+}
+
+function wrapText(ctx, text, maxWidth) {
+  const words = text.split(" ");
+  const lines = [];
+  let cur = "";
+  for (const w of words) {
+    const tentative = cur ? cur + " " + w : w;
+    if (ctx.measureText(tentative).width > maxWidth && cur) {
+      lines.push(cur);
+      cur = w;
+    } else {
+      cur = tentative;
+    }
+  }
+  if (cur) lines.push(cur);
+  return lines;
+}
+
+function showSKStatus(msg, isError) {
+  const el = document.getElementById("sk-status");
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.toggle("error", !!isError);
+  if (msg) setTimeout(() => { if (el.textContent === msg) el.textContent = ""; }, 3500);
+}
+
+function downloadShareKitImage() {
+  if (!shareKit.pngBlob) { showSKStatus("Image still rendering — try again in a sec.", true); return; }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(shareKit.pngBlob);
+  a.download = "unedited-share-" + shareKit.format + ".png";
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 200);
+  showSKStatus("Image downloaded. Open Instagram and paste the caption.");
+}
+
+async function copyShareKitCaption() {
+  const text = document.getElementById("sk-caption").value;
+  try {
+    await navigator.clipboard.writeText(text);
+    showSKStatus("Caption copied. Paste it into your post.");
+  } catch (e) {
+    showSKStatus("Couldn't copy automatically. Select the text and copy it manually.", true);
+  }
+}
+
+async function webShareKit() {
+  const text = document.getElementById("sk-caption").value;
+  const url = location.origin + (location.pathname || "/");
+  if (!navigator.share) {
+    showSKStatus("Your browser doesn't support native sharing. Use one of the platform buttons or download the image.", true);
+    return;
+  }
+  const payload = { title: "Unedited — Birth Stories", text, url };
+  // Attach the image if the browser supports file sharing.
+  if (shareKit.pngBlob && navigator.canShare) {
+    const file = new File([shareKit.pngBlob], "unedited-share.png", { type: "image/png" });
+    if (navigator.canShare({ files: [file] })) {
+      payload.files = [file];
+    }
+  }
+  try {
+    await navigator.share(payload);
+    showSKStatus("Shared.");
+  } catch (e) {
+    if (e.name !== "AbortError") showSKStatus("Share cancelled.", true);
+  }
+}
+
+function shareKitOpenPlatform(platform) {
+  const text = document.getElementById("sk-caption").value;
+  const url = location.origin + (location.pathname || "/");
+  const encText = encodeURIComponent(text);
+  const encUrl = encodeURIComponent(url);
+  let target;
+  switch (platform) {
+    case "twitter":
+      target = "https://twitter.com/intent/tweet?text=" + encText;
+      break;
+    case "whatsapp":
+      target = "https://wa.me/?text=" + encText;
+      break;
+    case "telegram":
+      target = "https://t.me/share/url?url=" + encUrl + "&text=" + encText;
+      break;
+    case "facebook":
+      target = "https://www.facebook.com/sharer/sharer.php?u=" + encUrl + "&quote=" + encText;
+      break;
+    case "email":
+      target = "mailto:?subject=" + encodeURIComponent("A project I thought you'd care about — Unedited") + "&body=" + encText;
+      break;
+    case "instagram":
+      // No web-share API for Instagram feed. Download the image + copy caption,
+      // user opens the Instagram app and pastes.
+      downloadShareKitImage();
+      copyShareKitCaption();
+      showSKStatus("Image downloaded, caption copied. Open Instagram and paste both.");
+      return;
+  }
+  if (target) window.open(target, "_blank", "noopener");
+}
+
+// Close the share-kit modal on Esc
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") {
+    const m = document.getElementById("share-kit-modal");
+    if (m && m.classList.contains("visible")) closeShareKit();
+  }
+});
 </script>
+
+<!-- SHARE KIT MODAL -->
+<div class="sk-backdrop" id="share-kit-modal" onclick="if(event.target===this) closeShareKit()">
+  <div class="sk-card">
+    <h3>Spread the word.</h3>
+    <p class="sk-intro">A ready-to-post invitation. The image is sized for Instagram (square for the feed, vertical for stories); the caption is editable. Post wherever you'd like — your inviter network is doing the project a favor.</p>
+
+    <div class="sk-format-toggle" role="tablist" aria-label="Image format">
+      <button type="button" data-format="square" class="active" onclick="setShareKitFormat('square')">Square (Feed)</button>
+      <button type="button" data-format="story" onclick="setShareKitFormat('story')">Vertical (Stories)</button>
+    </div>
+
+    <div class="sk-preview"><canvas id="sk-canvas"></canvas></div>
+
+    <div class="sk-caption-wrap">
+      <label for="sk-caption">Caption (edit before posting)</label>
+      <textarea id="sk-caption" rows="7"></textarea>
+    </div>
+
+    <div class="sk-actions">
+      <button type="button" class="sk-btn" onclick="downloadShareKitImage()">↓ Download image</button>
+      <button type="button" class="sk-btn secondary" onclick="copyShareKitCaption()">Copy caption</button>
+      <button type="button" class="sk-btn secondary" onclick="webShareKit()">Native share…</button>
+    </div>
+
+    <div class="sk-platforms" role="group" aria-label="Quick share">
+      <button type="button" class="sk-platform" onclick="shareKitOpenPlatform('instagram')" title="Downloads the image + copies the caption — paste both in the Instagram app">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        Instagram
+      </button>
+      <a class="sk-platform" href="javascript:void(0)" onclick="shareKitOpenPlatform('twitter'); return false;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X / Twitter
+      </a>
+      <a class="sk-platform" href="javascript:void(0)" onclick="shareKitOpenPlatform('whatsapp'); return false;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg>
+        WhatsApp
+      </a>
+      <a class="sk-platform" href="javascript:void(0)" onclick="shareKitOpenPlatform('telegram'); return false;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+        Telegram
+      </a>
+      <a class="sk-platform" href="javascript:void(0)" onclick="shareKitOpenPlatform('facebook'); return false;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.593 1.323-1.325V1.325C24 .593 23.407 0 22.675 0z"/></svg>
+        Facebook
+      </a>
+      <a class="sk-platform" href="javascript:void(0)" onclick="shareKitOpenPlatform('email'); return false;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3,7 12,13 21,7"/></svg>
+        Email
+      </a>
+    </div>
+
+    <p class="sk-footnote">Instagram doesn't allow posting from the web. The Instagram button downloads the image and copies the caption — open the Instagram app, create a new post, paste both.</p>
+
+    <p id="sk-status" class="sk-status" aria-live="polite"></p>
+
+    <button type="button" class="sk-close" onclick="closeShareKit()">Close</button>
+  </div>
+</div>
 
 </body>
 </html>
