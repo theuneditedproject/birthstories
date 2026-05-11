@@ -2729,6 +2729,21 @@ function openStory(id) {
     }
   }
 
+  // If the body starts with an H1/H2 that matches the story title (which is
+  // already rendered as the page heading above), strip it so the title isn't
+  // shown twice. This handles submissions where the author duplicated the title
+  // inside the body (common when copy-pasting from a document).
+  const titleNorm = (s.title || "").trim().replace(/\s+/g, " ").toLowerCase();
+  if (titleNorm && bodyHtml) {
+    bodyHtml = bodyHtml.replace(
+      /^\s*<(h[12])([^>]*)>([\s\S]*?)<\/\1>\s*/i,
+      (m, _tag, _attrs, inner) => {
+        const innerText = inner.replace(/<[^>]+>/g, "").trim().replace(/\s+/g, " ").toLowerCase();
+        return innerText === titleNorm ? "" : m;
+      }
+    );
+  }
+
   // Detect script for proper rendering (RTL, fonts, etc.)
   // Use the explicit `language` field in JSON if provided, otherwise auto-detect from text
   const detected = detectScript(s.body || "");
