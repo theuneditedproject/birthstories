@@ -1439,13 +1439,6 @@
 
   /* Remind-me-later panel: active interval button */
   .remind-interval.active { background: var(--ink); color: var(--bg); }
-  #remind-panel input[type="email"] {
-    width: 100%; padding: 10px 0;
-    border: none; border-bottom: 1px solid var(--ink);
-    font-family: var(--font-serif); font-size: 16px;
-    background: transparent; color: var(--ink); border-radius: 0;
-  }
-  #remind-panel input[type="email"]:focus { outline: none; border-bottom-width: 2px; padding-bottom: 9px; }
 
   /* Extra-narrow safety (≤360px — older iPhone SE width). */
   @media (max-width: 360px) {
@@ -1918,17 +1911,13 @@
           <button type="button" class="ghost-btn" id="clear-btn" style="margin-left: auto; color: var(--ink-faint);">Clear draft</button>
         </div>
 
-        <!-- Inline panel: opt-in to a gentle email reminder. Hidden by default. -->
+        <!-- Inline panel: download a calendar reminder (.ics). Hidden by default. -->
         <div id="remind-panel" style="display: none; margin: 18px 0 0; padding: 20px 22px; background: var(--bg-alt); border-left: 3px solid var(--ink); border-radius: 0;">
           <p style="margin: 0 0 14px; font-family: var(--font-serif); font-size: 16px; color: var(--ink); line-height: 1.5;">
-            <strong>Not ready today?</strong> We'll save your draft and email you a gentle nudge when you have a moment. We stop the moment you submit, and you can unsubscribe from any nudge.
+            <strong>Not ready today?</strong> Save your draft, then download a calendar reminder so your phone gently nudges you when you have a moment to come back. Nothing leaves your device.
           </p>
           <div class="form-group" style="margin-bottom: 14px;">
-            <label for="remind-email">Email</label>
-            <input id="remind-email" type="email" placeholder="So we can nudge you" />
-          </div>
-          <div class="form-group" style="margin-bottom: 14px;">
-            <label>When should we nudge you?</label>
+            <label>When should we remind you?</label>
             <div style="display: flex; gap: 6px; flex-wrap: wrap;">
               <button type="button" class="secondary-btn remind-interval" data-days="3" style="padding: 8px 14px; font-size: 11px;">In 3 days</button>
               <button type="button" class="secondary-btn remind-interval" data-days="7" style="padding: 8px 14px; font-size: 11px;">In a week</button>
@@ -1937,7 +1926,7 @@
             </div>
           </div>
           <div class="button-row" style="border-top: none; padding-top: 0; margin-top: 0;">
-            <button type="button" class="submit-btn" id="remind-submit-btn">Set reminder</button>
+            <button type="button" class="submit-btn" id="remind-submit-btn">Download reminder</button>
             <button type="button" class="ghost-btn" id="remind-cancel-btn">Cancel</button>
           </div>
           <p class="help-text" id="remind-status" style="margin: 12px 0 0; min-height: 18px;"></p>
@@ -2188,10 +2177,6 @@ async function loadTiptap() {
 // ============================================================
 const CONFIG = {
   formspreeEndpoint: "https://formspree.io/f/mykokjvb",
-
-  // Reminder Worker base URL (deployed separately — see worker/README.md).
-  // Leave as "REPLACE_WITH..." to hide the Remind-me feature gracefully.
-  reminderEndpoint: "REPLACE_WITH_REMINDER_WORKER_URL",
 
   // Cloudinary config for audio uploads
   // Sign up free at cloudinary.com, then create an "unsigned upload preset" in Settings → Upload
@@ -3865,9 +3850,6 @@ document.getElementById("story-form").addEventListener("submit", async (e) => {
       clearDraft();
       if (isAudioMode) clearRecording();
       clearImagePreview();
-      // If she had set a "remind me later" reminder, cancel it so she doesn't
-      // get nudged after she's already submitted. Fire-and-forget.
-      if (state.email) cancelReminderForEmail(state.email);
       showStatus("success", "Thank you. Your story has been received and will be reviewed within a few days. We'll be in touch.");
       btn.textContent = "Submit story";
       btn.disabled = false;
@@ -4153,14 +4135,10 @@ loadStories();
 
 // ============================================================
 // REMIND-ME-LATER PANEL
-// Lets a visitor opt in to a gentle email reminder. The Worker (see
-// worker/README.md) holds the pending reminder; it auto-cancels when the
-// same email submits a story.
+// Lets a visitor download a calendar reminder (.ics) so her phone or
+// calendar app nudges her when it's time to come back and finish the story.
+// Pure client-side — nothing leaves her device.
 // ============================================================
-
-function reminderEnabled() {
-  return CONFIG.reminderEndpoint && !CONFIG.reminderEndpoint.includes("REPLACE_WITH");
-}
 
 let remindIntervalDays = 14;
 
@@ -4168,12 +4146,7 @@ function openRemindPanel() {
   const panel = document.getElementById("remind-panel");
   if (!panel) return;
   panel.style.display = "";
-  // Pre-fill email from the form if she already typed one.
-  const formEmail = (document.getElementById("f-email") || {}).value || "";
-  const remindEmail = document.getElementById("remind-email");
-  if (formEmail && !remindEmail.value) remindEmail.value = formEmail;
   setRemindStatus("", false);
-  setTimeout(() => remindEmail.focus(), 50);
   panel.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
@@ -4189,71 +4162,96 @@ function setRemindStatus(msg, isError) {
   el.style.color = isError ? "var(--error-text, #b00020)" : "var(--success-text, #1f7a1f)";
 }
 
-async function submitRemindRequest() {
-  if (!reminderEnabled()) {
-    setRemindStatus("Reminders aren't configured on this site yet. Save a draft and check back when you can.", true);
-    return;
-  }
-  const email = (document.getElementById("remind-email").value || "").trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    setRemindStatus("Please enter a valid email.", true);
-    return;
-  }
-  const btn = document.getElementById("remind-submit-btn");
-  btn.disabled = true; btn.textContent = "Setting…";
-  setRemindStatus("", false);
+// ---- .ics builder ----------------------------------------------------------
+// Uses "floating" local time (no TZID), which every calendar app interprets
+// in the user's own timezone. Event is a 30-min window at 10:00 with a
+// 0-minute-before display alarm.
 
-  try {
-    const res = await fetch(CONFIG.reminderEndpoint.replace(/\/+$/, "") + "/api/reminder", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, interval_days: remindIntervalDays }),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data.ok) throw new Error(data.error || "Couldn't set reminder");
+function _pad2(n) { return String(n).padStart(2, "0"); }
 
-    setRemindStatus("Set. We'll send you a gentle nudge in " + remindIntervalDays + " days. You can unsubscribe from any email.", false);
-    // Hide the form fields, keep the status visible briefly.
-    setTimeout(() => {
-      closeRemindPanel();
-      setRemindStatus("", false);
-    }, 4000);
-  } catch (err) {
-    setRemindStatus("Couldn't set the reminder: " + err.message + ". Please try again, or save your draft and bookmark this page.", true);
-  } finally {
-    btn.disabled = false; btn.textContent = "Set reminder";
-  }
+function _icsLocal(d) {
+  return d.getFullYear() + _pad2(d.getMonth() + 1) + _pad2(d.getDate())
+       + "T" + _pad2(d.getHours()) + _pad2(d.getMinutes()) + _pad2(d.getSeconds());
 }
 
-async function cancelReminderForEmail(email) {
-  if (!reminderEnabled()) return;
-  if (!email) return;
-  try {
-    await fetch(CONFIG.reminderEndpoint.replace(/\/+$/, "") + "/api/reminder/clear", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-  } catch (e) {
-    // Fail silently — don't get in the way of the submission flow.
-    console.warn("Reminder clear failed:", e.message);
-  }
+function _icsUtc(d) {
+  return d.getUTCFullYear() + _pad2(d.getUTCMonth() + 1) + _pad2(d.getUTCDate())
+       + "T" + _pad2(d.getUTCHours()) + _pad2(d.getUTCMinutes()) + _pad2(d.getUTCSeconds()) + "Z";
 }
 
-// Wire UI on DOMContentLoaded (the elements exist in the static HTML).
+function _icsEscape(s) {
+  // RFC 5545: escape backslash, semicolon, comma, and newlines.
+  return String(s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+}
+
+function buildReminderIcs(days) {
+  const now = new Date();
+  const start = new Date();
+  start.setDate(start.getDate() + days);
+  start.setHours(10, 0, 0, 0); // 10:00 local time on the target day
+  const end = new Date(start);
+  end.setMinutes(end.getMinutes() + 30);
+
+  const uid = "remind-" + now.getTime() + "-" + Math.random().toString(36).slice(2, 10) + "@unedited";
+  const siteUrl = location.origin + location.pathname + "#submit";
+  const summary = "Finish my birth story for Unedited";
+  const description = "You set this reminder to come back and finish your story. When you're ready, head to " + siteUrl;
+
+  // RFC 5545 requires CRLF line endings.
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Unedited//Birth Stories//EN",
+    "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    "UID:" + uid,
+    "DTSTAMP:" + _icsUtc(now),
+    "DTSTART:" + _icsLocal(start),
+    "DTEND:" + _icsLocal(end),
+    "SUMMARY:" + _icsEscape(summary),
+    "DESCRIPTION:" + _icsEscape(description),
+    "URL:" + siteUrl,
+    "BEGIN:VALARM",
+    "TRIGGER:-PT0M",
+    "ACTION:DISPLAY",
+    "DESCRIPTION:" + _icsEscape(summary),
+    "END:VALARM",
+    "END:VEVENT",
+    "END:VCALENDAR",
+    ""
+  ].join("\r\n");
+}
+
+function downloadReminderIcs() {
+  const ics = buildReminderIcs(remindIntervalDays);
+  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "unedited-reminder.ics";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+  const human = remindIntervalDays === 1 ? "tomorrow"
+              : remindIntervalDays === 3 ? "in 3 days"
+              : remindIntervalDays === 7 ? "in a week"
+              : remindIntervalDays === 14 ? "in two weeks"
+              : remindIntervalDays === 30 ? "in a month"
+              : "in " + remindIntervalDays + " days";
+  setRemindStatus("Reminder downloaded. Open the .ics file to add it to your calendar — we'll see you " + human + ".", false);
+}
+
+// Wire UI on load (the elements exist in the static HTML).
 (function wireRemindPanel() {
   const remindBtn = document.getElementById("remind-btn");
   if (!remindBtn) return;
-  // Hide the button entirely if reminders aren't configured.
-  if (!reminderEnabled()) {
-    remindBtn.style.display = "none";
-    return;
-  }
   remindBtn.addEventListener("click", openRemindPanel);
   const cancelBtn = document.getElementById("remind-cancel-btn");
   if (cancelBtn) cancelBtn.addEventListener("click", closeRemindPanel);
   const submitBtn = document.getElementById("remind-submit-btn");
-  if (submitBtn) submitBtn.addEventListener("click", submitRemindRequest);
+  if (submitBtn) submitBtn.addEventListener("click", downloadReminderIcs);
   document.querySelectorAll(".remind-interval").forEach(b => {
     b.addEventListener("click", () => {
       remindIntervalDays = parseInt(b.dataset.days, 10) || 14;
