@@ -1281,6 +1281,65 @@
   }
   .floating-share .arrow { font-size: 14px; }
   .floating-share.hidden { display: none; }
+
+  /* === FLOATING REMIND-ME-LATER BUTTON ===
+     Visible only when the visitor is on the submit page. Uses the
+     project's warm-rust accent so it pops against the cream page. */
+  .floating-remind {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 51;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 999px;
+    padding: 14px 22px 14px 18px;
+    font-family: var(--font-sans);
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(194, 65, 12, 0.32);
+    transition: transform 0.18s, box-shadow 0.2s, background 0.2s;
+    display: none; /* shown via .visible (toggled by showPage) */
+    align-items: center; gap: 10px;
+  }
+  .floating-remind.visible {
+    display: inline-flex;
+    animation: remind-pulse 2.2s ease-in-out 0.6s 3;
+  }
+  .floating-remind:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(194, 65, 12, 0.45);
+    background: #A6360A; /* slightly deeper rust */
+  }
+  .floating-remind:focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 3px;
+  }
+  .floating-remind svg {
+    width: 18px; height: 18px;
+    stroke: currentColor; stroke-width: 1.8;
+    fill: none;
+  }
+  @keyframes remind-pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 8px 24px rgba(194, 65, 12, 0.32); }
+    50%      { transform: scale(1.07); box-shadow: 0 14px 36px rgba(194, 65, 12, 0.55); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .floating-remind.visible { animation: none; }
+    .floating-remind:hover { transform: none; }
+  }
+  @media (max-width: 600px) {
+    .floating-remind {
+      bottom: 16px; right: 16px;
+      padding: 11px 16px 11px 13px;
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      gap: 6px;
+    }
+    .floating-remind svg { width: 15px; height: 15px; }
+  }
   @media (max-width: 600px) {
     .floating-share {
       bottom: 16px; right: 16px;
@@ -1907,7 +1966,6 @@
           <button type="submit" class="submit-btn" id="submit-btn">Submit story</button>
           <button type="button" class="secondary-btn" id="preview-btn">Preview</button>
           <button type="button" class="ghost-btn" id="save-now-btn">Save draft</button>
-          <button type="button" class="ghost-btn" id="remind-btn">Remind me later</button>
           <button type="button" class="ghost-btn" id="clear-btn" style="margin-left: auto; color: var(--ink-faint);">Clear draft</button>
         </div>
 
@@ -2122,6 +2180,18 @@
 <button id="floating-share" class="floating-share" type="button" onclick="showPage('submit')" aria-label="Share your story">
   <span>Share your story</span>
   <span class="arrow" aria-hidden="true">→</span>
+</button>
+
+<!-- Floating "Remind me later" button. Only visible on the submit page;
+     opens the inline panel (same panel as the in-form button used). -->
+<button id="floating-remind" class="floating-remind" type="button" onclick="openRemindPanel()" aria-label="Get a calendar reminder to come back later">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <rect x="3.5" y="5" width="17" height="15" rx="2"></rect>
+    <line x1="3.5" y1="10" x2="20.5" y2="10"></line>
+    <line x1="8" y1="3" x2="8" y2="7"></line>
+    <line x1="16" y1="3" x2="16" y2="7"></line>
+  </svg>
+  <span>Remind me later</span>
 </button>
 
 <noscript>
@@ -2962,6 +3032,17 @@ window.showPage = function(name) {
   // Hide the floating share-your-story button when already on submit page
   const fab = document.getElementById("floating-share");
   if (fab) fab.classList.toggle("hidden", name === "submit");
+  // Show the floating remind-me-later button only on the submit page.
+  // (Re-adding the class restarts the entrance pulse each visit.)
+  const remindFab = document.getElementById("floating-remind");
+  if (remindFab) {
+    remindFab.classList.remove("visible");
+    if (name === "submit") {
+      // Force reflow so the animation replays on every entry to the page.
+      void remindFab.offsetWidth;
+      remindFab.classList.add("visible");
+    }
+  }
 };
 
 document.querySelectorAll(".nav-btn").forEach(btn => {
@@ -4148,11 +4229,19 @@ function openRemindPanel() {
   panel.style.display = "";
   setRemindStatus("", false);
   panel.scrollIntoView({ behavior: "smooth", block: "center" });
+  // Hide the floating trigger while the panel itself is on screen.
+  const remindFab = document.getElementById("floating-remind");
+  if (remindFab) remindFab.classList.remove("visible");
 }
 
 function closeRemindPanel() {
   const panel = document.getElementById("remind-panel");
   if (panel) panel.style.display = "none";
+  // Bring the floating trigger back (without re-running the entrance pulse).
+  const remindFab = document.getElementById("floating-remind");
+  if (remindFab && document.getElementById("page-submit").classList.contains("active")) {
+    remindFab.classList.add("visible");
+  }
 }
 
 function setRemindStatus(msg, isError) {
@@ -4243,11 +4332,9 @@ function downloadReminderIcs() {
   setRemindStatus("Reminder downloaded. Open the .ics file to add it to your calendar — we'll see you " + human + ".", false);
 }
 
-// Wire UI on load (the elements exist in the static HTML).
+// Wire UI on load (the panel elements live in the static HTML; the trigger
+// is the bottom-right floating button, which uses an inline onclick).
 (function wireRemindPanel() {
-  const remindBtn = document.getElementById("remind-btn");
-  if (!remindBtn) return;
-  remindBtn.addEventListener("click", openRemindPanel);
   const cancelBtn = document.getElementById("remind-cancel-btn");
   if (cancelBtn) cancelBtn.addEventListener("click", closeRemindPanel);
   const submitBtn = document.getElementById("remind-submit-btn");
