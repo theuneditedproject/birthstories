@@ -424,6 +424,7 @@
           <button class="btn-primary" id="save-btn" onclick="saveStory()">Publish</button>
           <button class="btn-secondary" onclick="resetForm()">Reset form</button>
           <button class="btn-secondary" id="cancel-edit-btn" onclick="resetForm()" style="display: none;">Cancel edit</button>
+          <button class="btn-secondary" id="regenerate-btn" onclick="regenerateManageLink()" style="display: none;" title="Issue a new manage link if the previous email was never sent or the author lost it. The old link will stop working.">🔑 Regenerate manage link</button>
         </div>
       </div>
 
@@ -534,6 +535,24 @@
         </div>
 
         <div class="settings-section">
+          <h3>Notifications worker <span class="opt" style="font-weight: 400;">optional</span></h3>
+          <p style="font-size: 13px; color: var(--text-soft); margin: 0 0 12px;">If you've deployed the Cloudflare worker in <code>worker/</code>, paste its URL and admin secret here. The publish confirmation will then offer a <strong>Send email now</strong> button that emails the author their story URL and private manage link automatically. Leave blank to keep using the manual <code>mailto:</code> draft.</p>
+          <div class="field">
+            <label>Worker URL <span class="opt">e.g. https://unedited-reminders.YOUR-CF-SUBDOMAIN.workers.dev</span></label>
+            <input type="url" id="cfg-worker-url" placeholder="https://...workers.dev" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label>Admin secret <span class="opt">the ADMIN_SECRET value you set on the worker</span></label>
+            <input type="password" id="cfg-admin-secret" autocomplete="off" />
+          </div>
+          <div class="btn-row">
+            <button class="btn-primary" onclick="saveNotificationConfig()">Save</button>
+            <button class="btn-secondary" onclick="clearNotificationConfig()">Clear</button>
+          </div>
+          <p id="notif-status" style="font-size: 13px; margin-top: 10px;"></p>
+        </div>
+
+        <div class="settings-section">
           <h3>About this admin panel</h3>
           <p style="font-size: 13px; color: var(--text-soft); margin: 0 0 8px;">This panel runs entirely in your browser. Your GitHub token is stored only in this browser's localStorage, and is sent only to api.github.com when reading or writing stories.</p>
           <p style="font-size: 13px; color: var(--text-soft); margin: 0;">No analytics, no third parties, no logging.</p>
@@ -555,7 +574,7 @@ const TAGS = [
   "first-baby","rainbow-baby"
 ];
 
-let cfg = null; // { owner, repo, branch, token }
+let cfg = null; // { owner, repo, branch, token, workerUrl?, adminSecret? }
 let stories = []; // loaded from index.json + each story file
 let indexShas = {}; // sha of index.json + each story file (needed for GitHub PUT)
 let editingId = null; // when set, we're editing this story instead of creating new
@@ -638,11 +657,55 @@ function enterAdmin() {
   document.getElementById("settings-repo-info").textContent = `${cfg.owner}/${cfg.repo} (${cfg.branch})`;
   document.getElementById("edit-html-link").href = `https://github.com/${cfg.owner}/${cfg.repo}/edit/${cfg.branch}/index.html`;
 
+  // Populate notifications-worker settings (if previously saved)
+  const workerUrlEl = document.getElementById("cfg-worker-url");
+  const adminSecretEl = document.getElementById("cfg-admin-secret");
+  if (workerUrlEl) workerUrlEl.value = (cfg && cfg.workerUrl) || "";
+  if (adminSecretEl) adminSecretEl.value = (cfg && cfg.adminSecret) || "";
+
   buildTagPicker();
   initEditor();
   loadStories();
   loadContent();
   setDefaultDates();
+}
+
+// ---- Notifications worker config (optional) ----
+
+function isNotificationsConfigured() {
+  return !!(cfg && cfg.workerUrl && cfg.adminSecret);
+}
+
+function saveNotificationConfig() {
+  const url = (document.getElementById("cfg-worker-url").value || "").trim().replace(/\/+$/, "");
+  const secret = (document.getElementById("cfg-admin-secret").value || "").trim();
+  const statusEl = document.getElementById("notif-status");
+  if (!cfg) return;
+  if (url && !/^https?:\/\//i.test(url)) {
+    statusEl.innerHTML = '<span class="msg error">Worker URL must start with https://</span>';
+    return;
+  }
+  cfg.workerUrl = url || undefined;
+  cfg.adminSecret = secret || undefined;
+  // Persist only if we already have a remembered config (don't surprise the
+  // user by writing to localStorage when they signed in without "Remember").
+  if (localStorage.getItem(CONFIG_KEY)) {
+    saveConfig(cfg, true);
+  }
+  statusEl.innerHTML = (url && secret)
+    ? '<span class="msg success">Saved. Auto-send is now enabled.</span>'
+    : '<span class="msg" style="color: var(--text-soft);">Saved. Auto-send is disabled — you\'ll get the manual mailto draft.</span>';
+}
+
+function clearNotificationConfig() {
+  if (!cfg) return;
+  delete cfg.workerUrl;
+  delete cfg.adminSecret;
+  if (localStorage.getItem(CONFIG_KEY)) saveConfig(cfg, true);
+  document.getElementById("cfg-worker-url").value = "";
+  document.getElementById("cfg-admin-secret").value = "";
+  document.getElementById("notif-status").innerHTML =
+    '<span class="msg" style="color: var(--text-soft);">Cleared. Publish confirmation will use the manual mailto draft.</span>';
 }
 
 function setDefaultDates() {
@@ -1018,6 +1081,12 @@ function editStory(id) {
   document.getElementById("form-subtitle").textContent = "Editing " + (s._filename || s.id) + ". Changes commit to GitHub when you save.";
   document.getElementById("save-btn").textContent = "Save changes";
   document.getElementById("cancel-edit-btn").style.display = "inline-block";
+  document.getElementById("regenerate-btn").style.display = "inline-block";
+
+  // Pre-fill the author email if we remember it locally from the original publish,
+  // so the post-regenerate confirmation panel has someone to draft the email to.
+  const rememberedEmail = (loadStoryEmails() || {})[s.id] || "";
+  document.getElementById("f-author-email").value = rememberedEmail;
 
   document.getElementById("f-title").value = s.title || "";
   document.getElementById("f-author").value = s.author || "";
@@ -1051,6 +1120,7 @@ function resetForm() {
   document.getElementById("form-subtitle").textContent = "Fill in the details from a submission email or voice note. The story goes live within ~1 minute of saving.";
   document.getElementById("save-btn").textContent = "Publish";
   document.getElementById("cancel-edit-btn").style.display = "none";
+  document.getElementById("regenerate-btn").style.display = "none";
 
   ["f-title","f-author","f-author-email","f-location","f-year","f-content-notes","f-audio-url","f-audio-duration","f-cover-image"].forEach(id => {
     document.getElementById(id).value = "";
@@ -1622,6 +1692,70 @@ document.addEventListener("keydown", function(e) {
 // MANAGE TOKEN + POST-PUBLISH CONFIRMATION
 // ============================================================
 
+// Regenerate the manage token for an already-published story.
+// Used when the original confirmation email was never sent (Mosi dismissed the
+// panel too soon, or her mail client never opened the mailto draft) or the
+// author lost the link. The previous link stops working immediately.
+//
+// Operates on the saved version of the story from `stories` (NOT the form),
+// so unsaved field edits aren't quietly committed. Mosi can save those
+// separately if she wants.
+async function regenerateManageLink() {
+  if (!editingId) {
+    showFormStatus("error", "Only available while editing a story.");
+    return;
+  }
+  const existing = stories.find(x => x.id === editingId);
+  if (!existing) {
+    showFormStatus("error", "Couldn't find the story to regenerate.");
+    return;
+  }
+  const ok = confirm(
+    "Generate a new manage link for story " + existing.id + "?\n\n" +
+    "The previous link (if it was ever sent) will stop working. " +
+    "After regenerating, you'll get the new link and a fresh confirmation panel — send the email before leaving the page."
+  );
+  if (!ok) return;
+
+  const btn = document.getElementById("regenerate-btn");
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Regenerating…";
+  showFormStatus("info", "Generating a new manage token and committing to GitHub…");
+
+  try {
+    const newToken = generateManageToken();
+    const newHash = await sha256Hex(newToken);
+
+    // Build the updated story object: same as the saved version, with only
+    // the token_hash field swapped. Don't read the form — we don't want to
+    // surprise-save half-edited fields here.
+    const updated = { ...existing, token_hash: newHash };
+    // The `_filename` field is for our internal bookkeeping, not part of the
+    // public JSON. Strip it before writing.
+    delete updated._filename;
+
+    const filename = existing._filename || `${existing.id}.json`;
+    const filepath = "stories/" + filename;
+    const sha = indexShas[filename];
+
+    await ghPut(filepath, JSON.stringify(updated, null, 2) + "\n",
+      `Regenerate manage token for story ${existing.id}`, sha);
+
+    showFormStatus("success", "New manage link generated. Send it to the author below — it will not be shown again.");
+    showStatusBar("success", "Regenerated.");
+    await loadStories();
+
+    const authorEmail = document.getElementById("f-author-email").value.trim();
+    renderPublishConfirmation(existing, newToken, authorEmail);
+  } catch (err) {
+    showFormStatus("error", "Regenerate failed: " + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+  }
+}
+
 // Generate a 16-byte URL-safe token (~22 chars). 128 bits of entropy.
 function generateManageToken() {
   const bytes = new Uint8Array(16);
@@ -1672,11 +1806,42 @@ function renderPublishConfirmation(story, token, authorEmail) {
   const emailBody = bodyLines.join("\n");
   const mailto = "mailto:" + encodeURIComponent(authorEmail || "") + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(emailBody);
 
+  // Stash everything the auto-send button needs, so we don't have to round-trip
+  // the token (which we don't want to embed in any DOM attribute) or rebuild the
+  // payload from scratch.
+  window.__pendingPublishEmail = {
+    story_id: story.id,
+    author: story.author || "writer",
+    email: authorEmail || "",
+    story_url: storyUrl,
+    manage_url: manageUrl,
+    lang: story.language || "en"
+  };
+
+  const autoSendEnabled = isNotificationsConfigured() && !!authorEmail;
+  const autoSendBlocked = isNotificationsConfigured() && !authorEmail;
+
+  const autoSendRow = autoSendEnabled
+    ? `<div style="border: 1px solid #cde3cd; background: #f3f9f3; border-radius: 4px; padding: 12px 14px; margin: 0 0 14px;">
+         <p style="margin: 0 0 10px; font-size: 14px;">Auto-send is configured. Click below to email <strong>${escapeHtml(authorEmail)}</strong> via the worker — no need to open your mail client.</p>
+         <div class="btn-row" style="margin: 0;">
+           <button type="button" class="btn-primary" id="auto-send-btn" onclick="sendPublishEmailNow()">✉ Send email now</button>
+           <span id="auto-send-status" style="font-size: 13px; color: var(--text-soft);"></span>
+         </div>
+       </div>`
+    : (autoSendBlocked
+       ? `<div style="border: 1px solid #ead7a8; background: #fbf5e6; border-radius: 4px; padding: 10px 14px; margin: 0 0 14px; font-size: 13px; color: #6b4f00;">
+            Auto-send is configured, but no author email was captured for this publish. Fill in <em>Author email</em> on the form and use Regenerate to get a panel that can auto-send, or send manually below.
+          </div>`
+       : "");
+
   const panel = document.getElementById("publish-confirmation");
   panel.innerHTML = `
     <div style="border: 1px solid var(--border, #ddd); border-radius: 6px; padding: 18px 20px; margin: 0 0 18px; background: var(--bg-alt, #f8f6f2);">
       <h3 style="margin: 0 0 6px;">Story ${escapeHtml(story.id)} published.</h3>
       <p style="margin: 0 0 14px; color: var(--text-soft); font-size: 14px;">Now send the author their confirmation email. It contains a private link they can use later to change or remove their story.</p>
+
+      ${autoSendRow}
 
       <div class="field" style="margin: 0 0 12px;">
         <label style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-soft);">Story URL</label>
@@ -1692,20 +1857,20 @@ function renderPublishConfirmation(story, token, authorEmail) {
           <input type="text" readonly value="${escapeAttr(manageUrl)}" style="flex: 1; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px;" onclick="this.select()" />
           <button type="button" class="btn-secondary" onclick="copyToClipboard('${escapeAttr(manageUrl)}', this)">Copy</button>
         </div>
-        <p class="help" style="margin-top: 6px;">The token is one-way hashed in the story JSON. After this page reloads, this raw URL is gone — you can only retrieve it from the email you send the author. If they lose the email, you can issue a new token by editing the story and saving (which regenerates).</p>
+        <p class="help" style="margin-top: 6px;">The token is one-way hashed in the story JSON. After this page reloads, this raw URL is gone — if the email never reaches the author, edit the story and click <strong>Regenerate manage link</strong> to issue a fresh one.</p>
       </div>
 
       <div class="field" style="margin: 0 0 12px;">
-        <label style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-soft);">Pre-drafted email${authorEmail ? " to " + escapeHtml(authorEmail) : " (no author email captured — you'll need to address it)"}</label>
+        <label style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-soft);">${autoSendEnabled ? "Email preview" : "Pre-drafted email"}${authorEmail ? " to " + escapeHtml(authorEmail) : " (no author email captured — you'll need to address it)"}</label>
         <textarea readonly style="width: 100%; min-height: 200px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px;">${escapeHtml(emailBody)}</textarea>
         <div class="btn-row" style="margin-top: 8px;">
-          <a class="btn-primary" href="${escapeAttr(mailto)}" target="_blank" style="text-decoration: none; display: inline-block;">Open in your email client</a>
+          <a class="${autoSendEnabled ? "btn-secondary" : "btn-primary"}" href="${escapeAttr(mailto)}" target="_blank" style="text-decoration: none; display: inline-block;">Open in your email client</a>
           <button type="button" class="btn-secondary" onclick="copyToClipboard(${JSON.stringify(emailBody)}, this)">Copy email body</button>
         </div>
       </div>
 
       <div class="btn-row" style="margin-top: 8px;">
-        <button type="button" class="btn-secondary" onclick="dismissPublishConfirmation()">I sent the email — clear this</button>
+        <button type="button" class="btn-secondary" onclick="dismissPublishConfirmation()">${autoSendEnabled ? "Done — clear this" : "I sent the email — clear this"}</button>
       </div>
     </div>
   `;
@@ -1713,9 +1878,63 @@ function renderPublishConfirmation(story, token, authorEmail) {
   panel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+// Auto-send via the Cloudflare worker.
+// Reads the pending payload that renderPublishConfirmation stashed on window,
+// because we don't want the raw manage token in any inspectable DOM attribute.
+async function sendPublishEmailNow() {
+  const payload = window.__pendingPublishEmail;
+  const btn = document.getElementById("auto-send-btn");
+  const status = document.getElementById("auto-send-status");
+  if (!payload || !btn) return;
+
+  if (!isNotificationsConfigured()) {
+    status.textContent = "Worker not configured — open Settings to add it.";
+    status.style.color = "var(--error-text, #b00020)";
+    return;
+  }
+
+  btn.disabled = true;
+  const originalLabel = btn.textContent;
+  btn.textContent = "Sending…";
+  status.textContent = "";
+
+  try {
+    const res = await fetch(cfg.workerUrl.replace(/\/+$/, "") + "/api/notify-published", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + cfg.adminSecret
+      },
+      body: JSON.stringify({
+        email: payload.email,
+        author: payload.author,
+        story_url: payload.story_url,
+        manage_url: payload.manage_url,
+        lang: payload.lang
+      })
+    });
+    let data = {};
+    try { data = await res.json(); } catch {}
+    if (!res.ok || data.ok === false) {
+      throw new Error(data.error || ("HTTP " + res.status));
+    }
+    btn.textContent = "Sent ✓";
+    status.textContent = "Email sent to " + payload.email + ".";
+    status.style.color = "var(--success-text, #1f7a3a)";
+    // Keep the button disabled so Mosi can't accidentally send twice.
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+    status.textContent = "Send failed: " + err.message + " (you can still use the mailto draft below)";
+    status.style.color = "var(--error-text, #b00020)";
+  }
+}
+
 function dismissPublishConfirmation() {
   document.getElementById("publish-confirmation").style.display = "none";
   document.getElementById("publish-confirmation").innerHTML = "";
+  // Drop the stashed manage-token payload so it doesn't linger in memory.
+  try { delete window.__pendingPublishEmail; } catch { window.__pendingPublishEmail = null; }
   resetForm();
   switchTab("stories");
 }

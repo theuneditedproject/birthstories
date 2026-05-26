@@ -1,0 +1,29 @@
+# Cloudflare Worker config — see worker/README.md for setup steps.
+
+name = "unedited-reminders"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# Daily run at 14:00 UTC. Adjust if you'd like reminders to land later/earlier.
+[triggers]
+crons = ["0 14 * * *"]
+
+# Variables (non-secret). Set with `wrangler deploy`.
+[vars]
+SITE_URL = "https://birthstories.pages.dev"
+# Comma-separated list. Add your custom domain too if you have one.
+ALLOWED_ORIGINS = "https://birthstories.pages.dev"
+# Set this after deployment — used in unsubscribe links inside the emails.
+WORKER_URL = "https://unedited-reminders.YOUR-CF-SUBDOMAIN.workers.dev"
+
+# Secrets (set with `wrangler secret put NAME`):
+#   RESEND_API_KEY  — from https://resend.com (free tier, 3k/month)
+#   FROM_EMAIL      — e.g. "Unedited <reminders@dornafoundation.org>"
+
+# KV namespace for storing pending reminders. Create with:
+#   wrangler kv:namespace create REMINDERS
+# Then replace the placeholder IDs below with what wrangler prints.
+[[kv_namespaces]]
+binding = "REMINDERS"
+id = "31291f0bde2a48c98e929dddf57af49a"
+preview_id = "32ddf05e24574c4eb822b5c751f40457"
